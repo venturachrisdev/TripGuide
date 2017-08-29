@@ -1,0 +1,92 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 26
+    buildToolsVersion "26.0.1"
+    defaultConfig {
+        applicationId "com.blancgrupo.apps.tripguide"
+        minSdkVersion 16
+        targetSdkVersion 26
+        versionCode 1
+        vectorDrawables.useSupportLibrary = true
+        versionName "1.0"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+ext {
+    androidVersion = '26.0.1'
+    butterKnifeVersion = '8.7.0'
+    gsonVersion = '2.8.1'
+    retrofitVersion = '2.3.0'
+    okhttpVersion = '3.8.1'
+    daggerVersion = '2.9'
+    archComponentsVersion = '1.0.0-alpha5'
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    })
+
+    /* Android */
+    compile "com.android.support:appcompat-v7:$androidVersion"
+    compile "com.android.support:design:$androidVersion"
+    compile "com.android.support:recyclerview-v7:$androidVersion"
+    compile "com.android.support:cardview-v7:$androidVersion"
+    compile "com.android.support:design:$androidVersion"
+    compile "com.android.support:support-v4:$androidVersion"
+    compile "com.android.support:support-core-utils:$androidVersion"
+
+    /* Architecture components */
+    compile "android.arch.lifecycle:runtime:$archComponentsVersion"
+    compile "android.arch.lifecycle:extensions:$archComponentsVersion"
+    compile "android.arch.persistence.room:rxjava2:$archComponentsVersion"
+    compile "android.arch.persistence.room:runtime:$archComponentsVersion"
+
+    /* Third Party - UI */
+    compile "com.jakewharton:butterknife:$butterKnifeVersion"
+
+    /* Third Party - Business */
+    compile "com.google.code.gson:gson:$gsonVersion"
+    compile "com.squareup.retrofit2:retrofit:$retrofitVersion"
+    compile "com.squareup.retrofit2:converter-gson:$retrofitVersion"
+    compile "com.squareup.retrofit2:adapter-rxjava2:$retrofitVersion"
+    compile "com.squareup.okhttp3:okhttp:$okhttpVersion"
+    compile "com.squareup.okhttp3:logging-interceptor:$okhttpVersion"
+
+    /* Dependency Injection */
+    compile "com.google.dagger:dagger:$daggerVersion"
+
+    /* Annotations */
+    annotationProcessor "com.jakewharton:butterknife-compiler:$butterKnifeVersion"
+    annotationProcessor "com.google.dagger:dagger-compiler:$daggerVersion"
+    annotationProcessor "android.arch.persistence.room:compiler:$archComponentsVersion"
+    annotationProcessor "android.arch.lifecycle:compiler:$archComponentsVersion"
+
+
+
+    compile 'com.elyeproj.libraries:loaderviewlibrary:1.3.0'
+    compile 'com.android.support.constraint:constraint-layout:1.0.2'
+    compile 'com.google.android.gms:play-services-maps:11.0.4'
+    compile 'com.github.ittianyu:BottomNavigationViewEx:1.2.1'
+    compile 'com.afollestad.material-dialogs:core:0.9.4.4'
+    compile 'com.github.bumptech.glide:glide:3.7.0'
+    compile 'de.hdodenhof:circleimageview:2.1.0'
+    compile 'com.jakewharton.rxbinding2:rxbinding-appcompat-v7:2.0.0'
+    compile 'io.reactivex.rxjava2:rxandroid:2.0.1'
+    compile 'io.reactivex.rxjava2:rxjava:2.1.0'
+    compile 'com.android.support:support-v4:26.+'
+    compile 'com.github.sharish:ShimmerRecyclerView:v1.0.1'
+    compile 'uk.co.chrisjenx:calligraphy:2.1.0'
+    compile 'com.rockerhieu:rv-adapter-states:1.0'
+    compile 'com.github.chrisbanes:PhotoView:2.0.0'
+    testCompile 'junit:junit:4.12'
+}

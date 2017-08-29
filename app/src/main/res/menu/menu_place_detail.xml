@@ -1,0 +1,13 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.blancgrupo.apps.tripguide.presentation.ui.activity.PlaceDetailActivity">
+    <item
+        android:id="@+id/action_mark_duplicate"
+        android:title="@string/mark_as_duplicated"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_place_close"
+        android:title="@string/this_place_is_closed"
+        app:showAsAction="never" />
+</menu>
