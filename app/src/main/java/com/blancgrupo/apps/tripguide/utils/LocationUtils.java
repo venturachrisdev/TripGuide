@@ -166,7 +166,7 @@ public class LocationUtils {
             if (dis >= 1000000) {
                 return context.getResources().getString(R.string.far_away);
             } else if (dis >= 1000) {
-                return String.format(Locale.getDefault(), "%.1f km", dis / 1000);
+                return String.format(Locale.getDefault(), "%d km", (int)(dis / 1000));
             } else {
                 return String.format(Locale.getDefault(), "%d m", (int)dis);
             }

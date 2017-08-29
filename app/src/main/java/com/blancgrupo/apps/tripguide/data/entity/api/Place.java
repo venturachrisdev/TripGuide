@@ -27,7 +27,7 @@ public class Place implements Parcelable {
     private String googleId;
     @SerializedName("city")
     @Expose
-    private String city;
+    private City city;
     @SerializedName("name")
     @Expose
     private String name;
@@ -54,7 +54,7 @@ public class Place implements Parcelable {
     public Place() {
     }
 
-    public Place(String id, List<String> types, String address, String googleId, String city, String name, Integer v, String createdAt, OpeningHours openingHours, Photo photo, Location location, String phoneNumber, String website) {
+    public Place(String id, List<String> types, String address, String googleId, City city, String name, Integer v, String createdAt, OpeningHours openingHours, Photo photo, Location location, String phoneNumber, String website) {
         this.id = id;
         this.types = types;
         this.address = address;
@@ -75,7 +75,7 @@ public class Place implements Parcelable {
         types = in.createStringArrayList();
         address = in.readString();
         googleId = in.readString();
-        city = in.readString();
+        city = in.readParcelable(City.class.getClassLoader());
         name = in.readString();
         createdAt = in.readString();
         photo = in.readParcelable(Photo.class.getClassLoader());
@@ -90,7 +90,7 @@ public class Place implements Parcelable {
         dest.writeStringList(types);
         dest.writeString(address);
         dest.writeString(googleId);
-        dest.writeString(city);
+        dest.writeParcelable(city, flags);
         dest.writeString(name);
         dest.writeString(createdAt);
         dest.writeParcelable(photo, flags);
@@ -164,11 +164,11 @@ public class Place implements Parcelable {
         this.googleId = googleId;
     }
 
-    public String getCity() {
+    public City getCity() {
         return city;
     }
 
-    public void setCity(String city) {
+    public void setCity(City city) {
         this.city = city;
     }
 

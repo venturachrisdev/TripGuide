@@ -2,8 +2,10 @@ package com.blancgrupo.apps.tripguide.presentation.ui.fragment;
 
 
 import android.Manifest;
+import android.app.Activity;
 import android.arch.lifecycle.LifecycleFragment;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
@@ -74,9 +76,9 @@ public class MapFragment extends LifecycleFragment implements OnMapReadyCallback
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-        if (map == null) {
+    public void onResume() {
+        super.onResume();
+        if (isAdded() && map == null) {
             final OnMapReadyCallback callback = this;
             new Handler().postDelayed(new Runnable() {
                 @Override

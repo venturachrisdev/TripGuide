@@ -49,10 +49,12 @@ public class TopicAdapter extends RecyclerView.Adapter<TopicAdapter.TopicViewHol
     @Override
     public void onBindViewHolder(TopicViewHolder holder, int position) {
         Topic topic = topics.get(position);
-        if (topic.get_id().equals(Constants.RECOMMENDED_CATEGORY)) {
+        if (topic.get_id().equals(Constants.HIGHLIGHT_CATEGORY)) {
             holder.setDarkStyle();
+            holder.setTopicTitle(TextStringUtils.formatTitle(topic.get_id()) + "s");
+        } else {
+            holder.setTopicTitle(TextStringUtils.formatTitle(topic.get_id()));
         }
-        holder.setTopicTitle(TextStringUtils.formatTitle(topic.get_id()));
         holder.setupRecyclerView(topic.getPlaces(), placesListener, 100);
         holder.setTopicListener(topicListener, topic.get_id(), topic.get_id());
     }
@@ -97,7 +99,7 @@ public class TopicAdapter extends RecyclerView.Adapter<TopicAdapter.TopicViewHol
         }
 
         public void setTopicListener(final TopicListener listener, final String topicTitle, String title) {
-            if (!title.equals(Constants.RECOMMENDED_CATEGORY)) {
+            if (!title.equals(Constants.HIGHLIGHT_CATEGORY)) {
                 moreBtn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {

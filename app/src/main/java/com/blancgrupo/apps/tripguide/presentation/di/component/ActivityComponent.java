@@ -7,6 +7,7 @@ import com.blancgrupo.apps.tripguide.presentation.ui.activity.PlaceDetailActivit
 import com.blancgrupo.apps.tripguide.presentation.ui.activity.SearchActivity;
 import com.blancgrupo.apps.tripguide.presentation.ui.fragment.CitiesFragment;
 import com.blancgrupo.apps.tripguide.presentation.ui.fragment.MapFragment;
+import com.blancgrupo.apps.tripguide.presentation.ui.fragment.ToursFragment;
 
 import dagger.Component;
 
@@ -22,5 +23,6 @@ public interface ActivityComponent {
     void inject(CityDetailActivity activity);
     void inject(PlaceDetailActivity activity);
     void inject(SearchActivity activity);
+    void inject(ToursFragment toursFragment);
 }
 

@@ -15,7 +15,7 @@ public class Constants {
     public static final String API_BASE_URL_2 =
             "http://138.197.43.190/api/v1/";
     public static final String PHOTO_PLACE_API_URL = "https://maps.googleapis.com/maps/api/place/photo";
-    public static final String RECOMMENDED_CATEGORY = "recommended";
+    public static final String HIGHLIGHT_CATEGORY = "tour";
     public static final String EXTRA_CITY_ID = createExtra("CITY_ID");
     public static final String EXTRA_PLACE_ID = createExtra("PLACE_ID");
     public static final String EXTRA_SEARCH_PLACE_QUERY = createExtra("SEARCH_PLACE_QUERY");

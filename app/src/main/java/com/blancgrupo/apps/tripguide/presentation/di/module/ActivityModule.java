@@ -11,6 +11,7 @@ import com.blancgrupo.apps.tripguide.presentation.di.ActivityScope;
 import com.blancgrupo.apps.tripguide.presentation.ui.viewmodel.CityVMFactory;
 import com.blancgrupo.apps.tripguide.presentation.ui.viewmodel.PlaceVMFactory;
 import com.blancgrupo.apps.tripguide.presentation.ui.viewmodel.SearchVMFactory;
+import com.blancgrupo.apps.tripguide.presentation.ui.viewmodel.TourVMFactory;
 
 import javax.inject.Named;
 
@@ -72,6 +73,12 @@ public class ActivityModule {
                                         GooglePlaceRepository googlePlaceRepository) {
         return new PlaceVMFactory(placeRepository, googlePlaceRepository);
     }
+    @Provides
+    @ActivityScope
+    TourVMFactory providesTourFactory(PlaceRepository placeRepository) {
+        return new TourVMFactory(placeRepository);
+    }
+
 
 
 }

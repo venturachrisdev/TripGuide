@@ -1,5 +1,8 @@
 package com.blancgrupo.apps.tripguide.data.entity.api;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -9,7 +12,7 @@ import java.util.List;
  * Created by root on 8/18/17.
  */
 
-public class City {
+public class City implements Parcelable {
     @SerializedName("_id")
     @Expose
     private String id;
@@ -49,6 +52,28 @@ public class City {
         this.topics = topics;
         this.parent = parent;
     }
+
+    protected City(Parcel in) {
+        id = in.readString();
+        googleId = in.readString();
+        name = in.readString();
+        parent = in.readString();
+        createdAt = in.readString();
+        photo = in.readParcelable(Photo.class.getClassLoader());
+        location = in.readParcelable(Location.class.getClassLoader());
+    }
+
+    public static final Creator<City> CREATOR = new Creator<City>() {
+        @Override
+        public City createFromParcel(Parcel in) {
+            return new City(in);
+        }
+
+        @Override
+        public City[] newArray(int size) {
+            return new City[size];
+        }
+    };
 
     public String getId() {
         return id;
@@ -120,5 +145,21 @@ public class City {
 
     public void setTopics(List<Topic> topics) {
         this.topics = topics;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeString(id);
+        parcel.writeString(googleId);
+        parcel.writeString(name);
+        parcel.writeString(parent);
+        parcel.writeString(createdAt);
+        parcel.writeParcelable(photo, i);
+        parcel.writeParcelable(location, i);
     }
 }
