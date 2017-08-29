@@ -1,0 +1,28 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:background="@color/colorBackground"
+    android:layout_height="match_parent"
+    tools:context="com.blancgrupo.apps.tripguide.presentation.ui.fragment.ToursFragment">
+
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/swipeRefreshLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <com.cooltechworks.views.shimmer.ShimmerRecyclerView
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/tours_rv"
+            android:nestedScrollingEnabled="false"
+            android:layout_height="match_parent"
+            android:layout_width="match_parent"
+            app:shimmer_demo_child_count="5"
+            app:shimmer_demo_layout="@layout/shimmer_city_loading"
+            app:shimmer_demo_layout_manager_type="linear_vertical"
+            />
+
+
+    </android.support.v4.widget.SwipeRefreshLayout>
+
+</FrameLayout>

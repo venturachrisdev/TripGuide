@@ -29,6 +29,7 @@ import com.blancgrupo.apps.tripguide.data.entity.api.City;
 import com.blancgrupo.apps.tripguide.data.entity.api.Location;
 import com.blancgrupo.apps.tripguide.presentation.di.component.ActivityComponent;
 import com.blancgrupo.apps.tripguide.presentation.ui.fragment.CitiesFragment;
+import com.blancgrupo.apps.tripguide.presentation.ui.fragment.ToursFragment;
 import com.blancgrupo.apps.tripguide.utils.Constants;
 import com.blancgrupo.apps.tripguide.utils.LocationUtils;
 
@@ -221,12 +222,11 @@ public class MainActivity extends AppCompatActivity
         @Override
         public Fragment getItem(int position) {
             // getItem is called to instantiate the fragment for the given page.
-            // Return a PlaceholderFragment (defined as a static inner class below).
             switch (position) {
                 case 0:
                     return new CitiesFragment();
                 case 1:
-                    break;
+                    return new ToursFragment();
             }
             return new Fragment();
         }

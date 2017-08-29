@@ -56,7 +56,24 @@
         pero no te preocupes, estamos trabajando en ello.</string>
     <string name="network_error">Lo sentimos, no pudimos completar tu peticion</string>
     <string name="try_searching_something">Intenta buscar \"restaurantes en Londres\"</string>
-    <string name="location_request">Para continuar, permite que tu dispositivo active la ubicacion,
-    que usa el servicio de ubicacion de Google.</string>
+    <string name="add_to_favorite">Agregar a favoritos</string>
+    <string name="added_to_favorites">Marcado como favorito</string>
+    <string name="are_you_sure">Estas seguro?</string>
+    <string name="edit">Editar</string>
+    <string name="favorite_message">Marca un lugar como favorito para visualizarlo sin conexion</string>
+    <string name="website">Sitio web</string>
+    <string name="update_settings">Ajustes</string>
+    <string name="update_permissions">Permisos</string>
+    <string name="this_place_is_closed">Este lugar esta cerrado</string>
+    <string name="suggest_edit">Sugerir modificacion</string>
+    <string name="remove_all">Remover todos</string>
+    <string name="not_now">Ahora no</string>
+    <string name="no_image_found">Imagen no encontrada</string>
+    <string name="no_favorites_yet">Sin favoritos</string>
+    <string name="location_services_are_off">Los servicios de ubicacion estan desactivados</string>
+    <string name="mark_as_duplicated">Marcar como duplicado</string>
+    <string name="location_services_why">Para ver las recomendaciones cerca de ti, tu ubicacion debe estar disponible</string>
+    <string name="location_why">Para ver las recomendaciones cerca de ti, necesitamos que permitas el acceso para ver tu ubicacion.</string>
+    <string name="no_tours_yet">Estamos trabajando con los tours, Por favor vuelve mas tarde para una mejor experiencia</string>
 
 </resources>

@@ -63,7 +63,7 @@
     <string name="network_error">Sorry, we could not complete your request</string>
     <string name="try_searching_something">Try searching \"restaurants in Italy\"</string>
 
-    <string name="title_activity_display_image">DisplayImageActivity</string>
+    <string name="title_activity_display_image" translatable="false">DisplayImageActivity</string>
     <string name="no_favorites_yet">No favorites yet</string>
     <string name="favorite_message">Mark places as favorite to visualize them
         without internet connection.</string>
@@ -83,5 +83,6 @@
     services must be on.</string>
     <string name="update_settings">Update settings</string>
     <string name="no_image_found">No image found.</string>
+    <string name="no_tours_yet">We are working with the tours, please come back later for a better experience</string>
 
 </resources>
