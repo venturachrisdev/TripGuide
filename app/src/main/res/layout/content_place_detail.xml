@@ -131,6 +131,7 @@
 
             <android.support.constraint.ConstraintLayout
                 android:id="@+id/distance_layout"
+                android:visibility="gone"
                 android:layout_width="match_parent"
                 android:focusable="true"
                 android:clickable="true"
@@ -167,6 +168,7 @@
 
             <android.support.constraint.ConstraintLayout
                 android:id="@+id/phone_layout"
+                android:visibility="gone"
                 android:layout_width="match_parent"
                 android:focusable="true"
                 android:clickable="true"
@@ -256,6 +258,7 @@
 
             <android.support.constraint.ConstraintLayout
                 android:id="@+id/calendar_layout"
+                android:visibility="gone"
                 android:layout_width="match_parent"
                 android:focusable="true"
                 android:clickable="true"
@@ -307,6 +310,7 @@
 
             <android.support.constraint.ConstraintLayout
                 android:id="@+id/website_layout"
+                android:visibility="gone"
                 android:layout_width="match_parent"
                 android:focusable="true"
                 android:clickable="true"

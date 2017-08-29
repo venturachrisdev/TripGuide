@@ -50,7 +50,7 @@ public class CityAdapter extends RecyclerView.Adapter<CityAdapter.CityViewHolder
         City city = cities.get(position);
         holder.setName(city.getName());
         holder.setPhoto(application, city.getPhoto().getReference(),
-                city.getPhoto().getWidth());
+                1000);
         holder.setParent(city.getParent());
         holder.setOnClickListener(listener, city);
     }

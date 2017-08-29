@@ -42,6 +42,16 @@ public class LocationUtils {
         return true;
     }
 
+    public static boolean checkForPermission(Context context) {
+        if (ActivityCompat.checkSelfPermission(context,
+                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(context,
+                Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return false;
+        }
+        return true;
+    }
+
     public static void showDialogEnableGps(final Context context) {
         AlertDialog.Builder builder = new AlertDialog.Builder(context)
                 .setTitle(R.string.location_services_are_off)
@@ -147,15 +157,20 @@ public class LocationUtils {
                 1, 1, locationListener);
     }
 
-    public static String measureDistance(Location currentLocation, double lat, double lng) {
+    public static String measureDistance(Context context, Location currentLocation, double lat, double lng) {
         android.location.Location where = new android.location.Location("where");
         where.setLatitude(lat);
         where.setLongitude(lng);
-        float dis = currentLocation.distanceTo(where);
-        if (dis >= 1000) {
-            return String.format(Locale.getDefault(), "%.1f km", dis / 1000);
-        } else {
-            return String.format(Locale.getDefault(), "%d m", (int)dis);
+        if (currentLocation != null) {
+            float dis = currentLocation.distanceTo(where);
+            if (dis >= 1000000) {
+                return context.getResources().getString(R.string.far_away);
+            } else if (dis >= 1000) {
+                return String.format(Locale.getDefault(), "%.1f km", dis / 1000);
+            } else {
+                return String.format(Locale.getDefault(), "%d m", (int)dis);
+            }
         }
+        return "";
     }
 }

@@ -28,8 +28,6 @@ import butterknife.ButterKnife;
  * status bar and navigation/system bar) with user interaction.
  */
 public class DisplayImageActivity extends AppCompatActivity {
-    @BindView(R.id.toolbar)
-    Toolbar toolbar;
     @BindView(R.id.progressbar)
     ProgressBar progressBar;
     @BindView(R.id.image)
@@ -39,13 +37,6 @@ public class DisplayImageActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_display_image);
         ButterKnife.bind(this);
-        setSupportActionBar(toolbar);
-        ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) {
-            actionBar.setTitle("");
-            actionBar.setDisplayHomeAsUpEnabled(true);
-        }
-
     }
 
     @Override
@@ -90,7 +81,7 @@ public class DisplayImageActivity extends AppCompatActivity {
                     })
                     .into(imageView);
         } else {
-            Toast.makeText(this, "No image found", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.no_image_found, Toast.LENGTH_SHORT).show();
             finish();
         }
     }

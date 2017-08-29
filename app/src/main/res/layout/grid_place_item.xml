@@ -40,7 +40,7 @@
                 android:textSize="16sp"
                 android:layout_alignParentStart="true"
                 android:layout_alignParentTop="true"
-                android:maxLines="2"
+                android:maxLines="1"
                 android:textAppearance="@style/TextAppearance.AppCompat.Headline" />
 
             <com.elyeproj.loaderviewlibrary.LoaderTextView
@@ -57,6 +57,7 @@
             <com.elyeproj.loaderviewlibrary.LoaderTextView
                 android:id="@+id/place_item_distance"
                 android:layout_width="wrap_content"
+                android:visibility="gone"
                 android:text="@string/far_away"
                 android:layout_height="wrap_content"
                 android:textAppearance="@style/TextAppearance.AppCompat.Caption"

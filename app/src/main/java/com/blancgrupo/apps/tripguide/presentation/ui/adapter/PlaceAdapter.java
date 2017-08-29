@@ -10,9 +10,11 @@ import android.widget.TextView;
 
 import com.blancgrupo.apps.tripguide.MyApplication;
 import com.blancgrupo.apps.tripguide.R;
+import com.blancgrupo.apps.tripguide.data.entity.api.Location;
 import com.blancgrupo.apps.tripguide.data.entity.api.Photo;
 import com.blancgrupo.apps.tripguide.data.entity.api.PlaceCover;
 import com.blancgrupo.apps.tripguide.utils.ApiUtils;
+import com.blancgrupo.apps.tripguide.utils.LocationUtils;
 import com.blancgrupo.apps.tripguide.utils.TextStringUtils;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -68,9 +70,11 @@ public class PlaceAdapter extends RecyclerView.Adapter<PlaceAdapter.PlaceViewHol
         holder.setType(TextStringUtils.formatTitle(place.getType()));
         holder.setName(place.getName());
         holder.setLocation(place.getAddress());
+        holder.setDistance(app, place.getLocation());
         Photo photo = place.getPhoto();
         if (photo != null && photo.getReference() != null) {
-            holder.setImage(ApiUtils.getPlacePhotoUrl(app, photo.getReference(), photo.getWidth()));
+            int width = adapterType == PLACE_VERTICAL_ADAPTER ? 200 : 700;
+            holder.setImage(ApiUtils.getPlacePhotoUrl(app, photo.getReference(), width));
         }
     }
 
@@ -93,6 +97,7 @@ public class PlaceAdapter extends RecyclerView.Adapter<PlaceAdapter.PlaceViewHol
         ImageView image;
         LoaderTextView nameText;
         LoaderTextView locationText;
+        LoaderTextView distanceText;
 
         public PlaceViewHolder(View itemView) {
             super(itemView);
@@ -152,6 +157,19 @@ public class PlaceAdapter extends RecyclerView.Adapter<PlaceAdapter.PlaceViewHol
 
         public void setName(String name) {
             this.nameText.setText(name);
+        }
+
+        public void setDistance(MyApplication app, Location location) {
+            distanceText = itemView.findViewById(R.id.place_item_distance);
+            if (LocationUtils.checkForPermission(app)) {
+                distanceText.setVisibility(View.VISIBLE);
+                distanceText.setText(LocationUtils.measureDistance(
+                        app,
+                        LocationUtils.getCurrentLocation(app),
+                        location.getLat(),
+                        location.getLng()
+                ));
+            }
         }
     }
 }

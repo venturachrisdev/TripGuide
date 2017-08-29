@@ -36,6 +36,7 @@ import com.blancgrupo.apps.tripguide.presentation.ui.viewmodel.PlaceVMFactory;
 import com.blancgrupo.apps.tripguide.presentation.ui.viewmodel.PlaceViewModel;
 import com.blancgrupo.apps.tripguide.utils.ApiUtils;
 import com.blancgrupo.apps.tripguide.utils.Constants;
+import com.blancgrupo.apps.tripguide.utils.LocationUtils;
 import com.blancgrupo.apps.tripguide.utils.TextStringUtils;
 import com.bumptech.glide.Glide;
 import com.elyeproj.loaderviewlibrary.LoaderTextView;
@@ -225,6 +226,7 @@ public class PlaceDetailActivity extends AppCompatActivity
             }
         });
         if (place.getPhoneNumber() != null) {
+            phoneLayout.setVisibility(View.VISIBLE);
             phoneText.setText(place.getPhoneNumber());
             phoneLayout.setOnClickListener(new View.OnClickListener() {
 
@@ -244,6 +246,7 @@ public class PlaceDetailActivity extends AppCompatActivity
             Calendar calendar = Calendar.getInstance();
             int day = calendar.get(Calendar.DAY_OF_WEEK);
             if (weekend != null && weekend.size() > 0) {
+                calendarLayout.setVisibility(View.VISIBLE);
                 switch (day) {
                     case Calendar.MONDAY:
                         calendarText.setText(weekend.get(0));
@@ -291,7 +294,7 @@ public class PlaceDetailActivity extends AppCompatActivity
             });
         }
         if (place.getWebsite() != null) {
-            websiteText.setText(place.getWebsite());
+            websiteLayout.setVisibility(View.VISIBLE);
             websiteLayout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -300,6 +303,7 @@ public class PlaceDetailActivity extends AppCompatActivity
                     startActivity(intent);
                 }
             });
+            websiteText.setText(place.getWebsite());
         }
         navigateBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -309,14 +313,26 @@ public class PlaceDetailActivity extends AppCompatActivity
                 startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("google.navigation:q=" + location)));
             }
         });
-        distanceLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String location = String.format("%s,%s", place.getLocation().getLat(),
-                        place.getLocation().getLng());
-                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("google.navigation:q=" + location)));
+        if (LocationUtils.checkForPermission(this)) {
+            String distance = LocationUtils.measureDistance(
+                    getApplicationContext(),
+                    LocationUtils.getCurrentLocation(this),
+                    place.getLocation().getLat(),
+                    place.getLocation().getLng()
+            );
+            if (distance != null && distance.length() > 0) {
+                distanceLayout.setVisibility(View.VISIBLE);
+                distanceText.setText(distance);
+                distanceLayout.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        String location = String.format("%s,%s", place.getLocation().getLat(),
+                                place.getLocation().getLng());
+                        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("google.navigation:q=" + location)));
+                    }
+                });
             }
-        });
+        }
         updateMap(place);
     }
 

@@ -25,6 +25,7 @@ import com.blancgrupo.apps.tripguide.presentation.ui.viewmodel.SearchVMFactory;
 import com.blancgrupo.apps.tripguide.presentation.ui.viewmodel.SearchViewModel;
 import com.blancgrupo.apps.tripguide.utils.ApiUtils;
 import com.blancgrupo.apps.tripguide.utils.Constants;
+import com.blancgrupo.apps.tripguide.utils.LocationUtils;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -129,6 +130,15 @@ public class MapFragment extends LifecycleFragment implements OnMapReadyCallback
                 }
         } else {
             // we need to get the current location.
+            if (LocationUtils.checkForPermissionOrRequest(getActivity())) {
+                if (LocationUtils.gpsEnabledOrShowDialog(getActivity())) {
+                    android.location.Location location = LocationUtils.getCurrentLocation(getActivity());
+                    map.setMyLocationEnabled(true);
+                    map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(
+                            location.getLatitude(), location.getLongitude()
+                    ), 16f));
+                }
+            }
         }
     }
 

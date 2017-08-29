@@ -3,6 +3,7 @@ package com.blancgrupo.apps.tripguide.presentation.ui.activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.LocationListener;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -36,7 +37,7 @@ import butterknife.ButterKnife;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, CitiesFragment.CitiesFragmentListener {
+        implements NavigationView.OnNavigationItemSelectedListener, CitiesFragment.CitiesFragmentListener, LocationListener {
     @BindView(R.id.toolbar)
     Toolbar toolbar;
     @BindView(R.id.drawer_layout)
@@ -116,6 +117,14 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+        if (LocationUtils.checkForPermission(this)) {
+            LocationUtils.requestLocationUpdates(getApplicationContext(), this);
+        }
+    }
+
+    @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == LocationUtils.PERMISSION_LOCATION_REQUEST_CODE) {
@@ -181,6 +190,26 @@ public class MainActivity extends AppCompatActivity
         Intent intent = new Intent(MainActivity.this, CityDetailActivity.class);
         intent.putExtra(Constants.EXTRA_CITY_ID, city.getId());
         startActivity(intent);
+    }
+
+    @Override
+    public void onLocationChanged(android.location.Location location) {
+
+    }
+
+    @Override
+    public void onStatusChanged(String s, int i, Bundle bundle) {
+
+    }
+
+    @Override
+    public void onProviderEnabled(String s) {
+
+    }
+
+    @Override
+    public void onProviderDisabled(String s) {
+
     }
 
     public class SectionsPagerAdapter extends FragmentPagerAdapter {

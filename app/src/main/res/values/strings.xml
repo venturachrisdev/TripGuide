@@ -82,5 +82,6 @@
     <string name="location_services_why">In order to see recommendations near you, your location
     services must be on.</string>
     <string name="update_settings">Update settings</string>
+    <string name="no_image_found">No image found.</string>
 
 </resources>
