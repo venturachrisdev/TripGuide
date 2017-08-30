@@ -75,5 +75,6 @@
     <string name="location_services_why">Para ver las recomendaciones cerca de ti, tu ubicacion debe estar disponible</string>
     <string name="location_why">Para ver las recomendaciones cerca de ti, necesitamos que permitas el acceso para ver tu ubicacion.</string>
     <string name="no_tours_yet">Estamos trabajando con los tours, Por favor vuelve mas tarde para una mejor experiencia</string>
+    <string name="photos">Fotos</string>
 
 </resources>

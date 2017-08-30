@@ -68,7 +68,7 @@
     <string name="favorite_message">Mark places as favorite to visualize them
         without internet connection.</string>
     <string name="added_to_favorites">Added to your favorites list.</string>
-
+    <string name="photos">Photos</string>
 
     /* Location permissions */
     <string name="are_you_sure">Are you sure?</string>
@@ -84,5 +84,8 @@
     <string name="update_settings">Update settings</string>
     <string name="no_image_found">No image found.</string>
     <string name="no_tours_yet">We are working with the tours, please come back later for a better experience</string>
+    <string name="address_copied_to_clipboard">Adress copied to clipboard</string>
+    <string name="phone_copied_to_clipboard">Phone number copied to clipboard</string>
+    <string name="website_copied_to_clipboard">Website copied to clipboard</string>
 
 </resources>

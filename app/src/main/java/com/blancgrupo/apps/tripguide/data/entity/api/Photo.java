@@ -15,7 +15,7 @@ public class Photo implements Parcelable {
     @SerializedName("width")
     @Expose
     private int width;
-    @SerializedName("reference")
+    @SerializedName(value = "reference", alternate = {"photo_reference"})
     @Expose
     private String reference;
 

@@ -4,6 +4,8 @@ import android.arch.lifecycle.LifecycleRegistry;
 import android.arch.lifecycle.LifecycleRegistryOwner;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -15,14 +17,17 @@ import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.blancgrupo.apps.tripguide.MyApplication;
 import com.blancgrupo.apps.tripguide.R;
 import com.blancgrupo.apps.tripguide.data.entity.api.Location;
@@ -32,6 +37,7 @@ import com.blancgrupo.apps.tripguide.data.entity.api.Place;
 import com.blancgrupo.apps.tripguide.data.entity.api.PlaceWrapper;
 import com.blancgrupo.apps.tripguide.presentation.di.component.DaggerActivityComponent;
 import com.blancgrupo.apps.tripguide.presentation.di.module.ActivityModule;
+import com.blancgrupo.apps.tripguide.presentation.ui.adapter.PhotoAdapter;
 import com.blancgrupo.apps.tripguide.presentation.ui.viewmodel.PlaceVMFactory;
 import com.blancgrupo.apps.tripguide.presentation.ui.viewmodel.PlaceViewModel;
 import com.blancgrupo.apps.tripguide.utils.ApiUtils;
@@ -39,6 +45,7 @@ import com.blancgrupo.apps.tripguide.utils.Constants;
 import com.blancgrupo.apps.tripguide.utils.LocationUtils;
 import com.blancgrupo.apps.tripguide.utils.TextStringUtils;
 import com.bumptech.glide.Glide;
+import com.cooltechworks.views.shimmer.ShimmerRecyclerView;
 import com.elyeproj.loaderviewlibrary.LoaderTextView;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -58,7 +65,7 @@ import butterknife.ButterKnife;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 public class PlaceDetailActivity extends AppCompatActivity
-        implements LifecycleRegistryOwner, OnMapReadyCallback {
+        implements LifecycleRegistryOwner, OnMapReadyCallback, PhotoAdapter.PhotoListener {
     private final LifecycleRegistry registry = new LifecycleRegistry(this);
 
     @BindView(R.id.toolbar)
@@ -95,6 +102,10 @@ public class PlaceDetailActivity extends AppCompatActivity
     ConstraintLayout websiteLayout;
     @BindView(R.id.website_text)
     LoaderTextView websiteText;
+    @BindView(R.id.photos_rv)
+    ShimmerRecyclerView photosRecyclerView;
+    @BindView(R.id.photos_layout)
+    LinearLayout photosLayout;
 
     @Inject
     PlaceVMFactory placeVMFactory;
@@ -210,6 +221,9 @@ public class PlaceDetailActivity extends AppCompatActivity
 
     void bindPlace(@NonNull final Place place) {
         toolbarLayout.setTitle(place.getName());
+        if (place.getCity() != null) {
+            toolbar.setSubtitle(place.getCity().getName());
+        }
         addressText.setText(place.getAddress());
         this.place = place;
         addressLayout.setOnClickListener(new View.OnClickListener() {
@@ -225,6 +239,17 @@ public class PlaceDetailActivity extends AppCompatActivity
 
             }
         });
+        addressLayout.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                ClipboardManager clipboardManager = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+                ClipData clipData = ClipData.newPlainText(getString(R.string.address), place.getAddress());
+                clipboardManager.setPrimaryClip(clipData);
+                Toast.makeText(getApplicationContext(), R.string.address_copied_to_clipboard, Toast.LENGTH_LONG)
+                        .show();
+                return true;
+            }
+        });
         if (place.getPhoneNumber() != null) {
             phoneLayout.setVisibility(View.VISIBLE);
             phoneText.setText(place.getPhoneNumber());
@@ -238,15 +263,34 @@ public class PlaceDetailActivity extends AppCompatActivity
                     );
                 }
             });
+            phoneLayout.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View view) {
+                    ClipboardManager clipboardManager = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+                    ClipData clipData = ClipData.newPlainText(getString(R.string.phone_number), place.getPhoneNumber());
+                    clipboardManager.setPrimaryClip(clipData);
+                    Toast.makeText(getApplicationContext(), R.string.phone_copied_to_clipboard, Toast.LENGTH_LONG)
+                            .show();
+                    return true;
+                }
+            });
         }
         categoryText.setText(TextStringUtils.formatTitle(place.getTypes().get(0)));
         OpeningHours opening = place.getOpeningHours();
         if (opening != null) {
-            List<String> weekend = opening.getWeekdays();
+            final List<String> weekend = opening.getWeekdays();
             Calendar calendar = Calendar.getInstance();
             int day = calendar.get(Calendar.DAY_OF_WEEK);
             if (weekend != null && weekend.size() > 0) {
                 calendarLayout.setVisibility(View.VISIBLE);
+                calendarLayout.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        new MaterialDialog.Builder(PlaceDetailActivity.this)
+                                .content(weekend.toString())
+                                .show();
+                    }
+                });
                 switch (day) {
                     case Calendar.MONDAY:
                         calendarText.setText(weekend.get(0));
@@ -293,6 +337,14 @@ public class PlaceDetailActivity extends AppCompatActivity
                 }
             });
         }
+        List<Photo> photos = place.getPhotos();
+        if (photos != null && photos.size() > 0) {
+            photosLayout.setVisibility(View.VISIBLE);
+            PhotoAdapter adapter = new PhotoAdapter(getApplication(), this, photos);
+            photosRecyclerView.setHasFixedSize(true);
+            photosRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+            photosRecyclerView.setAdapter(adapter);
+        }
         if (place.getWebsite() != null) {
             websiteLayout.setVisibility(View.VISIBLE);
             websiteLayout.setOnClickListener(new View.OnClickListener() {
@@ -301,6 +353,17 @@ public class PlaceDetailActivity extends AppCompatActivity
                     Intent intent = new Intent(Intent.ACTION_VIEW);
                     intent.setData(Uri.parse(place.getWebsite()));
                     startActivity(intent);
+                }
+            });
+            websiteLayout.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View view) {
+                    ClipboardManager clipboardManager = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+                    ClipData clipData = ClipData.newPlainText(getString(R.string.website), place.getWebsite());
+                    clipboardManager.setPrimaryClip(clipData);
+                    Toast.makeText(getApplicationContext(), R.string.website_copied_to_clipboard, Toast.LENGTH_LONG)
+                            .show();
+                    return true;
                 }
             });
             websiteText.setText(place.getWebsite());
@@ -396,5 +459,14 @@ public class PlaceDetailActivity extends AppCompatActivity
         if (place != null) {
             mapLocation(map, place);
         }
+    }
+
+    @Override
+    public void onPhotoListener(Photo photo) {
+        Intent intent = new Intent(PlaceDetailActivity.this, DisplayImageActivity.class);
+        intent.putExtra(Constants.EXTRA_IMAGE_URL, ApiUtils.getPlacePhotoUrl(
+                (MyApplication) getApplication(), photo.getReference(), photo.getWidth()
+        ));
+        startActivity(intent);
     }
 }

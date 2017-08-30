@@ -43,6 +43,9 @@ public class Place implements Parcelable {
     @SerializedName("photo")
     @Expose
     private Photo photo;
+    @SerializedName("photos")
+    @Expose
+    private List<Photo> photos;
     @SerializedName("location")
     @Expose
     private Location location;
@@ -54,7 +57,7 @@ public class Place implements Parcelable {
     public Place() {
     }
 
-    public Place(String id, List<String> types, String address, String googleId, City city, String name, Integer v, String createdAt, OpeningHours openingHours, Photo photo, Location location, String phoneNumber, String website) {
+    public Place(String id, List<String> types, String address, String googleId, City city, String name, Integer v, String createdAt, OpeningHours openingHours, Photo photo, List<Photo> photos, Location location, String phoneNumber, String website) {
         this.id = id;
         this.types = types;
         this.address = address;
@@ -65,6 +68,7 @@ public class Place implements Parcelable {
         this.createdAt = createdAt;
         this.openingHours = openingHours;
         this.photo = photo;
+        this.photos = photos;
         this.location = location;
         this.phoneNumber = phoneNumber;
         this.website = website;
@@ -79,6 +83,7 @@ public class Place implements Parcelable {
         name = in.readString();
         createdAt = in.readString();
         photo = in.readParcelable(Photo.class.getClassLoader());
+        photos = in.createTypedArrayList(Photo.CREATOR);
         location = in.readParcelable(Location.class.getClassLoader());
         phoneNumber = in.readString();
         website = in.readString();
@@ -94,6 +99,7 @@ public class Place implements Parcelable {
         dest.writeString(name);
         dest.writeString(createdAt);
         dest.writeParcelable(photo, flags);
+        dest.writeTypedList(photos);
         dest.writeParcelable(location, flags);
         dest.writeString(phoneNumber);
         dest.writeString(website);
@@ -115,6 +121,14 @@ public class Place implements Parcelable {
             return new Place[size];
         }
     };
+
+    public List<Photo> getPhotos() {
+        return photos;
+    }
+
+    public void setPhotos(List<Photo> photos) {
+        this.photos = photos;
+    }
 
     public String getWebsite() {
         return website;

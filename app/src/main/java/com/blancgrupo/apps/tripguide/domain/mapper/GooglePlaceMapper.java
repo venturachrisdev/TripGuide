@@ -76,6 +76,12 @@ public class GooglePlaceMapper {
         if (placeDetail.getPhotos() != null && placeDetail.getPhotos().size() > 0) {
             place.setPhoto(new Photo(placeDetail.getPhotos().get(0).getPhotoReference(),
                     placeDetail.getPhotos().get(0).getWidth()));
+            List<Photo> photos = new ArrayList<>();
+            for (com.blancgrupo.apps.tripguide.data.entity.googleplace.Photo gPhoto
+                    : placeDetail.getPhotos()) {
+                photos.add(new Photo(gPhoto.getPhotoReference(), gPhoto.getWidth()));
+            }
+            place.setPhotos(photos);
         }
         if (placeDetail.getOpeningHours() != null
                 && placeDetail.getOpeningHours().getWeekdayText() != null) {
