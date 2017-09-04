@@ -17,6 +17,7 @@ import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.AppCompatRatingBar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -25,6 +26,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RatingBar;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -38,6 +41,7 @@ import com.blancgrupo.apps.tripguide.data.entity.api.PlaceWrapper;
 import com.blancgrupo.apps.tripguide.presentation.di.component.DaggerActivityComponent;
 import com.blancgrupo.apps.tripguide.presentation.di.module.ActivityModule;
 import com.blancgrupo.apps.tripguide.presentation.ui.adapter.PhotoAdapter;
+import com.blancgrupo.apps.tripguide.presentation.ui.custom.InfoView;
 import com.blancgrupo.apps.tripguide.presentation.ui.viewmodel.PlaceVMFactory;
 import com.blancgrupo.apps.tripguide.presentation.ui.viewmodel.PlaceViewModel;
 import com.blancgrupo.apps.tripguide.utils.ApiUtils;
@@ -106,6 +110,12 @@ public class PlaceDetailActivity extends AppCompatActivity
     ShimmerRecyclerView photosRecyclerView;
     @BindView(R.id.photos_layout)
     LinearLayout photosLayout;
+    @BindView(R.id.rating_layout)
+    RelativeLayout ratingLayout;
+    @BindView(R.id.rating_bar)
+    AppCompatRatingBar ratingBar;
+    @BindView(R.id.info_layout)
+    InfoView infoView;
 
     @Inject
     PlaceVMFactory placeVMFactory;
@@ -139,7 +149,6 @@ public class PlaceDetailActivity extends AppCompatActivity
         Intent intent = getIntent();
         Bundle data = intent.getExtras();
         String placeId;
-        boolean fromGoogle = false;
         if (!data.containsKey(Constants.EXTRA_PLACE_ID)) {
             if (!data.containsKey(Constants.EXTRA_PLACE_GOOGLE_ID)) {
                 Toast.makeText(this, R.string.network_error, Toast.LENGTH_LONG)
@@ -147,7 +156,6 @@ public class PlaceDetailActivity extends AppCompatActivity
                 finish();
             }
             placeId = data.getString(Constants.EXTRA_PLACE_GOOGLE_ID);
-            fromGoogle = true;
         } else {
             placeId = data.getString(Constants.EXTRA_PLACE_ID);
         }
@@ -173,7 +181,7 @@ public class PlaceDetailActivity extends AppCompatActivity
         if (placeViewModel.isPlaceLoaded()) {
             placeViewModel.getLoadedSinglePlace().observe(this, observer);
         } else {
-            placeViewModel.getSinglePlace(placeId, fromGoogle).observe(this, observer);
+            placeViewModel.getSinglePlace(placeId).observe(this, observer);
         }
 
     }
@@ -223,6 +231,11 @@ public class PlaceDetailActivity extends AppCompatActivity
         toolbarLayout.setTitle(place.getName());
         if (place.getCity() != null) {
             toolbar.setSubtitle(place.getCity().getName());
+        }
+        String description = place.getDescription();
+        if (description != null && description.length() != 0) {
+            infoView.setVisibility(View.VISIBLE);
+            infoView.setContentText(description);
         }
         addressText.setText(place.getAddress());
         this.place = place;
@@ -275,6 +288,14 @@ public class PlaceDetailActivity extends AppCompatActivity
                 }
             });
         }
+
+        if (place.getRating() != null) {
+            ratingLayout.setVisibility(View.VISIBLE);
+            ratingBar.setRating(place.getRating().floatValue());
+            ratingBar.setActivated(false);
+            ratingBar.setEnabled(false);
+        }
+
         categoryText.setText(TextStringUtils.formatTitle(place.getTypes().get(0)));
         OpeningHours opening = place.getOpeningHours();
         if (opening != null) {
@@ -287,7 +308,7 @@ public class PlaceDetailActivity extends AppCompatActivity
                     @Override
                     public void onClick(View view) {
                         new MaterialDialog.Builder(PlaceDetailActivity.this)
-                                .content(weekend.toString())
+                                .content(TextStringUtils.arrayToString(weekend))
                                 .show();
                     }
                 });

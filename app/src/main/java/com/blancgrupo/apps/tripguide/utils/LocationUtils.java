@@ -14,6 +14,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 
+import com.blancgrupo.apps.tripguide.MyApplication;
 import com.blancgrupo.apps.tripguide.R;
 
 import java.util.Locale;
@@ -81,8 +82,8 @@ public class LocationUtils {
                 .setPositiveButton(R.string.update_permissions, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        ((AppCompatActivity) context).startActivityForResult(new Intent(Settings.ACTION_APPLICATION_SETTINGS,
-                                        Uri.parse("com.blancgrupo.apps.tripguide")),
+                        ((AppCompatActivity) context).startActivityForResult(new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                                        Uri.fromParts("package", MyApplication.packageName, null)),
                                 PERMISSION_ENABLE_GPS_REQUEST_CODE);
 
                     }

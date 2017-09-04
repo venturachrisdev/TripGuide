@@ -41,6 +41,10 @@ public class City implements Parcelable {
     private List<Topic> topics;
 
 
+    public City(String id) {
+        this.id = id;
+    }
+
     public City(String id, String googleId, String name, Integer v, String createdAt, Photo photo, Location location, List<Topic> topics, String parent) {
         this.id = id;
         this.googleId = googleId;

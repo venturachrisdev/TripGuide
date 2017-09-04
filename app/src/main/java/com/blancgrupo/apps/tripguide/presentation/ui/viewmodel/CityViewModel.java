@@ -8,6 +8,7 @@ import com.blancgrupo.apps.tripguide.data.entity.api.CityWrapper;
 import com.blancgrupo.apps.tripguide.domain.repository.CityRepository;
 import com.blancgrupo.apps.tripguide.presentation.ui.viewmodel.livedata.CitiesLiveData;
 import com.blancgrupo.apps.tripguide.presentation.ui.viewmodel.livedata.CityLiveData;
+import com.blancgrupo.apps.tripguide.presentation.ui.viewmodel.livedata.StringLiveData;
 
 /**
  * Created by root on 8/18/17.
@@ -17,10 +18,27 @@ public class CityViewModel extends ViewModel {
     private CityRepository cityRepository;
     private CityLiveData singleCityLiveData;
     private CitiesLiveData citiesLiveData;
+    private StringLiveData currentCityIdLiveData;
     private String cityId;
 
     public CityViewModel(CityRepository cityRepository) {
         this.cityRepository = cityRepository;
+    }
+
+
+    public LiveData<String> getCurrentCityId(String lat, String lng) {
+        if (currentCityIdLiveData == null) {
+            currentCityIdLiveData = new StringLiveData();
+            loadCurrentCityId(lat, lng);
+        }
+        return currentCityIdLiveData;
+    }
+
+    private void loadCurrentCityId(String lat, String lng) {
+        if (currentCityIdLiveData != null) {
+            currentCityIdLiveData.loadString(
+                    cityRepository.getCurrentCity(lat, lng));
+        }
     }
 
     public LiveData<CityWrapper> getSingleCity(String cityId) {

@@ -15,4 +15,5 @@ import io.reactivex.Observable;
 public interface CityRepository {
     Observable<CitiesWrapper> getCities();
     Observable<CityWrapper> getSingleCity(String cityId);
+    Observable<String> getCurrentCity(String lat, String lng);
 }

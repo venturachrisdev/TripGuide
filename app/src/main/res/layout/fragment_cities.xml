@@ -11,6 +11,21 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <android.support.v4.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:focusableInTouchMode="true"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <com.blancgrupo.apps.tripguide.presentation.ui.custom.ExploreMyCityView
+                    android:layout_width="match_parent"
+                    android:id="@+id/explore_my_cityview"
+                    android:layout_height="wrap_content"/>
+
                 <com.cooltechworks.views.shimmer.ShimmerRecyclerView
                     xmlns:app="http://schemas.android.com/apk/res-auto"
                     android:id="@+id/cities_rv"
@@ -21,6 +36,11 @@
                     app:shimmer_demo_layout="@layout/shimmer_city_loading"
                     app:shimmer_demo_layout_manager_type="linear_vertical"
                     />
+
+
+            </LinearLayout>
+
+        </android.support.v4.widget.NestedScrollView>
 
 
     </android.support.v4.widget.SwipeRefreshLayout>

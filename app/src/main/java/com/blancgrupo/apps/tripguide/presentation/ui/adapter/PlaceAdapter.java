@@ -23,7 +23,8 @@ import com.elyeproj.loaderviewlibrary.LoaderTextView;
 
 import java.util.List;
 
-import de.hdodenhof.circleimageview.CircleImageView;
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 /**
  * Created by root on 8/21/17.
@@ -32,8 +33,9 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class PlaceAdapter extends RecyclerView.Adapter<PlaceAdapter.PlaceViewHolder> {
     private List<PlaceCover> places;
     private int adapterType;
-    public static final int PLACE_VERTICAL_ADAPTER = 100;
-    public static final int PLACE_HORIZONTAL_ADAPTER = 101;
+    public static final int PLACE_VERTICAL_ADAPTER      = 100;
+    public static final int PLACE_HORIZONTAL_ADAPTER    = 101;
+    public static final int PLACE_TOUR_ADAPTER          = 110;
     MyApplication app;
     PlaceAdapterListener listener;
 
@@ -51,32 +53,45 @@ public class PlaceAdapter extends RecyclerView.Adapter<PlaceAdapter.PlaceViewHol
     @Override
     public PlaceViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        int id;
+        View root;
         switch (adapterType) {
             case PLACE_HORIZONTAL_ADAPTER:
-                id = R.layout.grid_place_item;
-                break;
+                root = inflater.inflate(R.layout.grid_place_item, parent, false);
+                return new HorizontalPlaceViewHolder(root);
+            case PLACE_TOUR_ADAPTER:
+                root = inflater.inflate(R.layout.tour_item_layout, parent, false);
+                return new TourPlaceViewHolder(root);
             case PLACE_VERTICAL_ADAPTER:
             default:
-                id = R.layout.place_item_list;
+                root = inflater.inflate(R.layout.place_item_list, parent, false);
+                return new VerticalPlaceViewHolder(root);
         }
-        View root = inflater.inflate(id, parent, false);
-        return new PlaceViewHolder(root, adapterType);
     }
 
     @Override
     public void onBindViewHolder(PlaceViewHolder holder, int position) {
         PlaceCover place = places.get(position);
         holder.setOnClickListener(listener, place);
-        holder.setType(TextStringUtils.formatTitle(place.getType()));
         holder.setName(place.getName());
         holder.setLocation(place.getAddress());
-        holder.setDistance(app, place.getLocation());
         Photo photo = place.getPhoto();
         if (photo != null && photo.getReference() != null) {
             int width = adapterType == PLACE_VERTICAL_ADAPTER ? 200 : 700;
             holder.setImage(ApiUtils.getPlacePhotoUrl(app, photo.getReference(), width));
         }
+
+        switch (holder.getViewHolderType()) {
+            case PlaceViewHolder.PLACE_LIST:
+                ((VerticalPlaceViewHolder) holder).setDistance(app, place.getLocation());
+                ((VerticalPlaceViewHolder) holder).setType(TextStringUtils.formatTitle(place.getType()));
+                break;
+            case PlaceViewHolder.PLACE_GRID:
+                ((HorizontalPlaceViewHolder) holder).setDistance(app, place.getLocation());
+                break;
+            case PlaceViewHolder.PLACE_TOUR:
+                break;
+        }
+
     }
 
     @Override
@@ -93,57 +108,21 @@ public class PlaceAdapter extends RecyclerView.Adapter<PlaceAdapter.PlaceViewHol
         notifyDataSetChanged();
     }
 
-    class PlaceViewHolder extends RecyclerView.ViewHolder {
-        int adapterType;
+    abstract class PlaceViewHolder extends RecyclerView.ViewHolder {
+        @BindView(R.id.place_item_photo)
         ImageView image;
+        @BindView(R.id.place_item_title)
         LoaderTextView nameText;
+        @BindView(R.id.place_item_location)
         LoaderTextView locationText;
-        LoaderTextView distanceText;
+        int holderType;
+        public static final int PLACE_LIST = 100;
+        public static final int PLACE_GRID = 101;
+        public static final int PLACE_TOUR = 110;
+
 
         public PlaceViewHolder(View itemView) {
             super(itemView);
-        }
-
-        public PlaceViewHolder(View itemView, int adapterType) {
-            super(itemView);
-            this.adapterType = adapterType;
-            nameText = itemView.findViewById(R.id.place_item_title);
-            locationText = itemView.findViewById(R.id.place_item_location);
-        }
-
-        public void setImage(String imageUrl) {
-            switch (adapterType) {
-                case PLACE_VERTICAL_ADAPTER:
-                    image = itemView.findViewById(R.id.place_item_photo);
-                    Glide.with(itemView.getContext())
-                            .load(imageUrl)
-                            .placeholder(R.mipmap.place_holder)
-                            .centerCrop()
-                            .crossFade()
-                            .diskCacheStrategy(DiskCacheStrategy.ALL)
-                            .into(image);
-                    break;
-                case PLACE_HORIZONTAL_ADAPTER:
-                    image = itemView.findViewById(R.id.place_item_photo);
-                    Glide.with(itemView.getContext())
-                            .load(imageUrl)
-                            .centerCrop()
-                            .crossFade()
-                            .diskCacheStrategy(DiskCacheStrategy.ALL)
-                            .into(image);
-                    break;
-            }
-        }
-
-
-        public void setType(String type) {
-            TextView typeText =  itemView.findViewById(R.id.place_item_types);
-            typeText.setText(type);
-        }
-
-
-        public void setLocation(String location) {
-            locationText.setText(location);
         }
 
 
@@ -167,7 +146,38 @@ public class PlaceAdapter extends RecyclerView.Adapter<PlaceAdapter.PlaceViewHol
         }
 
         public void setName(String name) {
-            this.nameText.setText(name);
+            nameText.setText(name);
+        }
+
+        public abstract void setImage(String placePhotoUrl);
+
+        public void setLocation(String address) {
+            locationText.setText(address);
+        }
+
+        public int getViewHolderType() {
+            return this.holderType;
+        }
+    }
+
+    class HorizontalPlaceViewHolder extends PlaceViewHolder {
+        @BindView(R.id.place_item_distance)
+        LoaderTextView distanceText;
+
+        public HorizontalPlaceViewHolder(View itemView) {
+            super(itemView);
+            ButterKnife.bind(this, itemView);
+            this.holderType = PlaceViewHolder.PLACE_GRID;
+        }
+
+        @Override
+        public void setImage(String placePhotoUrl) {
+            Glide.with(itemView.getContext())
+                    .load(placePhotoUrl)
+                    .centerCrop()
+                    .crossFade()
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .into(image);
         }
 
         public void setDistance(MyApplication app, Location location) {
@@ -181,6 +191,66 @@ public class PlaceAdapter extends RecyclerView.Adapter<PlaceAdapter.PlaceViewHol
                         location.getLng()
                 ));
             }
+        }
+    }
+
+    class VerticalPlaceViewHolder extends PlaceViewHolder {
+        @BindView(R.id.place_item_distance)
+        LoaderTextView distanceText;
+        @BindView(R.id.place_item_types)
+        TextView typeText;
+
+        public VerticalPlaceViewHolder(View itemView) {
+            super(itemView);
+            ButterKnife.bind(this, itemView);
+            this.holderType = PlaceViewHolder.PLACE_LIST;
+        }
+
+        @Override
+        public void setImage(String placePhotoUrl) {
+            Glide.with(itemView.getContext())
+                    .load(placePhotoUrl)
+                    .placeholder(R.mipmap.place_holder)
+                    .centerCrop()
+                    .crossFade()
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .into(image);
+        }
+
+        public void setDistance(MyApplication app, Location location) {
+            distanceText = itemView.findViewById(R.id.place_item_distance);
+            if (LocationUtils.checkForPermission(app)) {
+                distanceText.setVisibility(View.VISIBLE);
+                distanceText.setText(LocationUtils.measureDistance(
+                        app,
+                        LocationUtils.getCurrentLocation(app),
+                        location.getLat(),
+                        location.getLng()
+                ));
+            }
+        }
+
+        public void setType(String type) {
+            typeText.setText(type);
+        }
+    }
+
+    class TourPlaceViewHolder extends PlaceViewHolder {
+
+        public TourPlaceViewHolder(View itemView) {
+            super(itemView);
+            ButterKnife.bind(this, itemView);
+            this.holderType = PlaceViewHolder.PLACE_TOUR;
+        }
+
+        @Override
+        public void setImage(String placePhotoUrl) {
+            Glide.with(itemView.getContext())
+                    .load(placePhotoUrl)
+                    .centerCrop()
+                    .crossFade()
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .into(image);
         }
     }
 }

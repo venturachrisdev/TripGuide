@@ -13,4 +13,6 @@
     <color name="colorPlaceholder">#C0C4D7</color>
     <color name="colorSelectableBackground">#66F43868</color>
     <color name="black_overlay">#66000000</color>
+    <color name="pager_bullet_active">#FFFFFF</color>
+    <color name="pager_bullet_inactive">#33000000</color>
 </resources>

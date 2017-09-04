@@ -13,16 +13,14 @@ import javax.inject.Inject;
 
 public class PlaceVMFactory implements ViewModelProvider.Factory {
     private PlaceRepository placeRepository;
-    private GooglePlaceRepository googlePlaceRepository;
 
     @Inject
-    public PlaceVMFactory(PlaceRepository placeRepository, GooglePlaceRepository googlePlaceRepository) {
+    public PlaceVMFactory(PlaceRepository placeRepository) {
         this.placeRepository = placeRepository;
-        this.googlePlaceRepository = googlePlaceRepository;
     }
 
     @Override
     public PlaceViewModel create(Class modelClass) {
-        return new PlaceViewModel(this.placeRepository, this.googlePlaceRepository);
+        return new PlaceViewModel(this.placeRepository);
     }
 }

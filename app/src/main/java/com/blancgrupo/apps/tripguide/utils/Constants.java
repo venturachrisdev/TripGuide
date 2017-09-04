@@ -23,9 +23,17 @@ public class Constants {
     public static final String STATUS_OK = "OK";
     public static final String EXTRA_PLACE_GOOGLE_ID = createExtra("PLACE_GOOGLE_ID");
     public static final String EXTRA_IMAGE_URL = createExtra("EXTRA_IMAGE_URL");
+    public static final String CURRENT_LOCATION_SP = createSharedPreference("CURRENT_LOCATION");
+    public static final int CHOOSE_LOCATION_RC = 100;
+    public static final String GETTING_STARTED_SP =  createSharedPreference("GETTING STARTED");
 
 
     public static String createExtra(String name) {
         return String.format("%s.EXTRA_%s", MyApplication.packageName, name);
     }
+
+    public static String createSharedPreference(String name) {
+        return String.format("%s.SHARED_PREFERENCE_%s", MyApplication.packageName, name);
+    }
+
 }

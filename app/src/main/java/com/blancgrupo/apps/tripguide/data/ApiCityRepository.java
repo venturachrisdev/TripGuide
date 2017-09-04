@@ -35,4 +35,9 @@ public class ApiCityRepository implements CityRepository {
     public Observable<CityWrapper> getSingleCity(String cityId) {
         return apiPlaceService.getSingleCity(cityId);
     }
+
+    @Override
+    public Observable<String> getCurrentCity(String lat, String lng) {
+        return apiPlaceService.getCurrentCity(lat, lng);
+    }
 }

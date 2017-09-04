@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:foreground="?attr/selectableItemBackgroundBorderless"
+    android:animateLayoutChanges="true"
+    android:id="@+id/suggestion_card_view"
+    app:cardBackgroundColor="@color/colorAccent"
+    app:cardElevation="@dimen/cardview_default_elevation"
+    app:cardCornerRadius="0dp"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:padding="15dp"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:background="@drawable/ic_directions_run_black_24dp"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginEnd="10dp"
+            android:id="@+id/imageView4"
+            android:layout_alignTop="@+id/textView1"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true" />
+
+        <ImageView
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:background="@drawable/ic_clear_white_24dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/imageView3" />
+
+        <TextView
+            android:id="@+id/textView1"
+            android:text="@string/tour_feature_title"
+            android:textAppearance="@style/Base.TextAppearance.AppCompat.Display4"
+            android:textSize="22sp"
+            android:textColor="@color/colorIcon"
+            android:layout_width="wrap_content"
+            fontPath="fonts/Montserrat/Monstserrat-Light.ttf"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/imageView3"
+            android:layout_toRightOf="@+id/imageView4"
+            android:layout_toEndOf="@+id/imageView4" />
+
+        <TextView
+            android:id="@+id/textView2"
+            android:text="@string/tour_feature_message"
+            android:textColor="@color/colorDivider"
+            android:layout_width="wrap_content"
+            fontPath="fonts/Montserrat/Monstserrat-Light.ttf"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/textView1"
+            android:layout_toRightOf="@+id/imageView4"
+            android:layout_toEndOf="@+id/imageView4" />
+
+
+        <Button
+            android:id="@+id/btn"
+            android:layout_marginTop="10dp"
+            android:background="@color/colorIcon"
+            android:textColor="@color/colorAccent"
+            android:text="@string/go"
+            android:foreground="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/textView2"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true" />
+
+    </RelativeLayout>
+
+
+</android.support.v7.widget.CardView>

@@ -8,12 +8,17 @@ import com.blancgrupo.apps.tripguide.data.entity.api.PlacesWrapper;
 import io.reactivex.Observable;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
+import retrofit2.http.Query;
 
 /**
  * Created by root on 8/18/17.
  */
 
 public interface ApiPlaceService {
+
+    @GET("where")
+    Observable<String> getCurrentCity(@Query("lat") String lat, @Query("lng") String lng);
+
     @GET("places?json")
     Observable<PlacesWrapper> getPlaces();
 

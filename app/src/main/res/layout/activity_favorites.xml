@@ -19,6 +19,13 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"/>
 
+        <View
+            android:id="@+id/toolbar_border_bottom"
+            android:background="@color/colorAccent"
+            android:layout_width="match_parent"
+            android:layout_gravity="bottom"
+            android:layout_height="@dimen/toolbar_border_bottom_size"/>
+
     </android.support.design.widget.AppBarLayout>
 
     <include layout="@layout/content_favorites"/>

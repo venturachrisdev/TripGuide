@@ -135,10 +135,12 @@ public class MapFragment extends LifecycleFragment implements OnMapReadyCallback
             if (LocationUtils.checkForPermissionOrRequest(getActivity())) {
                 if (LocationUtils.gpsEnabledOrShowDialog(getActivity())) {
                     android.location.Location location = LocationUtils.getCurrentLocation(getActivity());
-                    map.setMyLocationEnabled(true);
-                    map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(
-                            location.getLatitude(), location.getLongitude()
-                    ), 16f));
+                    if (location != null) {
+                        map.setMyLocationEnabled(true);
+                        map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(
+                                location.getLatitude(), location.getLongitude()
+                        ), 13f));
+                    }
                 }
             }
         }

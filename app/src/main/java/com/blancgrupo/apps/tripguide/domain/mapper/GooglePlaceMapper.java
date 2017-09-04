@@ -65,6 +65,7 @@ public class GooglePlaceMapper {
     public static Place transformDetail(@NonNull PlaceDetail placeDetail) {
         Place place = new Place();
         place.setName(placeDetail.getName());
+        place.setRating(placeDetail.getRating());
         place.setAddress(placeDetail.getFormattedAddress() != null
                 ? placeDetail.getFormattedAddress() : placeDetail.getVicinity());
         place.setGoogleId(placeDetail.getPlaceId());

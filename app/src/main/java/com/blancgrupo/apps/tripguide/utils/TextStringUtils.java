@@ -25,6 +25,13 @@ public class TextStringUtils {
         return "";
     }
 
+    public static String shortText(String text) {
+        if (text.length() >= 270) {
+            return text.substring(0, 270) + "...";
+        }
+        return text;
+    }
+
     public interface PlaceItemActivityListener {
         void onPlaceClick(PlaceCover place);
     }

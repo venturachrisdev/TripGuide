@@ -69,9 +69,8 @@ public class ActivityModule {
 
     @Provides
     @ActivityScope
-    PlaceVMFactory providesPlaceFactory(PlaceRepository placeRepository,
-                                        GooglePlaceRepository googlePlaceRepository) {
-        return new PlaceVMFactory(placeRepository, googlePlaceRepository);
+    PlaceVMFactory providesPlaceFactory(PlaceRepository placeRepository) {
+        return new PlaceVMFactory(placeRepository);
     }
     @Provides
     @ActivityScope

@@ -1,26 +1,46 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@color/colorBackground"
-    android:paddingBottom="20dp"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_marginBottom="12dp"
+    android:paddingTop="10dp"
+    android:paddingBottom="6dp"
+    android:layout_marginBottom="8dp"
     tools:context="com.blancgrupo.apps.tripguide.utils.TextStringUtils"
     android:orientation="vertical">
 
         <RelativeLayout
+            android:layout_marginLeft="16dp"
+            android:layout_marginStart="16dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
+            <ImageView
+                android:id="@+id/topic_icon"
+                app:srcCompat="@drawable/ic_place_black_24dp"
+                android:alpha="0.5"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:scaleX=".7"
+                android:scaleY=".7"
+                android:transformPivotY="10dp"
+                android:transformPivotX="10dp"
+                android:layout_centerVertical="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true" />
+
             <com.elyeproj.loaderviewlibrary.LoaderTextView
                 android:id="@+id/topic_title"
-                fontPath="fonts/Montserrat/Montserrat-Medium.ttf"
-                android:layout_margin="12dp"
-                android:textSize="16dp"
+                fontPath="fonts/Montserrat/Montserrat-Light.ttf"
+                android:textSize="14sp"
+                android:textAllCaps="true"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_toRightOf="@+id/topic_icon"
+                android:layout_toEndOf="@+id/topic_icon" />
 
             <Button
                 android:id="@+id/more_btn"
@@ -46,7 +66,7 @@
             <com.cooltechworks.views.shimmer.ShimmerRecyclerView
                 android:id="@+id/topic_rv"
                 android:nestedScrollingEnabled="false"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 app:shimmer_demo_child_count="6"
                 app:shimmer_demo_layout="@layout/shimmer_grid_place_item"
                 app:shimmer_demo_layout_manager_type="grid"

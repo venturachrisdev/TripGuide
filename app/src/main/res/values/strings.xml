@@ -87,5 +87,32 @@
     <string name="address_copied_to_clipboard">Adress copied to clipboard</string>
     <string name="phone_copied_to_clipboard">Phone number copied to clipboard</string>
     <string name="website_copied_to_clipboard">Website copied to clipboard</string>
+    <string name="change_location">Change location</string>
+    <string name="choose_location">Choose a location</string>
+    <string name="restaurants">Restaurants</string>
+    <string name="beaches">Beaches</string>
+    <string name="hotels">Hotels</string>
+    <string name="cafes">Cafes</string>
+    <string name="parks">Parks</string>
+    <string name="in">in</string>
+    <string name="network_error_tap_to_retry">We could not establish a connection
+    with our servers. Please Tap to retry.</string>
+    <string name="ok_got_it">Ok, got it!</string>
+    <string name="hello_visitor">Hello, visitor!</string>
+    <string name="no_thanks">No, thanks.</string>
+    <string name="one_last_step">Just one more step!</string>
+    <string name="try_again">Try again</string>
+    <string name="go">Go</string>
+    <string name="about">About</string>
+    <string name="tour_feature_message">Make your trip for the most important places in the city.</string>
+    <string name="tour_feature_title">Explore the world with our tours.</string>
+    <string name="copied_to_clipboard">Copied to clipboard</string>
+    <string name="coming_soon">Coming soon</string>
+    <string name="ok">Ok</string>
+    <string name="explore_places_title">Explore my city</string>
+    <string name="explore_places_message">We\'ll find your city based on your current location using your GPS connection.</string>
+    <string name="skip">Skip</string>
+    <string name="finish">Finish</string>
+    <string name="please_wait">Please wait...</string>
 
 </resources>

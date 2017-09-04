@@ -1,6 +1,7 @@
 package com.blancgrupo.apps.tripguide.presentation.di.component;
 
 import android.app.Application;
+import android.content.SharedPreferences;
 
 import com.blancgrupo.apps.tripguide.presentation.di.module.AppModule;
 import com.blancgrupo.apps.tripguide.presentation.di.module.NetModule;
@@ -21,4 +22,5 @@ public interface NetComponent {
     @Named("GoogleRetrofit") Retrofit retrofit1();
     @Named("ApiRetrofit") Retrofit retrofit2();
     Application application();
+    SharedPreferences sharedPreferences();
 }

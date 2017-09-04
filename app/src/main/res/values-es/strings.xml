@@ -12,7 +12,7 @@
     <string name="far_away">muy lejos</string>
     <string name="distance">Distancia</string>
     <string name="phone_number">Telefono</string>
-    <string name="category">Categoria</string>
+    <string name="category">Categoría</string>
     <string name="hours_today">Horario de hoy</string>
     <string name="open_caps">ABIERTO</string>
 
@@ -51,7 +51,7 @@
     con nuestros servidores. Por favor intente denuevo cuando este conectado a internet.</string>
     <string name="we_could_not_establish_connection_scroll">No pudimos establecer una conexion
     con nuestros servidores. Desliza tu dedo hacia abajo para actualizar. </string>
-    <string name="no_places_yet">Parece que aun no hay lugares aqui! Vuelve mas tarde.</string>
+    <string name="no_places_yet">Parece que aun no hay lugares aquí! Vuelve mas tarde.</string>
     <string name="something_went_wrong">Parece que algo salio mal!
         pero no te preocupes, estamos trabajando en ello.</string>
     <string name="network_error">Lo sentimos, no pudimos completar tu peticion</string>
@@ -70,11 +70,41 @@
     <string name="not_now">Ahora no</string>
     <string name="no_image_found">Imagen no encontrada</string>
     <string name="no_favorites_yet">Sin favoritos</string>
-    <string name="location_services_are_off">Los servicios de ubicacion estan desactivados</string>
+    <string name="location_services_are_off">Los servicios de ubicación están desactivados</string>
     <string name="mark_as_duplicated">Marcar como duplicado</string>
-    <string name="location_services_why">Para ver las recomendaciones cerca de ti, tu ubicacion debe estar disponible</string>
-    <string name="location_why">Para ver las recomendaciones cerca de ti, necesitamos que permitas el acceso para ver tu ubicacion.</string>
+    <string name="location_services_why">Para ver las recomendaciones cerca de ti, tu ubicación debe estar disponible</string>
+    <string name="location_why">Para ver las recomendaciones cerca de ti, necesitamos que permitas el acceso para ver tu ubicación.</string>
     <string name="no_tours_yet">Estamos trabajando con los tours, Por favor vuelve mas tarde para una mejor experiencia</string>
     <string name="photos">Fotos</string>
+    <string name="address_copied_to_clipboard">Direccion copiada al portapapeles</string>
+    <string name="phone_copied_to_clipboard">Telefono copiado al portapapeles</string>
+    <string name="website_copied_to_clipboard">Sitio web copiado al portapapeles</string>
+    <string name="beaches">Playas</string>
+    <string name="cafes">Café</string>
+    <string name="change_location">Cambiar ubicación</string>
+    <string name="choose_location">Elegir ubicación</string>
+    <string name="hotels">Hoteles</string>
+    <string name="in">en</string>
+    <string name="parks">Parques</string>
+    <string name="restaurants">Restaurantes</string>
+    <string name="network_error_tap_to_retry">No pudimos establecer una conexion
+    con nuestros servidores. Toca para actualizar.</string>
+    <string name="hello_visitor">Hola, visitante!</string>
+    <string name="ok_got_it">Entendido!</string>
+    <string name="no_thanks">No, gracias.</string>
+    <string name="one_last_step">Solo un paso mas</string>
+    <string name="try_again">Intenta denuevo</string>
+    <string name="go">Vamos</string>
+    <string name="about">Acerca de</string>
+    <string name="tour_feature_message">Planea tu recorrido por los lugares mas importantes de la ciudad.</string>
+    <string name="tour_feature_title">Explora el mundo con nuestros tours.</string>
+    <string name="copied_to_clipboard">Copiado al portapapeles</string>
+    <string name="coming_soon">Muy pronto</string>
+    <string name="ok">Ok</string>
+    <string name="explore_places_title">Explorar my ciudad</string>
+    <string name="explore_places_message">Encontraremos tu ciudad actual usando GPS. Para esto necesitamos que actives tu ubicación.</string>
+    <string name="skip">Saltar</string>
+    <string name="finish">Finalizar</string>
+    <string name="please_wait">Por favor espere...</string>
 
 </resources>

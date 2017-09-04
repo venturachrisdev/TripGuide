@@ -28,6 +28,9 @@ public class Place implements Parcelable {
     @SerializedName("city")
     @Expose
     private City city;
+    @SerializedName("description")
+    @Expose
+    private String description;
     @SerializedName("name")
     @Expose
     private String name;
@@ -53,11 +56,14 @@ public class Place implements Parcelable {
     private String phoneNumber;
     @SerializedName("website")
     private String website;
+    @SerializedName("rating")
+    Double rating;
 
     public Place() {
     }
 
-    public Place(String id, List<String> types, String address, String googleId, City city, String name, Integer v, String createdAt, OpeningHours openingHours, Photo photo, List<Photo> photos, Location location, String phoneNumber, String website) {
+    public Place(String id, List<String> types, String address, String googleId, City city, String name, Integer v, String createdAt, OpeningHours openingHours, Photo photo, List<Photo> photos, Location location,
+                 String phoneNumber, String website, Double rating, String description) {
         this.id = id;
         this.types = types;
         this.address = address;
@@ -68,10 +74,12 @@ public class Place implements Parcelable {
         this.createdAt = createdAt;
         this.openingHours = openingHours;
         this.photo = photo;
+        this.description = description;
         this.photos = photos;
         this.location = location;
         this.phoneNumber = phoneNumber;
         this.website = website;
+        this.rating = rating;
     }
 
     protected Place(Parcel in) {
@@ -80,6 +88,7 @@ public class Place implements Parcelable {
         address = in.readString();
         googleId = in.readString();
         city = in.readParcelable(City.class.getClassLoader());
+        description = in.readString();
         name = in.readString();
         createdAt = in.readString();
         photo = in.readParcelable(Photo.class.getClassLoader());
@@ -96,6 +105,7 @@ public class Place implements Parcelable {
         dest.writeString(address);
         dest.writeString(googleId);
         dest.writeParcelable(city, flags);
+        dest.writeString(description);
         dest.writeString(name);
         dest.writeString(createdAt);
         dest.writeParcelable(photo, flags);
@@ -121,6 +131,22 @@ public class Place implements Parcelable {
             return new Place[size];
         }
     };
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public Double getRating() {
+        return rating;
+    }
+
+    public void setRating(Double rating) {
+        this.rating = rating;
+    }
 
     public List<Photo> getPhotos() {
         return photos;

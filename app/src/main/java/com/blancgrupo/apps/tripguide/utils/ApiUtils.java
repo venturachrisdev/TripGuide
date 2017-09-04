@@ -33,28 +33,37 @@ public class ApiUtils {
         switch (type) {
             case "hotel":
             case "lodging":
-                mipmap = R.mipmap.marker_hotel;
+                mipmap = R.mipmap.hotels;
                 break;
             case "park":
-                mipmap = R.mipmap.marker_park;
+                mipmap = R.mipmap.parks;
                 break;
             case "golf":
-                mipmap = R.mipmap.marker_golf;
+                mipmap = R.mipmap.games;
                 break;
             case "point_of_interest":
-                mipmap = R.mipmap.marker_interest;
+                mipmap = R.mipmap.meetups;
                 break;
             case "beach":
-                mipmap = R.mipmap.marker_beach;
+                mipmap = R.mipmap.travel;
+                break;
+            case "cafe":
+                mipmap = R.mipmap.cafe;
                 break;
             case "restaurant":
+                mipmap = R.mipmap.restaurants;
+                break;
             default:
-                mipmap = R.mipmap.marker_default;
+                mipmap = R.mipmap.default_marker;
         }
         Bitmap resource = BitmapFactory.decodeResource(context.getResources(), mipmap);
-        Bitmap bitmap = Bitmap.createScaledBitmap(resource, 80, 80, false);
-        //return BitmapDescriptorFactory.fromBitmap(bitmap);
-        return BitmapDescriptorFactory.defaultMarker();
+        //Bitmap bitmap = Bitmap.createScaledBitmap(resource, 80, 80, false);
+        Bitmap bitmap = resource;
+        return BitmapDescriptorFactory.fromBitmap(bitmap);
+    }
+
+    public interface OnBoardingListener {
+        void onBoardingFinished();
     }
 }
 

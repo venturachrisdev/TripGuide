@@ -24,28 +24,24 @@ import io.reactivex.schedulers.Schedulers;
  */
 
 public class PlaceViewModel extends ViewModel {
-    private GooglePlaceRepository googlePlaceRepository;
     private PlaceRepository placeRepository;
     private PlaceLiveData singlePlaceLiveData;
     private PlacesLiveData placesLiveData;
     private String placeId;
-    private boolean fromGoogle = false;
 
-    public PlaceViewModel(PlaceRepository placeRepository, GooglePlaceRepository googlePlaceRepository) {
+    public PlaceViewModel(PlaceRepository placeRepository) {
         this.placeRepository = placeRepository;
-        this.googlePlaceRepository = googlePlaceRepository;
     }
 
-    public LiveData<PlaceWrapper> getSinglePlace(String placeId, boolean fromGoogle) {
+    public LiveData<PlaceWrapper> getSinglePlace(String placeId) {
         if (singlePlaceLiveData == null) {
             singlePlaceLiveData = new PlaceLiveData();
-            loadSinglePlace(placeId, fromGoogle);
+            loadSinglePlace(placeId);
             this.placeId = placeId;
-            this.fromGoogle = fromGoogle;
         } else {
             if (this.placeId == null || !this.placeId.equals(placeId)) {
                 this.placeId = placeId;
-                loadSinglePlace(this.placeId, this.fromGoogle);
+                loadSinglePlace(this.placeId);
             }
         }
         return singlePlaceLiveData;
@@ -56,18 +52,11 @@ public class PlaceViewModel extends ViewModel {
     }
 
 
-    private void loadSinglePlace(String placeId, boolean fromGoogle) {
+    private void loadSinglePlace(String placeId) {
         if (singlePlaceLiveData != null) {
-            if (fromGoogle) {
-                singlePlaceLiveData.loadSinglePlace(
-                        googlePlaceRepository.getPlaceDetail(placeId, Locale.getDefault().getLanguage())
-                );
-
-            } else {
                 singlePlaceLiveData.loadSinglePlace(
                         placeRepository.getSinglePlace(placeId)
                 );
-            }
         }
     }
 
@@ -86,6 +75,6 @@ public class PlaceViewModel extends ViewModel {
     }
 
     public LiveData<PlaceWrapper> getLoadedSinglePlace() {
-        return getSinglePlace(this.placeId, this.fromGoogle);
+        return getSinglePlace(this.placeId);
     }
 }
