@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
@@ -37,6 +38,8 @@ import com.blancgrupo.apps.tripguide.data.entity.api.Location;
 import com.blancgrupo.apps.tripguide.data.entity.api.OpeningHours;
 import com.blancgrupo.apps.tripguide.data.entity.api.Photo;
 import com.blancgrupo.apps.tripguide.data.entity.api.Place;
+import com.blancgrupo.apps.tripguide.data.entity.api.PlaceDescription;
+import com.blancgrupo.apps.tripguide.data.entity.api.PlaceDescriptionWrapper;
 import com.blancgrupo.apps.tripguide.data.entity.api.PlaceWrapper;
 import com.blancgrupo.apps.tripguide.presentation.di.component.DaggerActivityComponent;
 import com.blancgrupo.apps.tripguide.presentation.di.module.ActivityModule;
@@ -59,6 +62,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
@@ -116,6 +120,7 @@ public class PlaceDetailActivity extends AppCompatActivity
     AppCompatRatingBar ratingBar;
     @BindView(R.id.info_layout)
     InfoView infoView;
+    List<Photo> myPhotos;
 
     @Inject
     PlaceVMFactory placeVMFactory;
@@ -182,6 +187,23 @@ public class PlaceDetailActivity extends AppCompatActivity
             placeViewModel.getLoadedSinglePlace().observe(this, observer);
         } else {
             placeViewModel.getSinglePlace(placeId).observe(this, observer);
+            placeViewModel.getPlaceDescription(placeId).observe(this, new Observer<PlaceDescriptionWrapper>() {
+                @Override
+                public void onChanged(@Nullable PlaceDescriptionWrapper placeDescriptionWrapper) {
+                    if (placeDescriptionWrapper != null) {
+                        PlaceDescription description = placeDescriptionWrapper.getPlaceDescription();
+                        if (placeDescriptionWrapper.getStatus().equals("OK") && description != null
+                                && description.getText() != null) {
+                            infoView.setVisibility(View.VISIBLE);
+                            infoView.setContentText(description.getText());
+                        } else {
+                            infoView.setVisibility(View.GONE);
+                        }
+                    } else {
+                        infoView.setVisibility(View.GONE);
+                    }
+                }
+            });
         }
 
     }
@@ -360,6 +382,7 @@ public class PlaceDetailActivity extends AppCompatActivity
         }
         List<Photo> photos = place.getPhotos();
         if (photos != null && photos.size() > 0) {
+            myPhotos = photos;
             photosLayout.setVisibility(View.VISIBLE);
             PhotoAdapter adapter = new PhotoAdapter(getApplication(), this, photos);
             photosRecyclerView.setHasFixedSize(true);
@@ -485,9 +508,7 @@ public class PlaceDetailActivity extends AppCompatActivity
     @Override
     public void onPhotoListener(Photo photo) {
         Intent intent = new Intent(PlaceDetailActivity.this, DisplayImageActivity.class);
-        intent.putExtra(Constants.EXTRA_IMAGE_URL, ApiUtils.getPlacePhotoUrl(
-                (MyApplication) getApplication(), photo.getReference(), photo.getWidth()
-        ));
+        intent.putParcelableArrayListExtra(Constants.EXTRA_IMAGE_URL, (ArrayList<? extends Parcelable>) myPhotos);
         startActivity(intent);
     }
 }

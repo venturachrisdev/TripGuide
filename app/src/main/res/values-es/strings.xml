@@ -101,10 +101,12 @@
     <string name="copied_to_clipboard">Copiado al portapapeles</string>
     <string name="coming_soon">Muy pronto</string>
     <string name="ok">Ok</string>
-    <string name="explore_places_title">Explorar my ciudad</string>
+    <string name="explore_places_title">Explorar mi ciudad</string>
     <string name="explore_places_message">Encontraremos tu ciudad actual usando GPS. Para esto necesitamos que actives tu ubicación.</string>
     <string name="skip">Saltar</string>
     <string name="finish">Finalizar</string>
-    <string name="please_wait">Por favor espere...</string>
+    <string name="please_wait">Por favor espere…</string>
+    <string name="enable_location">Activar ubicación</string>
+    <string name="cannot_find_your_location">Lo sentimos, no pudimos obtener tu ubicación. Intenta de nuevo.</string>
 
 </resources>

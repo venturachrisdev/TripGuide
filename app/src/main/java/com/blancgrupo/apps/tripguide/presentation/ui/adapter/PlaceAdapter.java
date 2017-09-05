@@ -127,22 +127,12 @@ public class PlaceAdapter extends RecyclerView.Adapter<PlaceAdapter.PlaceViewHol
 
 
         public void setOnClickListener(final PlaceAdapterListener listener, final PlaceCover place) {
-            if (!place.getType().equals("tour")) {
-                itemView.setOnClickListener(new View.OnClickListener() {
+            itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        listener.onPlaceClick(place);
-                    }
-                });
-            } else {
-                itemView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        Toast.makeText(PlaceAdapter.this.app, "Tours can wait!", Toast.LENGTH_SHORT)
-                                .show();
-                    }
-                });
-            }
+                    listener.onPlaceClick(place);
+                }
+            });
         }
 
         public void setName(String name) {

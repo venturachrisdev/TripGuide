@@ -1,8 +1,12 @@
 package com.blancgrupo.apps.tripguide.presentation.ui.activity;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -12,13 +16,20 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.blancgrupo.apps.tripguide.MyApplication;
 import com.blancgrupo.apps.tripguide.R;
+import com.blancgrupo.apps.tripguide.data.entity.api.Photo;
+import com.blancgrupo.apps.tripguide.presentation.ui.fragment.DisplayImageFragment;
+import com.blancgrupo.apps.tripguide.utils.ApiUtils;
 import com.blancgrupo.apps.tripguide.utils.Constants;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.github.chrisbanes.photoview.PhotoView;
+import com.robohorse.pagerbullet.PagerBullet;
+
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -28,10 +39,9 @@ import butterknife.ButterKnife;
  * status bar and navigation/system bar) with user interaction.
  */
 public class DisplayImageActivity extends AppCompatActivity {
-    @BindView(R.id.progressbar)
-    ProgressBar progressBar;
-    @BindView(R.id.image)
-    PhotoView imageView;
+    @BindView(R.id.viewpager)
+    PagerBullet viewPager;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,36 +63,43 @@ public class DisplayImageActivity extends AppCompatActivity {
         Intent intent = getIntent();
         Bundle data =  intent.getExtras();
         if (data != null && data.containsKey(Constants.EXTRA_IMAGE_URL)) {
-            Glide.with(this)
-                    .load(data.getString(Constants.EXTRA_IMAGE_URL))
-                    .fitCenter()
-                    .crossFade()
-                    .listener(new RequestListener<String, GlideDrawable>() {
-                        @Override
-                        public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
-                            new Handler().postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    progressBar.setIndeterminate(false);
-                                    progressBar.setVisibility(View.GONE);
-                                    Toast.makeText(DisplayImageActivity.this, R.string.network_error, Toast.LENGTH_SHORT).show();
-                                    DisplayImageActivity.this.finish();
-                                }
-                            }, 300);
-                            return false;
-                        }
+            List<Photo> photos = data.getParcelableArrayList(Constants.EXTRA_IMAGE_URL);
+            viewPager.setAdapter(new PhotosPageAdapter(getSupportFragmentManager(), photos));
+            viewPager.setIndicatorTintColorScheme(Color.WHITE, Color.DKGRAY);
 
-                        @Override
-                        public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
-                            progressBar.setIndeterminate(false);
-                            progressBar.setVisibility(View.GONE);
-                            return false;
-                        }
-                    })
-                    .into(imageView);
         } else {
             Toast.makeText(this, R.string.no_image_found, Toast.LENGTH_SHORT).show();
             finish();
+        }
+    }
+
+    class PhotosPageAdapter extends FragmentPagerAdapter {
+
+        List<Photo> photos;
+
+        public PhotosPageAdapter(FragmentManager fm, List<Photo> photos) {
+            super(fm);
+            this.photos = photos;
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            Photo photo = photos.get(position);
+            DisplayImageFragment fragment = new DisplayImageFragment();
+            Bundle args = new Bundle();
+            args.putString(Constants.EXTRA_IMAGE_URL, ApiUtils.getPlacePhotoUrl(
+                    (MyApplication) getApplication(), photo.getReference(), photo.getWidth()
+            ));
+            fragment.setArguments(args);
+            return fragment;
+        }
+
+        @Override
+        public int getCount() {
+            if (photos != null) {
+                return photos.size();
+            }
+            return 0;
         }
     }
 }

@@ -5,9 +5,11 @@ import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
 
 import com.blancgrupo.apps.tripguide.data.GooglePlaceRepository;
+import com.blancgrupo.apps.tripguide.data.entity.api.PlaceDescriptionWrapper;
 import com.blancgrupo.apps.tripguide.data.entity.api.PlaceWrapper;
 import com.blancgrupo.apps.tripguide.data.entity.api.PlacesWrapper;
 import com.blancgrupo.apps.tripguide.domain.repository.PlaceRepository;
+import com.blancgrupo.apps.tripguide.presentation.ui.viewmodel.livedata.PlaceDescriptionLiveData;
 import com.blancgrupo.apps.tripguide.presentation.ui.viewmodel.livedata.PlaceLiveData;
 import com.blancgrupo.apps.tripguide.presentation.ui.viewmodel.livedata.PlacesLiveData;
 
@@ -27,6 +29,7 @@ public class PlaceViewModel extends ViewModel {
     private PlaceRepository placeRepository;
     private PlaceLiveData singlePlaceLiveData;
     private PlacesLiveData placesLiveData;
+    private PlaceDescriptionLiveData placeDescriptionLiveData;
     private String placeId;
 
     public PlaceViewModel(PlaceRepository placeRepository) {
@@ -76,5 +79,21 @@ public class PlaceViewModel extends ViewModel {
 
     public LiveData<PlaceWrapper> getLoadedSinglePlace() {
         return getSinglePlace(this.placeId);
+    }
+
+    public LiveData<PlaceDescriptionWrapper> getPlaceDescription(String placeId) {
+        if (placeDescriptionLiveData == null) {
+            placeDescriptionLiveData = new PlaceDescriptionLiveData();
+            loadPlaceDescription(placeId);
+        }
+        return placeDescriptionLiveData;
+    }
+
+    private void loadPlaceDescription(String placeId) {
+        if (placeDescriptionLiveData != null) {
+            placeDescriptionLiveData.loadPlaceDescription(placeRepository.getPlaceDescription(
+                    placeId, Locale.getDefault().getLanguage()
+            ));
+        }
     }
 }

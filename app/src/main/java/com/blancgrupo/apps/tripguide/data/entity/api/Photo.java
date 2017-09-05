@@ -29,6 +29,17 @@ public class Photo implements Parcelable {
         reference = in.readString();
     }
 
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(width);
+        dest.writeString(reference);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
     public static final Creator<Photo> CREATOR = new Creator<Photo>() {
         @Override
         public Photo createFromParcel(Parcel in) {
@@ -57,14 +68,4 @@ public class Photo implements Parcelable {
         this.width = width;
     }
 
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel parcel, int i) {
-        parcel.writeInt(width);
-        parcel.writeString(reference);
-    }
 }

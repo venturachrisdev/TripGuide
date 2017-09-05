@@ -183,11 +183,7 @@ public class CitiesFragment extends LifecycleFragment implements CityAdapter.Cit
         listener.onCityClick(city);
     }
 
-    public void fetchCurrentCity(String lat, String lng) {
-        final ProgressDialog dialog = new ProgressDialog(getContext());
-        dialog.setIndeterminate(true);
-        dialog.setMessage(getString(R.string.please_wait));
-        dialog.show();
+    public void fetchCurrentCity(final ProgressDialog dialog, String lat, String lng) {
         cityViewModel.getCurrentCityId(lat, lng)
                 .observe(this, new Observer<String>() {
                     @Override

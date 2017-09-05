@@ -80,6 +80,12 @@ public class LocationUtils {
         builder.create().show();
     }
 
+    public static void showEnableGpsActivity(Context context) {
+        ((AppCompatActivity) context).startActivityForResult(
+                new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS),
+                PERMISSION_ENABLE_GPS_REQUEST_CODE);
+    }
+
     public static void showAreYouSureLocation(final Context context) {
         AlertDialog.Builder builder = new AlertDialog.Builder(context)
                 .setTitle(R.string.are_you_sure)

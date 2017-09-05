@@ -110,6 +110,7 @@ public class CityDetailActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
+            toolbarTitle.setText(R.string.app_name);
             actionBar.setDisplayShowTitleEnabled(false);
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
@@ -293,9 +294,16 @@ public class CityDetailActivity extends AppCompatActivity
 
     @Override
     public void onPlaceClick(PlaceCover place) {
-        Intent intent = new Intent(CityDetailActivity.this, PlaceDetailActivity.class);
-        intent.putExtra(Constants.EXTRA_PLACE_ID, place.getId());
-        startActivity(intent);
+        if (!place.getType().equals("tour")) {
+            Intent intent = new Intent(CityDetailActivity.this, PlaceDetailActivity.class);
+            intent.putExtra(Constants.EXTRA_PLACE_ID, place.getId());
+            startActivity(intent);
+        } else {
+            // A Tour
+            Toast.makeText(this, "Tours can wait!", Toast.LENGTH_SHORT)
+                    .show();
+        }
+
     }
 
     @Override

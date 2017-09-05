@@ -80,48 +80,33 @@ public class GettingStartedActivity extends AppCompatActivity
         } else {
             viewPager.setAdapter(new OnBoardingViewPagerAdapter(getSupportFragmentManager()));
         }
-//            if (sharedPreferences.contains(Constants.CURRENT_LOCATION_SP)) {
-//                startCityActivityAndFinish();
-//            } else {
-//                View permissionView = getLayoutInflater()
-//                        .inflate(R.layout.first_location_permission_layout,
-//                                (ViewGroup) findViewById(R.id.content));
-//                permissionView.findViewById(R.id.location_btn).setOnClickListener(new View.OnClickListener() {
-//                    @Override
-//                    public void onClick(View view) {
-//                        LocationUtils.checkForPermissionOrRequest(GettingStartedActivity.this);
-//                    }
-//                });
-//                permissionView.findViewById(R.id.no_thanks_btn).setOnClickListener(new View.OnClickListener() {
-//                    @Override
-//                    public void onClick(View view) {
-//                        startCityActivityAndFinish();
-//                    }
-//                });
-//            }
-//        }
     }
 
     public void onSkipFragment() {
         if (LocationUtils.checkForPermission(this)) {
-            startCityActivityAndFinish();
+            if (LocationUtils.isGpsEnabled(this)) {
+                startCityActivityAndFinish();
+            } else {
+                if (sharedPreferences.contains(Constants.CURRENT_LOCATION_SP)) {
+                    startCityActivityAndFinish();
+                } else {
+                    showGpsStepFragment();
+                }
+            }
         }
-//            if (LocationUtils.isGpsEnabled(this)) {
-//                showLoadingCityLayout();
-//                goForLocation();
-//            } else {
-//                if (sharedPreferences.contains(Constants.CURRENT_LOCATION_SP)) {
-//                    startCityActivityAndFinish();
-//                } else {
-//                    showGpsStepLayout();
-//                }
-//            }
         else {
             getSupportFragmentManager()
                     .beginTransaction()
                     .replace(R.id.content, new LocationPermissionFragment())
                     .commit();
         }
+    }
+
+    private void showGpsStepFragment() {
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.content, new FirstEnableGpsFragment())
+                .commit();
     }
 
     @Override
@@ -166,21 +151,51 @@ public class GettingStartedActivity extends AppCompatActivity
 
     }
 
-
     public static class LocationPermissionFragment extends Fragment {
         @Nullable
         @Override
-        public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
+                                 @Nullable Bundle savedInstanceState) {
             super.onCreateView(inflater, container, savedInstanceState);
             View root;
             root = inflater.inflate(R.layout.first_location_permission_layout, container, false);
             root.findViewById(R.id.location_btn).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    if (LocationUtils.checkForPermissionOrRequest(getActivity())) {
+                    if(LocationUtils.checkForPermissionOrRequest(getActivity())) {
                         ((GettingStartedActivity) getActivity()).afterPermission();
                     }
 
+                }
+            });
+            root.findViewById(R.id.no_thanks_btn).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    ((GettingStartedActivity) getActivity()).startCityActivityAndFinish();
+                }
+            });
+            return root;
+        }
+    }
+
+    public static class FirstEnableGpsFragment extends Fragment {
+        @Nullable
+        @Override
+        public View onCreateView(LayoutInflater inflater,
+                                 @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+            super.onCreateView(inflater, container, savedInstanceState);
+            View root;
+            root = inflater.inflate(R.layout.first_gps_on_layout, container, false);
+            root.findViewById(R.id.location_btn).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    LocationUtils.showEnableGpsActivity(getActivity());
+                }
+            });
+            root.findViewById(R.id.no_thanks_btn).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    ((GettingStartedActivity) getActivity()).startCityActivityAndFinish();
                 }
             });
             return root;
@@ -275,13 +290,16 @@ public class GettingStartedActivity extends AppCompatActivity
 //
 
     public void afterPermission() {
-//        if (LocationUtils.isGpsEnabled(this)) {
-//                showLoadingCityLayout();
-//                goForLocation();
-//        } else {
-//             showGpsStepLayout();
-//        }
+        if (LocationUtils.isGpsEnabled(this)) {
             startCityActivityAndFinish();
+        } else {
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                  showGpsStepFragment();
+                }
+            }, 400);
+        }
     }
 
     @Override
@@ -293,16 +311,17 @@ public class GettingStartedActivity extends AppCompatActivity
             LocationUtils.showAreYouSureLocation(this);
         }
     }
-//
-//    @Override
-//    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-//        super.onActivityResult(requestCode, resultCode, data);
-//        if (LocationUtils.isGpsEnabled(this)) {
-//            showLoadingCityLayout();
-//            goForLocation();
-//        }
-//    }
-//
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == LocationUtils.PERMISSION_ENABLE_GPS_REQUEST_CODE
+                && LocationUtils.isGpsEnabled(this)) {
+            startCityActivityAndFinish();
+
+        }
+    }
+
     @Override
     public LifecycleRegistry getLifecycle() {
         return this.registry;
@@ -363,4 +382,5 @@ public class GettingStartedActivity extends AppCompatActivity
     public void onProviderDisabled(String s) {
 //        showGpsStepLayout();
     }
+
 }

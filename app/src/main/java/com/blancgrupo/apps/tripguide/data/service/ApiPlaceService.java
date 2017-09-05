@@ -2,6 +2,7 @@ package com.blancgrupo.apps.tripguide.data.service;
 
 import com.blancgrupo.apps.tripguide.data.entity.api.CitiesWrapper;
 import com.blancgrupo.apps.tripguide.data.entity.api.CityWrapper;
+import com.blancgrupo.apps.tripguide.data.entity.api.PlaceDescriptionWrapper;
 import com.blancgrupo.apps.tripguide.data.entity.api.PlaceWrapper;
 import com.blancgrupo.apps.tripguide.data.entity.api.PlacesWrapper;
 
@@ -36,4 +37,9 @@ public interface ApiPlaceService {
 
     @GET("tours/{tour_id}?json")
     Observable<PlaceWrapper> getSingleTour(@Path("tour_id") String tourId);
+
+    @GET("info/{place_id}/lang/{lang}?json")
+    Observable<PlaceDescriptionWrapper>
+    getPlaceDescription(@Path("place_id") String place_id,
+                        @Path("lang") String lang);
 }

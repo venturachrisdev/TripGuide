@@ -1,6 +1,7 @@
 package com.blancgrupo.apps.tripguide.data;
 
 import com.blancgrupo.apps.tripguide.data.entity.api.Place;
+import com.blancgrupo.apps.tripguide.data.entity.api.PlaceDescriptionWrapper;
 import com.blancgrupo.apps.tripguide.data.entity.api.PlaceWrapper;
 import com.blancgrupo.apps.tripguide.data.entity.api.PlacesWrapper;
 import com.blancgrupo.apps.tripguide.data.service.ApiPlaceService;
@@ -39,6 +40,11 @@ public class ApiPlaceRepository implements PlaceRepository {
     @Override
     public Observable<PlacesWrapper> getTours() {
         return apiPlaceService.getTours();
+    }
+
+    @Override
+    public Observable<PlaceDescriptionWrapper> getPlaceDescription(String placeId, String lang) {
+        return apiPlaceService.getPlaceDescription(placeId, lang);
     }
 
 }
