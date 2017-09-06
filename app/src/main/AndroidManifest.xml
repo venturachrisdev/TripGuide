@@ -88,7 +88,11 @@
         <service
             android:name=".presentation.ui.service.LocationService"
             android:enabled="true"
-            android:exported="true"></service>
+            android:exported="true" />
+
+        <activity android:name=".presentation.ui.activity.TourActivity"
+            android:theme="@style/AppTheme.NoActionBar"
+            />
     </application>
 
 </manifest>

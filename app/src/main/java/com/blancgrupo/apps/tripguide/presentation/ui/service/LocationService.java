@@ -19,7 +19,10 @@ import com.blancgrupo.apps.tripguide.MyApplication;
 import com.blancgrupo.apps.tripguide.R;
 import com.blancgrupo.apps.tripguide.data.ApiCityRepository;
 import com.blancgrupo.apps.tripguide.presentation.di.component.DaggerActivityComponent;
+import com.blancgrupo.apps.tripguide.presentation.di.component.DaggerNetComponent;
+import com.blancgrupo.apps.tripguide.presentation.di.component.NetComponent;
 import com.blancgrupo.apps.tripguide.presentation.di.module.ActivityModule;
+import com.blancgrupo.apps.tripguide.presentation.di.module.AppModule;
 import com.blancgrupo.apps.tripguide.presentation.ui.activity.CityDetailActivity;
 import com.blancgrupo.apps.tripguide.utils.Constants;
 import com.blancgrupo.apps.tripguide.utils.LocationUtils;
@@ -43,12 +46,7 @@ public class LocationService extends LifecycleService
     Disposable disposable;
     boolean listening = false;
     public LocationService() {
-        DaggerActivityComponent
-                .builder()
-                .activityModule(new ActivityModule())
-                .netComponent(((MyApplication)getApplication()).getNetComponent())
-                .build()
-                .inject(this);
+
     }
 
     @Override

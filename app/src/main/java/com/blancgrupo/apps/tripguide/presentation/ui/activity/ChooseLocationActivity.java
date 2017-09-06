@@ -148,8 +148,6 @@ public class ChooseLocationActivity extends AppCompatActivity
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString(Constants.CURRENT_LOCATION_SP, city.getId());
         editor.apply();
-        Intent i = new Intent(this, LocationService.class);
-        startService(i);
         setResult(RESULT_OK);
         finish();
     }

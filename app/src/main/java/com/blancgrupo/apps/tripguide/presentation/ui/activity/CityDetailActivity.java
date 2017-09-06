@@ -42,10 +42,12 @@ import com.blancgrupo.apps.tripguide.data.entity.api.CityWrapper;
 import com.blancgrupo.apps.tripguide.data.entity.api.Photo;
 import com.blancgrupo.apps.tripguide.data.entity.api.PlaceCover;
 import com.blancgrupo.apps.tripguide.data.entity.api.Topic;
+import com.blancgrupo.apps.tripguide.data.entity.api.Tour;
 import com.blancgrupo.apps.tripguide.presentation.di.component.DaggerActivityComponent;
 import com.blancgrupo.apps.tripguide.presentation.di.module.ActivityModule;
 import com.blancgrupo.apps.tripguide.presentation.ui.adapter.PlaceAdapter;
 import com.blancgrupo.apps.tripguide.presentation.ui.adapter.TopicAdapter;
+import com.blancgrupo.apps.tripguide.presentation.ui.adapter.TourAdapter;
 import com.blancgrupo.apps.tripguide.presentation.ui.custom.FeatureCardView;
 import com.blancgrupo.apps.tripguide.utils.ConnectivityUtils;
 import com.blancgrupo.apps.tripguide.utils.Constants;
@@ -300,8 +302,8 @@ public class CityDetailActivity extends AppCompatActivity
             startActivity(intent);
         } else {
             // A Tour
-            Toast.makeText(this, "Tours can wait!", Toast.LENGTH_SHORT)
-                    .show();
+            Intent intent = new Intent(this, TourActivity.class);
+            startActivity(intent);
         }
 
     }
