@@ -2,9 +2,11 @@ package com.blancgrupo.apps.tripguide.data.service;
 
 import com.blancgrupo.apps.tripguide.data.entity.api.CitiesWrapper;
 import com.blancgrupo.apps.tripguide.data.entity.api.CityWrapper;
+import com.blancgrupo.apps.tripguide.data.entity.api.ParentTourWrapper;
 import com.blancgrupo.apps.tripguide.data.entity.api.PlaceDescriptionWrapper;
 import com.blancgrupo.apps.tripguide.data.entity.api.PlaceWrapper;
 import com.blancgrupo.apps.tripguide.data.entity.api.PlacesWrapper;
+import com.blancgrupo.apps.tripguide.data.entity.api.TourWrapper;
 
 import io.reactivex.Observable;
 import retrofit2.http.GET;
@@ -35,8 +37,11 @@ public interface ApiPlaceService {
     @GET("tours?json")
     Observable<PlacesWrapper> getTours();
 
-    @GET("tours/{tour_id}?json")
-    Observable<PlaceWrapper> getSingleTour(@Path("tour_id") String tourId);
+    @GET("tours/single/{place_id}?json")
+    Observable<ParentTourWrapper> getSinglePlaceTour(@Path("place_id") String placeId);
+
+    @GET("tours/all/{tour_id}?json")
+    Observable<TourWrapper> getSingleTour(@Path("tour_id") String tourId);
 
     @GET("info/{place_id}/lang/{lang}?json")
     Observable<PlaceDescriptionWrapper>

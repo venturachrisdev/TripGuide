@@ -29,6 +29,7 @@ import com.blancgrupo.apps.tripguide.presentation.di.component.DaggerActivityCom
 import com.blancgrupo.apps.tripguide.presentation.di.module.ActivityModule;
 import com.blancgrupo.apps.tripguide.presentation.ui.fragment.CitiesFragment;
 import com.blancgrupo.apps.tripguide.presentation.ui.fragment.ToursFragment;
+import com.blancgrupo.apps.tripguide.presentation.ui.service.LocationService;
 import com.blancgrupo.apps.tripguide.utils.Constants;
 import com.blancgrupo.apps.tripguide.utils.LocationUtils;
 
@@ -147,6 +148,8 @@ public class ChooseLocationActivity extends AppCompatActivity
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString(Constants.CURRENT_LOCATION_SP, city.getId());
         editor.apply();
+        Intent i = new Intent(this, LocationService.class);
+        startService(i);
         setResult(RESULT_OK);
         finish();
     }

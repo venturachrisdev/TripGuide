@@ -11,6 +11,7 @@ import com.blancgrupo.apps.tripguide.presentation.ui.activity.SplashScreenActivi
 import com.blancgrupo.apps.tripguide.presentation.ui.fragment.CitiesFragment;
 import com.blancgrupo.apps.tripguide.presentation.ui.fragment.MapFragment;
 import com.blancgrupo.apps.tripguide.presentation.ui.fragment.ToursFragment;
+import com.blancgrupo.apps.tripguide.presentation.ui.service.LocationService;
 
 import dagger.Component;
 
@@ -29,5 +30,6 @@ public interface ActivityComponent {
     void inject(ToursFragment toursFragment);
     void inject(ChooseLocationActivity chooseLocationActivity);
     void inject(GettingStartedActivity gettingStartedActivity);
+    void inject(LocationService locationService);
 }
 
