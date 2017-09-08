@@ -262,7 +262,7 @@ public class CityDetailActivity extends AppCompatActivity
         if (header != null && header.getReference() != null) {
             final List<Photo> photos = new ArrayList<>();
             photos.add(header);
-            final String url = ApiUtils.getPlacePhotoUrl((MyApplication) getApplication(),
+            String url = ApiUtils.getPlacePhotoUrl((MyApplication) getApplication(),
                     header.getReference(), header.getWidth());
             Glide.with(this)
                     .load(url)

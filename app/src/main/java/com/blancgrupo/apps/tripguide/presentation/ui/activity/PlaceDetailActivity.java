@@ -362,7 +362,7 @@ public class PlaceDetailActivity extends AppCompatActivity
         }
         Photo photo = place.getPhoto();
         if (photo != null && photo.getReference() != null) {
-            final String url = ApiUtils.getPlacePhotoUrl((MyApplication) getApplication(),
+            String url = ApiUtils.getPlacePhotoUrl((MyApplication) getApplication(),
                     photo.getReference(), photo.getWidth());
             final List<Photo> photos = new ArrayList<>();
             photos.add(photo);

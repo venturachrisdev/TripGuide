@@ -136,11 +136,12 @@ public class TourActivity extends AppCompatActivity
         if (photo != null) {
             final List<Photo> photos = new ArrayList<>();
             photos.add(photo);
+            String url = ApiUtils.getPlacePhotoUrl(
+                    (MyApplication) getApplication(), photo.getReference(),
+                    photo.getWidth()
+            );
             Glide.with(this)
-                    .load(ApiUtils.getPlacePhotoUrl(
-                            (MyApplication) getApplication(), photo.getReference(),
-                            photo.getWidth()
-                    ))
+                    .load(url)
                     .centerCrop()
                     .crossFade()
                     .into(headerImage);
