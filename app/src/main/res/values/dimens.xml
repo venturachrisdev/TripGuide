@@ -7,6 +7,7 @@
     <dimen name="fab_margin">16dp</dimen>
     <dimen name="place_app_bar_height">300dp</dimen>
     <dimen name="city_app_bar_height">160dp</dimen>
+    <dimen name="parent_tour_app_bar_height">220dp</dimen>
     <dimen name="text_margin">16dp</dimen>
     <dimen name="city_height">160dp</dimen>
     <dimen name="toolbar_custom_title">22sp</dimen>

@@ -364,6 +364,8 @@ public class PlaceDetailActivity extends AppCompatActivity
         if (photo != null && photo.getReference() != null) {
             final String url = ApiUtils.getPlacePhotoUrl((MyApplication) getApplication(),
                     photo.getReference(), photo.getWidth());
+            final List<Photo> photos = new ArrayList<>();
+            photos.add(photo);
             Glide.with(this)
                     .load(url)
                     .centerCrop()
@@ -374,7 +376,8 @@ public class PlaceDetailActivity extends AppCompatActivity
                 @Override
                 public void onClick(View view) {
                     Intent intent = new Intent(PlaceDetailActivity.this, DisplayImageActivity.class);
-                    intent.putExtra(Constants.EXTRA_IMAGE_URL, url);
+                    intent.putParcelableArrayListExtra(Constants.EXTRA_IMAGE_URL,
+                            (ArrayList<? extends Parcelable>) photos);
                     startActivity(intent);
 
                 }

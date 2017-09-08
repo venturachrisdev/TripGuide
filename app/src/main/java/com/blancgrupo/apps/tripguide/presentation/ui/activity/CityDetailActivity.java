@@ -13,6 +13,7 @@ import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationListener;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CollapsingToolbarLayout;
@@ -60,6 +61,7 @@ import com.bumptech.glide.Glide;
 import com.cooltechworks.views.shimmer.ShimmerRecyclerView;
 import com.rockerhieu.rvadapter.states.StatesRecyclerViewAdapter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -258,6 +260,8 @@ public class CityDetailActivity extends AppCompatActivity
         Photo header = city.getPhoto();
 
         if (header != null && header.getReference() != null) {
+            final List<Photo> photos = new ArrayList<>();
+            photos.add(header);
             final String url = ApiUtils.getPlacePhotoUrl((MyApplication) getApplication(),
                     header.getReference(), header.getWidth());
             Glide.with(this)
@@ -270,7 +274,8 @@ public class CityDetailActivity extends AppCompatActivity
                 @Override
                 public void onClick(View view) {
                     Intent intent = new Intent(CityDetailActivity.this, DisplayImageActivity.class);
-                    intent.putExtra(Constants.EXTRA_IMAGE_URL, url);
+                    intent.putParcelableArrayListExtra(Constants.EXTRA_IMAGE_URL,
+                            (ArrayList<? extends Parcelable>) photos);
                     startActivity(intent);
                 }
             });
