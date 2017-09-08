@@ -16,7 +16,6 @@ import io.reactivex.Observable;
 public interface PlaceRepository {
     Observable<PlacesWrapper> getPlaces();
     Observable<PlaceWrapper> getSinglePlace(String placeId);
-    Observable<PlacesWrapper> getTours();
     Observable<PlaceDescriptionWrapper>
     getPlaceDescription(String placeId, String lang);
 }

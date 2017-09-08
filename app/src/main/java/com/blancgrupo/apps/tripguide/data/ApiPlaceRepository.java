@@ -36,12 +36,6 @@ public class ApiPlaceRepository implements PlaceRepository {
     public Observable<PlaceWrapper> getSinglePlace(String placeId) {
         return apiPlaceService.getSinglePlace(placeId);
     }
-
-    @Override
-    public Observable<PlacesWrapper> getTours() {
-        return apiPlaceService.getTours();
-    }
-
     @Override
     public Observable<PlaceDescriptionWrapper> getPlaceDescription(String placeId, String lang) {
         return apiPlaceService.getPlaceDescription(placeId, lang);

@@ -2,11 +2,13 @@ package com.blancgrupo.apps.tripguide.presentation.di.module;
 
 import com.blancgrupo.apps.tripguide.data.ApiCityRepository;
 import com.blancgrupo.apps.tripguide.data.ApiPlaceRepository;
+import com.blancgrupo.apps.tripguide.data.ApiTourRepository;
 import com.blancgrupo.apps.tripguide.data.GooglePlaceRepository;
 import com.blancgrupo.apps.tripguide.data.service.ApiPlaceService;
 import com.blancgrupo.apps.tripguide.data.service.GooglePlaceService;
 import com.blancgrupo.apps.tripguide.domain.repository.CityRepository;
 import com.blancgrupo.apps.tripguide.domain.repository.PlaceRepository;
+import com.blancgrupo.apps.tripguide.domain.repository.TourRepository;
 import com.blancgrupo.apps.tripguide.presentation.di.ActivityScope;
 import com.blancgrupo.apps.tripguide.presentation.ui.viewmodel.CityVMFactory;
 import com.blancgrupo.apps.tripguide.presentation.ui.viewmodel.PlaceVMFactory;
@@ -51,9 +53,16 @@ public class ActivityModule {
 
     @Provides
     @ActivityScope
+    TourRepository providesTourRepository(ApiPlaceService apiPlaceService) {
+        return new ApiTourRepository(apiPlaceService);
+    }
+
+    @Provides
+    @ActivityScope
     CityVMFactory providesCityFactory(CityRepository cityRepository) {
         return new CityVMFactory(cityRepository);
     }
+
 
     @Provides
     @ActivityScope
@@ -74,8 +83,8 @@ public class ActivityModule {
     }
     @Provides
     @ActivityScope
-    TourVMFactory providesTourFactory(PlaceRepository placeRepository) {
-        return new TourVMFactory(placeRepository);
+    TourVMFactory providesTourFactory(TourRepository tourRepository) {
+        return new TourVMFactory(tourRepository);
     }
 
 

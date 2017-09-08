@@ -3,6 +3,7 @@ package com.blancgrupo.apps.tripguide.presentation.ui.viewmodel;
 import android.arch.lifecycle.ViewModelProvider;
 
 import com.blancgrupo.apps.tripguide.domain.repository.PlaceRepository;
+import com.blancgrupo.apps.tripguide.domain.repository.TourRepository;
 
 import javax.inject.Inject;
 
@@ -11,15 +12,15 @@ import javax.inject.Inject;
  */
 
 public class TourVMFactory implements ViewModelProvider.Factory {
-    private PlaceRepository placeRepository;
+    private TourRepository tourRepository;
 
     @Inject
-    public TourVMFactory(PlaceRepository placeRepository) {
-        this.placeRepository = placeRepository;
+    public TourVMFactory(TourRepository tourRepository) {
+        this.tourRepository = tourRepository;
     }
 
     @Override
     public TourViewModel create(Class modelClass) {
-        return new TourViewModel(this.placeRepository);
+        return new TourViewModel(this.tourRepository);
     }
 }
