@@ -31,9 +31,9 @@ public class ParentTour {
     private Photo photo;
     @SerializedName("tours")
     @Expose
-    private List<Tour> tours = null;
+    private List<TourCover> tours = null;
 
-    public ParentTour(String name, City city, String googleId, String address, String id, Photo photo, List<Tour> tours) {
+    public ParentTour(String name, City city, String googleId, String address, String id, Photo photo, List<TourCover> tours) {
         this.name = name;
         this.city = city;
         this.googleId = googleId;
@@ -91,11 +91,11 @@ public class ParentTour {
         this.photo = photo;
     }
 
-    public List<Tour> getTours() {
+    public List<TourCover> getTours() {
         return tours;
     }
 
-    public void setTours(List<Tour> tours) {
+    public void setTours(List<TourCover> tours) {
         this.tours = tours;
     }
 

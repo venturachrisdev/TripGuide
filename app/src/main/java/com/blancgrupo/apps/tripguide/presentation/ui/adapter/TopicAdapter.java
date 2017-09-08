@@ -111,6 +111,7 @@ public class TopicAdapter extends RecyclerView.Adapter<TopicAdapter.TopicViewHol
                     }
                 });
             } else {
+                listener.onTourPresence();
                 moreBtn.setVisibility(View.INVISIBLE);
             }
         }
@@ -157,6 +158,7 @@ public class TopicAdapter extends RecyclerView.Adapter<TopicAdapter.TopicViewHol
 
     public interface TopicListener {
         void onMoreButtonClick(String topicTitle);
+        void onTourPresence();
     }
 
     class PaddingItemDecoration extends RecyclerView.ItemDecoration {

@@ -22,10 +22,12 @@ public class Constants {
     public static final String EXTRA_PLACE_FOR_MAP = createExtra("PLACE_FOR_MAP");
     public static final String STATUS_OK = "OK";
     public static final String EXTRA_PLACE_GOOGLE_ID = createExtra("PLACE_GOOGLE_ID");
-    public static final String EXTRA_IMAGE_URL = createExtra("EXTRA_IMAGE_URL");
+    public static final String EXTRA_IMAGE_URL = createExtra("IMAGE_URL");
     public static final String CURRENT_LOCATION_SP = createSharedPreference("CURRENT_LOCATION");
     public static final int CHOOSE_LOCATION_RC = 100;
     public static final String GETTING_STARTED_SP =  createSharedPreference("GETTING STARTED");
+    public static final String EXTRA_PLACE_TOUR_ID = createExtra("PLACE_TOUR_ID");
+    public static final String EXTRA_SINGLE_TOUR_ID = createExtra("SINGLE_TOUR_ID");
 
 
     public static String createExtra(String name) {

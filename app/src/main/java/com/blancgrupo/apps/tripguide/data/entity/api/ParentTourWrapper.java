@@ -11,21 +11,21 @@ public class ParentTourWrapper {
 
     @SerializedName("place")
     @Expose
-    private Place place;
+    private ParentTour place;
     @SerializedName("status")
     @Expose
     private String status;
 
-    public ParentTourWrapper(Place place, String status) {
+    public ParentTourWrapper(ParentTour place, String status) {
         this.place = place;
         this.status = status;
     }
 
-    public Place getPlace() {
+    public ParentTour getPlace() {
         return place;
     }
 
-    public void setPlace(Place place) {
+    public void setPlace(ParentTour place) {
         this.place = place;
     }
 

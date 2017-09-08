@@ -278,6 +278,9 @@ public class CityDetailActivity extends AppCompatActivity
         // BIND TOPICS
         List<Topic> topics = city.getTopics();
         if (topics.size() > 0) {
+            if (topics.get(0).get_id().equals("tour")) {
+                featureCardView.hide();
+            }
             adapter.updateData(topics);
         } else {
             Intent intent = new Intent(this, PlaceDetailActivity.class);
@@ -303,6 +306,7 @@ public class CityDetailActivity extends AppCompatActivity
         } else {
             // A Tour
             Intent intent = new Intent(this, TourActivity.class);
+            intent.putExtra(Constants.EXTRA_PLACE_TOUR_ID, place.getId());
             startActivity(intent);
         }
 
@@ -315,6 +319,11 @@ public class CityDetailActivity extends AppCompatActivity
         intent.putExtra(Constants.EXTRA_SEARCH_PLACE_QUERY, topify + " " +
                 getString(R.string.in) + " " + toolbarLayout.getTitle());
         startActivity(intent);
+    }
+
+    @Override
+    public void onTourPresence() {
+        featureCardView.hide();
     }
 
     @Override
