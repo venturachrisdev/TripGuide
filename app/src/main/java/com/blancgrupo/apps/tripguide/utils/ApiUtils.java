@@ -65,5 +65,9 @@ public class ApiUtils {
     public interface OnBoardingListener {
         void onBoardingFinished();
     }
+
+    public interface ActionCallback {
+        void call();
+    }
 }
 

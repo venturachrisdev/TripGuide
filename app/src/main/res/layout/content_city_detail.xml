@@ -21,6 +21,7 @@
 
         <com.blancgrupo.apps.tripguide.presentation.ui.custom.FeatureCardView
             android:layout_width="wrap_content"
+            android:visibility="gone"
             android:id="@+id/featurecardview"
             android:layout_height="wrap_content"/>
 

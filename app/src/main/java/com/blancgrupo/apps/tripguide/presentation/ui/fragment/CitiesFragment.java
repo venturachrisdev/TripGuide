@@ -1,7 +1,6 @@
 package com.blancgrupo.apps.tripguide.presentation.ui.fragment;
 
 
-import android.app.ProgressDialog;
 import android.arch.lifecycle.LifecycleFragment;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
@@ -11,7 +10,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,9 +27,9 @@ import com.blancgrupo.apps.tripguide.presentation.ui.adapter.CityAdapter;
 import com.blancgrupo.apps.tripguide.presentation.ui.custom.ExploreMyCityView;
 import com.blancgrupo.apps.tripguide.presentation.ui.viewmodel.CityVMFactory;
 import com.blancgrupo.apps.tripguide.presentation.ui.viewmodel.CityViewModel;
+import com.blancgrupo.apps.tripguide.utils.ApiUtils;
 import com.blancgrupo.apps.tripguide.utils.ConnectivityUtils;
 import com.blancgrupo.apps.tripguide.utils.Constants;
-import com.blancgrupo.apps.tripguide.utils.LocationUtils;
 import com.cooltechworks.views.shimmer.ShimmerRecyclerView;
 import com.rockerhieu.rvadapter.states.StatesRecyclerViewAdapter;
 
@@ -183,12 +181,12 @@ public class CitiesFragment extends LifecycleFragment implements CityAdapter.Cit
         listener.onCityClick(city);
     }
 
-    public void fetchCurrentCity(final ProgressDialog dialog, String lat, String lng) {
+    public void fetchCurrentCity(final ApiUtils.ActionCallback callback, String lat, String lng) {
         cityViewModel.getCurrentCityId(lat, lng)
                 .observe(this, new Observer<String>() {
                     @Override
                     public void onChanged(@Nullable String s) {
-                        dialog.hide();
+                        callback.call();
                         listener.onCityClick(new City(s));
                     }
                 });

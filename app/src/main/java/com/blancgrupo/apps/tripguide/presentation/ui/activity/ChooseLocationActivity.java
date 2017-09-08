@@ -30,6 +30,7 @@ import com.blancgrupo.apps.tripguide.presentation.di.module.ActivityModule;
 import com.blancgrupo.apps.tripguide.presentation.ui.fragment.CitiesFragment;
 import com.blancgrupo.apps.tripguide.presentation.ui.fragment.ToursFragment;
 import com.blancgrupo.apps.tripguide.presentation.ui.service.LocationService;
+import com.blancgrupo.apps.tripguide.utils.ApiUtils;
 import com.blancgrupo.apps.tripguide.utils.Constants;
 import com.blancgrupo.apps.tripguide.utils.LocationUtils;
 
@@ -87,7 +88,13 @@ public class ChooseLocationActivity extends AppCompatActivity
         dialog.show();
         Location location = LocationUtils.getCurrentLocation(this);
         if (location != null) {
-            fragment.fetchCurrentCity(dialog, String.valueOf(location.getLatitude()),
+            fragment.fetchCurrentCity(new ApiUtils.ActionCallback() {
+
+                                          @Override
+                                          public void call() {
+                                              ChooseLocationActivity.this.dialog.hide();
+                                          }
+                                      }, String.valueOf(location.getLatitude()),
                     String.valueOf(location.getLongitude()));
         } else {
             LocationUtils.requestLocationUpdates(this, this);
@@ -154,7 +161,13 @@ public class ChooseLocationActivity extends AppCompatActivity
 
     @Override
     public void onLocationChanged(Location location) {
-        fragment.fetchCurrentCity(dialog, String.valueOf(location.getLatitude()),
+        fragment.fetchCurrentCity(new ApiUtils.ActionCallback() {
+
+                                      @Override
+                                      public void call() {
+                                          ChooseLocationActivity.this.dialog.hide();
+                                      }
+                                  }, String.valueOf(location.getLatitude()),
                 String.valueOf(location.getLongitude()));
     }
 

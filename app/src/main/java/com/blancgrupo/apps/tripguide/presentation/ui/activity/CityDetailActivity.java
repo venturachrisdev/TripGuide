@@ -285,6 +285,8 @@ public class CityDetailActivity extends AppCompatActivity
         if (topics.size() > 0) {
             if (topics.get(0).get_id().equals("tour")) {
                 featureCardView.hide();
+            } else {
+                featureCardView.show();
             }
             adapter.updateData(topics);
         } else {
