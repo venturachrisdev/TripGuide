@@ -117,5 +117,8 @@
     <string name="enable_location">Enable location</string>
     <string name="cannot_find_your_location">Sorry, we could not get your location, try again.</string>
     <string name="no_tour_selected">No tour selected</string>
+    <string name="name">Name</string>
+    <string name="estimated_time">Estimated time</string>
+    <string name="distance_in_meters">Distance (in meters)</string>
 
 </resources>

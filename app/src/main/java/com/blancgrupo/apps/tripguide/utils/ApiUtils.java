@@ -31,27 +31,25 @@ public class ApiUtils {
     public static BitmapDescriptor drawMarkerByType(Context context,  String type) {
         int mipmap;
         switch (type) {
-            case "hotel":
-            case "lodging":
-                mipmap = R.mipmap.hotels;
-                break;
+//            case "hotel":
+//            case "lodging":
+//                mipmap = R.mipmap.hotels;
+//                break;
+//            case "golf":
+//            mipmap = R.mipmap.games;
+//            break;
             case "park":
-                mipmap = R.mipmap.parks;
-                break;
-            case "golf":
-                mipmap = R.mipmap.games;
-                break;
             case "point_of_interest":
-                mipmap = R.mipmap.meetups;
+                mipmap = R.mipmap.park_marker;
                 break;
             case "beach":
-                mipmap = R.mipmap.travel;
+                mipmap = R.mipmap.beach_marker;
                 break;
             case "cafe":
-                mipmap = R.mipmap.cafe;
+                mipmap = R.mipmap.cafe_marker;
                 break;
             case "restaurant":
-                mipmap = R.mipmap.restaurants;
+                mipmap = R.mipmap.restaurant_marker;
                 break;
             default:
                 mipmap = R.mipmap.default_marker;
