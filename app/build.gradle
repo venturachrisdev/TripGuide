@@ -99,6 +99,5 @@ dependencies {
     compile 'com.rockerhieu:rv-adapter-states:1.0'
     compile 'com.github.chrisbanes:PhotoView:2.0.0'
     compile 'com.robohorse.pagerbullet:pagerbullet:1.0.9'
-    compile 'com.android.support:support-v4:26.+'
     testCompile 'junit:junit:4.12'
 }

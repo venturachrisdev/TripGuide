@@ -107,12 +107,17 @@ public class TopicAdapter extends RecyclerView.Adapter<TopicAdapter.TopicViewHol
                 moreBtn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        listener.onMoreButtonClick(TopicViewHolder.this.topicTitle.getText().toString());
+                        listener.onMoreButtonClick(TopicViewHolder.this.topicTitle.getText().toString(), false);
                     }
                 });
             } else {
                 listener.onTourPresence();
-                moreBtn.setVisibility(View.INVISIBLE);
+                moreBtn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        listener.onMoreButtonClick(TopicViewHolder.this.topicTitle.getText().toString(), true);
+                    }
+                });
             }
         }
 
@@ -157,7 +162,7 @@ public class TopicAdapter extends RecyclerView.Adapter<TopicAdapter.TopicViewHol
     }
 
     public interface TopicListener {
-        void onMoreButtonClick(String topicTitle);
+        void onMoreButtonClick(String topicTitle, boolean isTour);
         void onTourPresence();
     }
 

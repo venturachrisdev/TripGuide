@@ -2,6 +2,7 @@ package com.blancgrupo.apps.tripguide.presentation.ui.viewmodel.livedata;
 
 import android.arch.lifecycle.LiveData;
 
+import com.blancgrupo.apps.tripguide.data.entity.api.PlacesCoverWrapper;
 import com.blancgrupo.apps.tripguide.data.entity.api.PlacesWrapper;
 
 import io.reactivex.Observable;
@@ -15,22 +16,22 @@ import io.reactivex.schedulers.Schedulers;
  * Created by root on 8/29/17.
  */
 
-public class ToursLiveData extends LiveData<PlacesWrapper> {
+public class ToursLiveData extends LiveData<PlacesCoverWrapper> {
     Disposable disposable;
 
-    public void loadTours(Observable<PlacesWrapper> observable) {
+    public void loadTours(Observable<PlacesCoverWrapper> observable) {
         disposable = observable
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Consumer<PlacesWrapper>() {
+                .subscribe(new Consumer<PlacesCoverWrapper>() {
                     @Override
-                    public void accept(@NonNull PlacesWrapper placesWrapper) throws Exception {
+                    public void accept(@NonNull PlacesCoverWrapper placesWrapper) throws Exception {
                         setValue(placesWrapper);
                     }
                 }, new Consumer<Throwable>() {
                     @Override
                     public void accept(@NonNull Throwable throwable) throws Exception {
-                        setValue(new PlacesWrapper(null, throwable.getMessage()));
+                        setValue(new PlacesCoverWrapper(null, throwable.getMessage()));
                     }
                 });
     }

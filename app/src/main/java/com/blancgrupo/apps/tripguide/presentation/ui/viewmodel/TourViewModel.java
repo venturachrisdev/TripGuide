@@ -4,6 +4,7 @@ import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.ViewModel;
 
 import com.blancgrupo.apps.tripguide.data.entity.api.ParentTourWrapper;
+import com.blancgrupo.apps.tripguide.data.entity.api.PlacesCoverWrapper;
 import com.blancgrupo.apps.tripguide.data.entity.api.PlacesWrapper;
 import com.blancgrupo.apps.tripguide.data.entity.api.Tour;
 import com.blancgrupo.apps.tripguide.data.entity.api.TourWrapper;
@@ -27,7 +28,7 @@ public class TourViewModel extends ViewModel {
         this.tourRepository = tourRepository;
     }
 
-    public LiveData<PlacesWrapper> getTours() {
+    public LiveData<PlacesCoverWrapper> getTours() {
         if (toursLiveData == null) {
             toursLiveData = new ToursLiveData();
         }

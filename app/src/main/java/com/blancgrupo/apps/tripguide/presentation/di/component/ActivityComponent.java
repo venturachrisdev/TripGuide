@@ -4,6 +4,7 @@ import com.blancgrupo.apps.tripguide.presentation.di.ActivityScope;
 import com.blancgrupo.apps.tripguide.presentation.di.module.ActivityModule;
 import com.blancgrupo.apps.tripguide.presentation.ui.activity.ChooseLocationActivity;
 import com.blancgrupo.apps.tripguide.presentation.ui.activity.CityDetailActivity;
+import com.blancgrupo.apps.tripguide.presentation.ui.activity.CityToursActivity;
 import com.blancgrupo.apps.tripguide.presentation.ui.activity.GettingStartedActivity;
 import com.blancgrupo.apps.tripguide.presentation.ui.activity.PlaceDetailActivity;
 import com.blancgrupo.apps.tripguide.presentation.ui.activity.SearchActivity;
@@ -33,5 +34,6 @@ public interface ActivityComponent {
     void inject(GettingStartedActivity gettingStartedActivity);
     void inject(LocationService locationService);
     void inject(TourActivity tourActivity);
+    void inject(CityToursActivity cityToursActivity);
 }
 

@@ -120,5 +120,8 @@
     <string name="name">Name</string>
     <string name="estimated_time">Estimated time</string>
     <string name="distance_in_meters">Distance (in meters)</string>
+    <string name="n_a">N/A</string>
+    <string name="min">min</string>
+    <string name="title_activity_city_tours">CityToursActivity</string>
 
 </resources>

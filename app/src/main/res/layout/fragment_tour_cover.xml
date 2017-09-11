@@ -1,13 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.CardView
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="200dp"
-    app:cardUseCompatPadding="true"
-    app:cardElevation="@dimen/cardview_default_elevation"
-    app:cardCornerRadius="@dimen/cardview_default_radius"
+    android:layout_width="match_parent"
     android:layout_gravity="center"
-    android:layout_height="wrap_content">
+    android:layout_height="match_parent">
+
+    <android.support.v7.widget.CardView
+        android:layout_width="match_parent"
+        app:cardBackgroundColor="@color/colorIcon"
+        app:elevation="@dimen/cardview_default_elevation"
+        app:cardCornerRadius="@dimen/cardview_default_radius"
+        app:cardUseCompatPadding="true"
+        android:layout_height="wrap_content">
 
     <LinearLayout
         android:orientation="vertical"
@@ -45,6 +50,27 @@
                 android:layout_alignParentStart="true" />
 
             <TextView
+                android:id="@+id/tour_type_places_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                fontPath="fonts/Montserrat/Montserrat-Light.ttf"
+                android:textColor="@color/colorPrimaryText"
+                android:textAppearance="@style/Base.TextAppearance.AppCompat.Display4"
+                android:textSize="26sp"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true" />
+
+            <TextView
+                android:id="@+id/tour_type_places_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/places"
+                android:layout_below="@+id/tour_type_places_text"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true" />
+
+            <TextView
                 android:id="@+id/tour_type_time_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -74,12 +100,9 @@
                 fontPath="fonts/Montserrat/Montserrat-Light.ttf"
                 android:textAppearance="@style/Base.TextAppearance.AppCompat.Display4"
                 android:textSize="30sp"
-                android:layout_alignBaseline="@+id/tour_type_time_text"
-                android:layout_alignBottom="@+id/tour_type_time_text"
+                android:layout_above="@+id/tour_type_time_title"
                 android:layout_alignParentRight="true"
-                android:layout_alignParentEnd="true"
-                android:layout_marginRight="30dp"
-                android:layout_marginEnd="30dp" />
+                android:layout_alignParentEnd="true" />
 
             <TextView
                 android:id="@+id/tour_type_distance_title"
@@ -92,7 +115,7 @@
 
             <Button
                 android:id="@id/btn"
-                android:text="@string/go"
+                android:text="@string/more"
                 android:background="@color/colorAccent"
                 android:layout_marginTop="30dp"
                 android:textColor="@color/colorIcon"
@@ -100,8 +123,10 @@
                 android:layout_below="@id/tour_type_distance_title"
                 android:layout_height="wrap_content" />
 
-
         </RelativeLayout>
+
     </LinearLayout>
 
-</android.support.v7.widget.CardView>
+    </android.support.v7.widget.CardView>
+
+</FrameLayout>

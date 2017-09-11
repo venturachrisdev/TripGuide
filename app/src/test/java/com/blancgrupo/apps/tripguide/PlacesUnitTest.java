@@ -2,9 +2,11 @@ package com.blancgrupo.apps.tripguide;
 
 import com.blancgrupo.apps.tripguide.data.ApiCityRepository;
 import com.blancgrupo.apps.tripguide.data.ApiPlaceRepository;
+import com.blancgrupo.apps.tripguide.data.ApiTourRepository;
 import com.blancgrupo.apps.tripguide.data.entity.api.City;
 import com.blancgrupo.apps.tripguide.data.entity.api.PlacesWrapper;
 import com.blancgrupo.apps.tripguide.data.service.ApiPlaceService;
+import com.blancgrupo.apps.tripguide.domain.repository.TourRepository;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -28,6 +30,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class PlacesUnitTest {
     ApiPlaceRepository apiPlaceRepository;
+    ApiTourRepository apiTourRepository;
 
     @Before
     public void setupRetrofit() throws Exception {
@@ -51,12 +54,13 @@ public class PlacesUnitTest {
         ApiPlaceService apiPlaceService = retrofit.create(ApiPlaceService.class);
 
         apiPlaceRepository = new ApiPlaceRepository(apiPlaceService);
+        apiTourRepository = new ApiTourRepository(apiPlaceService);
 
 
     }
     @Test
     public void fetchPlacesFromApi() throws Exception {
-        apiPlaceRepository.getTours()
+        apiTourRepository.getTours()
                 .subscribe(new Observer<PlacesWrapper>() {
                     @Override
                     public void onSubscribe(@NonNull Disposable d) {

@@ -5,6 +5,7 @@ import com.blancgrupo.apps.tripguide.data.entity.api.CityWrapper;
 import com.blancgrupo.apps.tripguide.data.entity.api.ParentTourWrapper;
 import com.blancgrupo.apps.tripguide.data.entity.api.PlaceDescriptionWrapper;
 import com.blancgrupo.apps.tripguide.data.entity.api.PlaceWrapper;
+import com.blancgrupo.apps.tripguide.data.entity.api.PlacesCoverWrapper;
 import com.blancgrupo.apps.tripguide.data.entity.api.PlacesWrapper;
 import com.blancgrupo.apps.tripguide.data.entity.api.TourWrapper;
 
@@ -35,7 +36,7 @@ public interface ApiPlaceService {
     Observable<CityWrapper> getSingleCity(@Path("city_id") String cityId);
 
     @GET("tours?json")
-    Observable<PlacesWrapper> getTours();
+    Observable<PlacesCoverWrapper> getTours();
 
     @GET("tours/single/{place_id}?json")
     Observable<ParentTourWrapper> getSinglePlaceTour(@Path("place_id") String placeId);

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:background="@color/colorBackground"
+    android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context="com.blancgrupo.apps.tripguide.presentation.ui.activity.CityToursActivity"
+    tools:showIn="@layout/activity_city_tours">
+
+    <RelativeLayout
+        android:padding="10dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/topic_icon"
+            app:srcCompat="@drawable/ic_directions_walk_black_24dp"
+            android:alpha="0.5"
+            android:tint="@color/colorSelectableBackground"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:scaleX=".7"
+            android:scaleY=".7"
+            android:transformPivotY="10dp"
+            android:transformPivotX="10dp"
+            android:layout_centerVertical="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true" />
+
+        <com.elyeproj.loaderviewlibrary.LoaderTextView
+            android:id="@+id/topic_title"
+            fontPath="fonts/Montserrat/Montserrat-Light.ttf"
+            android:textSize="14sp"
+            android:textAllCaps="true"
+            android:layout_width="match_parent"
+            android:text="@string/tours"
+            android:textColor="@color/colorSelectableBackground"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@+id/topic_icon"
+            android:layout_toEndOf="@+id/topic_icon" />
+
+
+    </RelativeLayout>
+
+    <com.cooltechworks.views.shimmer.ShimmerRecyclerView
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/tours_rv"
+        android:nestedScrollingEnabled="false"
+        android:layout_height="match_parent"
+        android:layout_width="match_parent"
+        app:shimmer_demo_child_count="5"
+        app:shimmer_demo_layout="@layout/shimmer_city_loading"
+        app:shimmer_demo_layout_manager_type="linear_vertical"
+        />
+
+</LinearLayout>

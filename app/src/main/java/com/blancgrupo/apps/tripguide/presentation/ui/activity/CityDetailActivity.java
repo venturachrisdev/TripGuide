@@ -100,6 +100,7 @@ public class CityDetailActivity extends AppCompatActivity
     StatesRecyclerViewAdapter statesRecyclerViewAdapter;
     TopicAdapter adapter;
     View errorView;
+    String  cityId;
 
     @Override
     protected void attachBaseContext(Context newBase) {
@@ -188,6 +189,7 @@ public class CityDetailActivity extends AppCompatActivity
                 id = sharedPreferences.getString(Constants.CURRENT_LOCATION_SP, null);
             }
         }
+        cityId = id;
         cityViewModel = ViewModelProviders.of(this, cityVMFactory)
                 .get(CityViewModel.class);
 
@@ -320,12 +322,18 @@ public class CityDetailActivity extends AppCompatActivity
     }
 
     @Override
-    public void onMoreButtonClick(String topicTitle) {
-        Intent intent = new Intent(this, SearchActivity.class);
-        String topify = TextStringUtils.formatTitle(topicTitle);
-        intent.putExtra(Constants.EXTRA_SEARCH_PLACE_QUERY, topify + " " +
-                getString(R.string.in) + " " + toolbarLayout.getTitle());
-        startActivity(intent);
+    public void onMoreButtonClick(String topicTitle, boolean isTour) {
+        if (isTour) {
+            Intent intent = new Intent(this, CityToursActivity.class);
+            intent.putExtra(Constants.EXTRA_CITY_ID, cityId);
+            startActivity(intent);
+        } else {
+            Intent intent = new Intent(this, SearchActivity.class);
+            String topify = TextStringUtils.formatTitle(topicTitle);
+            intent.putExtra(Constants.EXTRA_SEARCH_PLACE_QUERY, topify + " " +
+                    getString(R.string.in) + " " + toolbarLayout.getTitle());
+            startActivity(intent);
+        }
     }
 
     @Override
