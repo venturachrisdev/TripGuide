@@ -145,8 +145,8 @@ public class CityToursActivity extends AppCompatActivity
 
     @Override
     public void onTourClick(Place tour) {
-        Intent intent = new Intent(this, PlaceDetailActivity.class);
-        intent.putExtra(Constants.EXTRA_PLACE_ID, tour.getId());
+        Intent intent = new Intent(this, TourActivity.class);
+        intent.putExtra(Constants.EXTRA_PLACE_TOUR_ID, tour.getId());
         startActivity(intent);
     }
 }

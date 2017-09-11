@@ -9,6 +9,8 @@ import android.support.v4.graphics.BitmapCompat;
 
 import com.blancgrupo.apps.tripguide.MyApplication;
 import com.blancgrupo.apps.tripguide.R;
+import com.blancgrupo.apps.tripguide.data.entity.api.PlaceCover;
+import com.blancgrupo.apps.tripguide.data.entity.api.TourCover;
 import com.bumptech.glide.load.resource.bitmap.BitmapTransformation;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -66,6 +68,10 @@ public class ApiUtils {
 
     public interface ActionCallback {
         void call();
+    }
+
+    public interface SingleTourListener {
+        void onSingleTourClick(TourCover placeCover);
     }
 }
 

@@ -380,6 +380,7 @@ public class CityDetailActivity extends AppCompatActivity
         statesRecyclerViewAdapter.setState(StatesRecyclerViewAdapter.STATE_NORMAL);
         if (requestCode == Constants.CHOOSE_LOCATION_RC) {
             if (resultCode == RESULT_OK) {
+                recyclerView.showShimmerAdapter();
                 String id = sharedPreferences.getString(Constants.CURRENT_LOCATION_SP, null);
                 cityViewModel.loadSingleCity(id);
             }

@@ -96,7 +96,11 @@
         <activity
             android:name=".presentation.ui.activity.CityToursActivity"
             android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar"/>
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".presentation.ui.activity.SingleTourActivity"
+            android:label="@string/title_activity_single_tour"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>

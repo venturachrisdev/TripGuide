@@ -123,5 +123,6 @@
     <string name="n_a">N/A</string>
     <string name="min">min</string>
     <string name="title_activity_city_tours">CityToursActivity</string>
+    <string name="title_activity_single_tour">SingleTourActivity</string>
 
 </resources>
