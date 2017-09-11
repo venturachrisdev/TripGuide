@@ -36,7 +36,7 @@ public interface ApiPlaceService {
     Observable<CityWrapper> getSingleCity(@Path("city_id") String cityId);
 
     @GET("tours?json")
-    Observable<PlacesCoverWrapper> getTours();
+    Observable<PlacesWrapper> getTours();
 
     @GET("tours/single/{place_id}?json")
     Observable<ParentTourWrapper> getSinglePlaceTour(@Path("place_id") String placeId);

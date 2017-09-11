@@ -12,7 +12,7 @@ import io.reactivex.Observable;
  */
 
 public interface TourRepository {
-    Observable<PlacesCoverWrapper> getTours();
+    Observable<PlacesWrapper> getTours();
     Observable<ParentTourWrapper> getSinglePlaceTour(String placeId);
     Observable<TourWrapper> getSingleTour(String tourId);
 }

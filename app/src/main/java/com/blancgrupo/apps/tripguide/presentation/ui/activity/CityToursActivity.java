@@ -18,6 +18,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.blancgrupo.apps.tripguide.MyApplication;
 import com.blancgrupo.apps.tripguide.R;
@@ -29,8 +30,10 @@ import com.blancgrupo.apps.tripguide.presentation.di.component.DaggerActivityCom
 import com.blancgrupo.apps.tripguide.presentation.di.module.ActivityModule;
 import com.blancgrupo.apps.tripguide.presentation.ui.adapter.PlaceAdapter;
 import com.blancgrupo.apps.tripguide.presentation.ui.adapter.TopicAdapter;
+import com.blancgrupo.apps.tripguide.presentation.ui.adapter.TourAdapter;
 import com.blancgrupo.apps.tripguide.presentation.ui.viewmodel.TourVMFactory;
 import com.blancgrupo.apps.tripguide.presentation.ui.viewmodel.TourViewModel;
+import com.blancgrupo.apps.tripguide.utils.ApiUtils;
 import com.blancgrupo.apps.tripguide.utils.Constants;
 import com.cooltechworks.views.shimmer.ShimmerRecyclerView;
 import com.rockerhieu.rvadapter.states.StatesRecyclerViewAdapter;
@@ -44,12 +47,12 @@ import butterknife.ButterKnife;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 public class CityToursActivity extends AppCompatActivity
-        implements PlaceAdapter.PlaceAdapterListener, LifecycleRegistryOwner {
+        implements LifecycleRegistryOwner, TourAdapter.TourListener {
     @BindView(R.id.toolbar)
     Toolbar toolbar;
     @BindView(R.id.tours_rv)
     ShimmerRecyclerView recyclerView;
-    PlaceAdapter adapter;
+    TourAdapter adapter;
     StatesRecyclerViewAdapter statesRecyclerViewAdapter;
     @Inject
     TourVMFactory tourVMFactory;
@@ -93,32 +96,35 @@ public class CityToursActivity extends AppCompatActivity
         if (data != null && data.containsKey(Constants.EXTRA_CITY_ID)) {
             String cityId = data.getString(Constants.EXTRA_CITY_ID);
             recyclerView.setHasFixedSize(true);
-            adapter = new PlaceAdapter(this, PlaceAdapter.PLACE_TOUR_ADAPTER, getApplication());
+            adapter = new TourAdapter(this, getApplication());
             View emptyView = getLayoutInflater().inflate(R.layout.nothing_to_show_layout, recyclerView, false);
             View errorView = getLayoutInflater().inflate(R.layout.no_internet_layout, recyclerView, false);
             statesRecyclerViewAdapter = new StatesRecyclerViewAdapter(adapter, null, emptyView, errorView);
             recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
             recyclerView.setAdapter(statesRecyclerViewAdapter);
             recyclerView.showShimmerAdapter();
-            tourViewModel.getTours().observe(this, new Observer<PlacesCoverWrapper>() {
+            tourViewModel.getTours().observe(this, new Observer<PlacesWrapper>() {
                 @Override
-                public void onChanged(@Nullable PlacesCoverWrapper placesCoverWrapper) {
+                public void onChanged(@Nullable PlacesWrapper placesCoverWrapper) {
                     if (placesCoverWrapper != null) {
-                        List<PlaceCover> places = placesCoverWrapper.getPlaces();
-                        if (places != null && places.size() > 0 && placesCoverWrapper.getStatus().equals("OK")) {
+                        List<Place> places = placesCoverWrapper.getPlaces();
+                        if (places != null && places.size() > 0) {
+                            toolbar.setTitle(places.get(0).getCity().getName());
                             recyclerView.hideShimmerAdapter();
                             adapter.updateData(places);
                             statesRecyclerViewAdapter.setState(StatesRecyclerViewAdapter.STATE_NORMAL);
                         } else {
+                            recyclerView.hideShimmerAdapter();
                             statesRecyclerViewAdapter.setState(StatesRecyclerViewAdapter.STATE_EMPTY);
                         }
                     } else {
+                        recyclerView.hideShimmerAdapter();
                         statesRecyclerViewAdapter.setState(StatesRecyclerViewAdapter.STATE_ERROR);
                     }
                 }
             });
         } else {
-            //TODO: Set empty
+            recyclerView.hideShimmerAdapter();
             statesRecyclerViewAdapter.setState(StatesRecyclerViewAdapter.STATE_EMPTY);
         }
     }
@@ -131,13 +137,16 @@ public class CityToursActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    public void onPlaceClick(PlaceCover place) {
-
-    }
 
     @Override
     public LifecycleRegistry getLifecycle() {
         return this.registry;
+    }
+
+    @Override
+    public void onTourClick(Place tour) {
+        Intent intent = new Intent(this, PlaceDetailActivity.class);
+        intent.putExtra(Constants.EXTRA_PLACE_ID, tour.getId());
+        startActivity(intent);
     }
 }

@@ -17,6 +17,8 @@ import android.widget.Toast;
 
 import com.blancgrupo.apps.tripguide.MyApplication;
 import com.blancgrupo.apps.tripguide.R;
+import com.blancgrupo.apps.tripguide.data.entity.api.Place;
+import com.blancgrupo.apps.tripguide.data.entity.api.PlacesCoverWrapper;
 import com.blancgrupo.apps.tripguide.data.entity.api.PlacesWrapper;
 import com.blancgrupo.apps.tripguide.presentation.di.component.DaggerActivityComponent;
 import com.blancgrupo.apps.tripguide.presentation.di.module.ActivityModule;
@@ -35,7 +37,7 @@ import butterknife.ButterKnife;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class ToursFragment extends LifecycleFragment {
+public class ToursFragment extends LifecycleFragment implements TourAdapter.TourListener {
     @BindView(R.id.tours_rv)
     ShimmerRecyclerView recyclerView;
     @BindView(R.id.swipeRefreshLayout)
@@ -65,7 +67,7 @@ public class ToursFragment extends LifecycleFragment {
                 .inject(this);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
         recyclerView.setHasFixedSize(true);
-        adapter = new TourAdapter(getActivity().getApplication());
+        adapter = new TourAdapter(this, getActivity().getApplication());
         View errorView = getLayoutInflater().inflate(R.layout.no_internet_layout, recyclerView, false);
         View emptyView = getLayoutInflater().inflate(R.layout.nothing_to_show_layout, recyclerView, false);
         ((TextView) emptyView.findViewById(R.id.textView)).setText(R.string.no_tours_yet);
@@ -87,26 +89,31 @@ public class ToursFragment extends LifecycleFragment {
             }
         });
         tourViewModel = ViewModelProviders.of(this, tourVMFactory).get(TourViewModel.class);
-        tourViewModel.getTours().observe(this, new Observer<PlacesWrapper>() {
-            @Override
-            public void onChanged(@Nullable PlacesWrapper placesWrapper) {
-                if (swipeRefreshLayout.isRefreshing()) {
-                    swipeRefreshLayout.setRefreshing(false);
-                }
-                recyclerView.hideShimmerAdapter();
-                if (placesWrapper != null) {
-                    if (placesWrapper.getPlaces() != null && placesWrapper.getPlaces().size() > 0) {
-                        statesRecyclerViewAdapter.setState(StatesRecyclerViewAdapter.STATE_NORMAL);
-                        adapter.updateData(placesWrapper.getPlaces());
-                    } else {
-                        statesRecyclerViewAdapter.setState(StatesRecyclerViewAdapter.STATE_EMPTY);
-                    }
-                } else {
-                    statesRecyclerViewAdapter.setState(StatesRecyclerViewAdapter.STATE_ERROR);
-                }
-            }
-        });
+//        tourViewModel.getTours().observe(this, new Observer<PlacesCoverWrapper>() {
+//            @Override
+//            public void onChanged(@Nullable PlacesCoverWrapper placesWrapper) {
+//                if (swipeRefreshLayout.isRefreshing()) {
+//                    swipeRefreshLayout.setRefreshing(false);
+//                }
+//                recyclerView.hideShimmerAdapter();
+//                if (placesWrapper != null) {
+//                    if (placesWrapper.getPlaces() != null && placesWrapper.getPlaces().size() > 0) {
+//                        statesRecyclerViewAdapter.setState(StatesRecyclerViewAdapter.STATE_NORMAL);
+//                        adapter.updateData(placesWrapper.getPlaces());
+//                    } else {
+//                        statesRecyclerViewAdapter.setState(StatesRecyclerViewAdapter.STATE_EMPTY);
+//                    }
+//                } else {
+//                    statesRecyclerViewAdapter.setState(StatesRecyclerViewAdapter.STATE_ERROR);
+//                }
+//            }
+//
+//        });
         return v;
     }
 
+    @Override
+    public void onTourClick(Place tour) {
+
+    }
 }

@@ -28,7 +28,7 @@ public class TourViewModel extends ViewModel {
         this.tourRepository = tourRepository;
     }
 
-    public LiveData<PlacesCoverWrapper> getTours() {
+    public LiveData<PlacesWrapper> getTours() {
         if (toursLiveData == null) {
             toursLiveData = new ToursLiveData();
         }

@@ -12,6 +12,7 @@ import com.blancgrupo.apps.tripguide.R;
 import com.blancgrupo.apps.tripguide.data.entity.api.Location;
 import com.blancgrupo.apps.tripguide.data.entity.api.Photo;
 import com.blancgrupo.apps.tripguide.data.entity.api.Place;
+import com.blancgrupo.apps.tripguide.data.entity.api.PlaceCover;
 import com.blancgrupo.apps.tripguide.utils.ApiUtils;
 import com.blancgrupo.apps.tripguide.utils.LocationUtils;
 import com.bumptech.glide.Glide;
@@ -30,9 +31,15 @@ import butterknife.ButterKnife;
 public class TourAdapter extends RecyclerView.Adapter<TourAdapter.TourViewHolder> {
     List<Place> places;
     Application app;
+    TourListener listener;
 
-    public TourAdapter(Application app) {
+    public interface TourListener {
+        void onTourClick(Place tour);
+    }
+
+    public TourAdapter(TourListener tourListener, Application app) {
         this.app = app;
+        this.listener = tourListener;
     }
 
     @Override
@@ -53,6 +60,7 @@ public class TourAdapter extends RecyclerView.Adapter<TourAdapter.TourViewHolder
             int width = photo.getWidth();
             holder.setImage(ApiUtils.getPlacePhotoUrl((MyApplication) app, photo.getReference(), width));
         }
+        holder.setOnClickListener(listener, place);
     }
 
     @Override
@@ -95,6 +103,15 @@ public class TourAdapter extends RecyclerView.Adapter<TourAdapter.TourViewHolder
                     .crossFade()
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .into(image);
+        }
+
+        public void setOnClickListener(final TourListener listener, final Place place) {
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    listener.onTourClick(place);
+                }
+            });
         }
     }
 }

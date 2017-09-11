@@ -53,6 +53,7 @@
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/tours_rv"
         android:nestedScrollingEnabled="false"
+        android:padding="13dp"
         android:layout_height="match_parent"
         android:layout_width="match_parent"
         app:shimmer_demo_child_count="5"
