@@ -32,6 +32,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import javax.inject.Inject;
 
 import butterknife.BindView;
+import butterknife.ButterKnife;
 
 public class SingleTourActivity extends AppCompatActivity
     implements LifecycleRegistryOwner {
@@ -50,6 +51,7 @@ public class SingleTourActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_single_tour);
+        ButterKnife.bind(this);
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
