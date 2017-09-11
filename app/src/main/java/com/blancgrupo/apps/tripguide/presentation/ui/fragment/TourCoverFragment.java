@@ -39,6 +39,7 @@ public class TourCoverFragment extends Fragment {
     @BindView(R.id.btn)
     Button btn;
     ApiUtils.SingleTourListener listener;
+    String imageUrl;
 
 
     public TourCoverFragment() {
@@ -63,6 +64,7 @@ public class TourCoverFragment extends Fragment {
         Bundle args = getArguments();
         final TourCover cover = args.getParcelable(Constants.EXTRA_SINGLE_TOUR_ID);
         String pic_url = args.getString(Constants.EXTRA_IMAGE_URL);
+        imageUrl = pic_url;
         if (pic_url != null) {
             Glide.with(getContext())
                     .load(pic_url)
@@ -83,7 +85,7 @@ public class TourCoverFragment extends Fragment {
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                listener.onSingleTourClick(cover);
+                listener.onSingleTourClick(cover, imageUrl);
             }
         });
         return v;

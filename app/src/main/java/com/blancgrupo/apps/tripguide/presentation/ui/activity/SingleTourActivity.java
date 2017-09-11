@@ -26,6 +26,8 @@ import com.blancgrupo.apps.tripguide.presentation.di.module.ActivityModule;
 import com.blancgrupo.apps.tripguide.presentation.ui.viewmodel.TourVMFactory;
 import com.blancgrupo.apps.tripguide.presentation.ui.viewmodel.TourViewModel;
 import com.blancgrupo.apps.tripguide.utils.Constants;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
 import javax.inject.Inject;
 
@@ -42,6 +44,7 @@ public class SingleTourActivity extends AppCompatActivity
     TourVMFactory tourVMFactory;
     TourViewModel tourViewModel;
     private LifecycleRegistry registry = new LifecycleRegistry(this);
+    private String imageUrl;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,6 +71,13 @@ public class SingleTourActivity extends AppCompatActivity
         Intent intent = getIntent();
         Bundle data = intent.getExtras();
         if (data != null && data.containsKey(Constants.EXTRA_SINGLE_TOUR_ID)) {
+            imageUrl = data.getString(Constants.EXTRA_IMAGE_URL);
+            Glide.with(this)
+                    .load(imageUrl)
+                    .centerCrop()
+                    .crossFade()
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .into(headerImage);
             String id = data.getString(Constants.EXTRA_SINGLE_TOUR_ID);
             tourViewModel.getSingleTour(id).observe(this, new Observer<TourWrapper>() {
                 @Override
@@ -103,7 +113,6 @@ public class SingleTourActivity extends AppCompatActivity
     }
 
     private void bindTour(Tour tour) {
-
     }
 
     @Override

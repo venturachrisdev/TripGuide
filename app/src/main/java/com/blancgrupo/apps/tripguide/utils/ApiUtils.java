@@ -3,18 +3,12 @@ package com.blancgrupo.apps.tripguide.utils;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
-import android.os.Bundle;
-import android.support.v4.graphics.BitmapCompat;
 
 import com.blancgrupo.apps.tripguide.MyApplication;
 import com.blancgrupo.apps.tripguide.R;
-import com.blancgrupo.apps.tripguide.data.entity.api.PlaceCover;
 import com.blancgrupo.apps.tripguide.data.entity.api.TourCover;
-import com.bumptech.glide.load.resource.bitmap.BitmapTransformation;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.MarkerOptions;
 
 /**
  * Created by root on 8/18/17.
@@ -71,7 +65,7 @@ public class ApiUtils {
     }
 
     public interface SingleTourListener {
-        void onSingleTourClick(TourCover placeCover);
+        void onSingleTourClick(TourCover placeCover, String imageUrl);
     }
 }
 
