@@ -43,7 +43,7 @@ public class TourViewModel extends ViewModel {
     }
 
     public LiveData<TourWrapper> getSingleTour(String tourId) {
-        if (toursLiveData == null) {
+        if (singleTourLiveData == null) {
             singleTourLiveData = new SingleTourLiveData();
         }
         loadSingleTour(tourId);
@@ -51,7 +51,7 @@ public class TourViewModel extends ViewModel {
     }
 
     public void loadSingleTour(String tourId) {
-        if (toursLiveData != null) {
+        if (singleTourLiveData != null) {
             singleTourLiveData.loadSingleTour(tourRepository.getSingleTour(tourId));
         }
     }

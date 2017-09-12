@@ -509,8 +509,9 @@ public class PlaceDetailActivity extends AppCompatActivity
     }
 
     @Override
-    public void onPhotoListener(Photo photo) {
+    public void onPhotoListener(Photo photo, int position) {
         Intent intent = new Intent(PlaceDetailActivity.this, DisplayImageActivity.class);
+        intent.putExtra(Constants.EXTRA_CURRENT_IMAGE_POSITION, position);
         intent.putParcelableArrayListExtra(Constants.EXTRA_IMAGE_URL, (ArrayList<? extends Parcelable>) myPhotos);
         startActivity(intent);
     }

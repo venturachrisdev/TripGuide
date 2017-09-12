@@ -34,9 +34,9 @@ public class Tour {
     private String createdAt;
     @SerializedName("places")
     @Expose
-    private List<Place> places = null;
+    private List<PlaceTypesCover> places = null;
 
-    public Tour(String id, String parent, String name, Integer totalDistance, Integer totalTime, Integer v, String createdAt, List<Place> places) {
+    public Tour(String id, String parent, String name, Integer totalDistance, Integer totalTime, Integer v, String createdAt, List<PlaceTypesCover> places) {
         this.id = id;
         this.parent = parent;
         this.name = name;
@@ -103,11 +103,11 @@ public class Tour {
         this.createdAt = createdAt;
     }
 
-    public List<Place> getPlaces() {
+    public List<PlaceTypesCover> getPlaces() {
         return places;
     }
 
-    public void setPlaces(List<Place> places) {
+    public void setPlaces(List<PlaceTypesCover> places) {
         this.places = places;
     }
 

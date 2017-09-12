@@ -113,5 +113,7 @@
     <string name="estimated_time">Tiempo estimado</string>
     <string name="name">Nombre</string>
     <string name="no_tour_selected">No tour seleccionado</string>
+    <string name="min">min</string>
+    <string name="travel">Recorrido</string>
 
 </resources>

@@ -32,6 +32,13 @@ public class TextStringUtils {
         return text;
     }
 
+    public static String shortText(String text, int maxSize) {
+        if (text.length() >= maxSize) {
+            return text.substring(0, maxSize) + "...";
+        }
+        return text;
+    }
+
     public interface PlaceItemActivityListener {
         void onPlaceClick(PlaceCover place);
     }

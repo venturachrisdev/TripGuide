@@ -29,7 +29,7 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
     PhotoListener photoListener;
 
     public interface PhotoListener {
-        void onPhotoListener(Photo photo);
+        void onPhotoListener(Photo photo, int position);
     }
 
     public PhotoAdapter(Application app, PhotoListener listener, List<Photo> photos) {
@@ -48,7 +48,7 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
     public void onBindViewHolder(PhotoViewHolder holder, int position) {
         Photo photo = photos.get(position);
         holder.setImageUrl(app, photo.getReference(), photo.getWidth() / 3);
-        holder.setOnClickListener(photoListener, photo);
+        holder.setOnClickListener(photoListener, photo, position);
     }
 
     @Override
@@ -84,11 +84,11 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
                     .into(photo);
         }
 
-        public void setOnClickListener(final PhotoListener photoListener, final Photo photo) {
+        public void setOnClickListener(final PhotoListener photoListener, final Photo photo, final int position) {
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    photoListener.onPhotoListener(photo);
+                    photoListener.onPhotoListener(photo, position);
                 }
             });
         }

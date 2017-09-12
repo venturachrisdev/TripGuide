@@ -4,12 +4,15 @@ import android.arch.lifecycle.LifecycleRegistry;
 import android.arch.lifecycle.LifecycleRegistryOwner;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
@@ -18,34 +21,59 @@ import android.widget.Toast;
 
 import com.blancgrupo.apps.tripguide.MyApplication;
 import com.blancgrupo.apps.tripguide.R;
+import com.blancgrupo.apps.tripguide.data.entity.api.Location;
 import com.blancgrupo.apps.tripguide.data.entity.api.Photo;
+import com.blancgrupo.apps.tripguide.data.entity.api.PlaceTypesCover;
 import com.blancgrupo.apps.tripguide.data.entity.api.Tour;
 import com.blancgrupo.apps.tripguide.data.entity.api.TourWrapper;
 import com.blancgrupo.apps.tripguide.presentation.di.component.DaggerActivityComponent;
 import com.blancgrupo.apps.tripguide.presentation.di.module.ActivityModule;
+import com.blancgrupo.apps.tripguide.presentation.ui.adapter.TimelinePlaceAdapter;
 import com.blancgrupo.apps.tripguide.presentation.ui.viewmodel.TourVMFactory;
 import com.blancgrupo.apps.tripguide.presentation.ui.viewmodel.TourViewModel;
+import com.blancgrupo.apps.tripguide.utils.ApiUtils;
 import com.blancgrupo.apps.tripguide.utils.Constants;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.cooltechworks.views.shimmer.ShimmerRecyclerView;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.rockerhieu.rvadapter.states.StatesRecyclerViewAdapter;
+
+import java.util.List;
 
 import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 public class SingleTourActivity extends AppCompatActivity
-    implements LifecycleRegistryOwner {
+    implements LifecycleRegistryOwner, TimelinePlaceAdapter.PlaceTimeLineListener, OnMapReadyCallback {
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
     @BindView(R.id.header_image)
     ImageView headerImage;
+    @BindView(R.id.places_rv)
+    ShimmerRecyclerView recyclerView;
+    StatesRecyclerViewAdapter statesRecyclerViewAdapter;
+    TimelinePlaceAdapter adapter;
     @Inject
     TourVMFactory tourVMFactory;
     TourViewModel tourViewModel;
     private LifecycleRegistry registry = new LifecycleRegistry(this);
     private String imageUrl;
+    GoogleMap googleMap;
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,11 +93,32 @@ public class SingleTourActivity extends AppCompatActivity
 
         tourViewModel = ViewModelProviders.of(this, tourVMFactory)
                 .get(TourViewModel.class);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+        adapter = new TimelinePlaceAdapter(this);
+        statesRecyclerViewAdapter = new StatesRecyclerViewAdapter(adapter, null, null, null);
+        recyclerView.setAdapter(statesRecyclerViewAdapter);
+        recyclerView.showShimmerAdapter();
+        recyclerView.clearFocus();
     }
 
     @Override
     protected void onStart() {
         super.onStart();
+        if (googleMap == null) {
+            final SupportMapFragment mapFragment = new SupportMapFragment();
+            final OnMapReadyCallback callback = this;
+            new Handler().post(new Runnable() {
+                @Override
+                public void run() {
+                    getSupportFragmentManager()
+                            .beginTransaction()
+                            .replace(R.id.map, mapFragment)
+                            .commit();
+                    mapFragment.getMapAsync(callback);
+                }
+            });
+        }
         Intent intent = getIntent();
         Bundle data = intent.getExtras();
         if (data != null && data.containsKey(Constants.EXTRA_SINGLE_TOUR_ID)) {
@@ -84,14 +133,16 @@ public class SingleTourActivity extends AppCompatActivity
             tourViewModel.getSingleTour(id).observe(this, new Observer<TourWrapper>() {
                 @Override
                 public void onChanged(@Nullable TourWrapper tourWrapper) {
+                    recyclerView.hideShimmerAdapter();
                     if (tourWrapper != null) {
                         Tour tour = tourWrapper.getTour();
                         if (tour != null) {
+                            statesRecyclerViewAdapter.setState(StatesRecyclerViewAdapter.STATE_NORMAL);
                             bindTour(tour);
                         } else {
                             //TODO: Handle
                             Toast.makeText(SingleTourActivity.this,
-                                    R.string.network_error, Toast.LENGTH_LONG).show();
+                                    tourWrapper.getStatus(), Toast.LENGTH_LONG).show();
                         }
                     } else {
                         // TODO: Handle
@@ -114,11 +165,64 @@ public class SingleTourActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
-    private void bindTour(Tour tour) {
+    private void bindTour(final Tour tour) {
+        Bundle extras = getIntent().getExtras();
+        if (extras.containsKey(Constants.EXTRA_PLACE_ID)) {
+            String title = extras.getString(Constants.EXTRA_PLACE_ID);
+            toolbar.setTitle(title + " " + tour.getName());
+        } else {
+            toolbar.setTitle(tour.getName());
+        }
+        adapter.updateData(tour.getPlaces());
+        if (tour.getPlaces() != null) {
+            if (googleMap != null) {
+                bindMap(tour.getPlaces());
+            } else {
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        bindMap(tour.getPlaces());
+                    }
+                }, 200);
+            }
+        }
+    }
+
+    private void bindMap(List<PlaceTypesCover> places) {
+        Location first = places.get(0).getLocation();
+        Location last =places.get(places.size() - 1).getLocation();
+        double centerLat = (first.getLat() + last.getLat()) / 2;
+        double centerLng = (first.getLng() + last.getLng()) / 2;
+        for (PlaceTypesCover cover : places) {
+            LatLng where = new LatLng(cover.getLocation().getLat(), cover.getLocation().getLng());
+            googleMap.addMarker(new MarkerOptions().icon(ApiUtils.drawMarkerByType(
+                    this, "place"
+            )).position(where).title(cover.getName()));
+        }
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
+                new LatLng(centerLat, centerLng), 14.6f));
+
     }
 
     @Override
     public LifecycleRegistry getLifecycle() {
         return this.registry;
+    }
+
+    @Override
+    public void onCardPlaceClick(PlaceTypesCover cover) {
+        Intent intent = new Intent(this, PlaceDetailActivity.class);
+        intent.putExtra(Constants.EXTRA_PLACE_ID, cover.getId());
+        startActivity(intent);
+    }
+
+    @Override
+    public void onCardPlaceLongClick(PlaceTypesCover cover, int position) {
+        Toast.makeText(this, "Position " + position + " was clicked", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        this.googleMap = googleMap;
     }
 }

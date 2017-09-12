@@ -66,6 +66,10 @@ public class DisplayImageActivity extends AppCompatActivity {
             List<Photo> photos = data.getParcelableArrayList(Constants.EXTRA_IMAGE_URL);
             viewPager.setAdapter(new PhotosPageAdapter(getSupportFragmentManager(), photos));
             viewPager.setIndicatorTintColorScheme(Color.WHITE, Color.DKGRAY);
+            if (data.containsKey(Constants.EXTRA_CURRENT_IMAGE_POSITION)) {
+                int position = data.getInt(Constants.EXTRA_CURRENT_IMAGE_POSITION);
+                viewPager.setCurrentItem(position);
+            }
 
         } else {
             Toast.makeText(this, R.string.no_image_found, Toast.LENGTH_SHORT).show();
