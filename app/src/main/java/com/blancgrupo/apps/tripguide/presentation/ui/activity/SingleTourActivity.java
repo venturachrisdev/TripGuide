@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
@@ -34,6 +35,7 @@ import com.blancgrupo.apps.tripguide.utils.Constants;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.cooltechworks.views.shimmer.ShimmerRecyclerView;
+import com.elyeproj.loaderviewlibrary.LoaderTextView;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -62,13 +64,13 @@ public class SingleTourActivity extends AppCompatActivity
     ShimmerRecyclerView recyclerView;
 
     @BindView(R.id.name_text)
-    TextView nameText;
+    LoaderTextView nameText;
     @BindView(R.id.places_text)
-    TextView placesText;
+    LoaderTextView placesText;
     @BindView(R.id.time_text)
-    TextView timeText;
+    LoaderTextView timeText;
     @BindView(R.id.distance_text)
-    TextView distanceText;
+    LoaderTextView distanceText;
 
     StatesRecyclerViewAdapter statesRecyclerViewAdapter;
     TimelinePlaceAdapter adapter;
@@ -92,6 +94,11 @@ public class SingleTourActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            Bundle extras = getIntent().getExtras();
+            if (extras != null && extras.containsKey(Constants.EXTRA_PLACE_ID)) {
+                String title = extras.getString(Constants.EXTRA_PLACE_ID);
+                getSupportActionBar().setTitle(title);
+            }
         }
         DaggerActivityComponent
                 .builder()
@@ -175,15 +182,8 @@ public class SingleTourActivity extends AppCompatActivity
     }
 
     private void bindTour(final Tour tour) {
-        Bundle extras = getIntent().getExtras();
-        if (extras.containsKey(Constants.EXTRA_PLACE_ID)) {
-            String title = extras.getString(Constants.EXTRA_PLACE_ID);
-            toolbar.setTitle(title + " " + tour.getName());
-        } else {
-            toolbar.setTitle(tour.getName());
-        }
         nameText.setText(tour.getName());
-        placesText.setText(tour.getPlaces().size());
+        placesText.setText(String.valueOf(tour.getPlaces().size()));
         timeText.setText(ApiUtils.getTourTime(this, tour.getTotalTime()));
         distanceText.setText(ApiUtils.getTourDistance(this, tour.getTotalDistance()));
         adapter.updateData(tour.getPlaces());
@@ -194,9 +194,11 @@ public class SingleTourActivity extends AppCompatActivity
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        bindMap(tour.getPlaces());
+                        if (googleMap != null) {
+                            bindMap(tour.getPlaces());
+                        }
                     }
-                }, 200);
+                }, 250);
             }
         }
     }
