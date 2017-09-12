@@ -9,20 +9,18 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.blancgrupo.apps.tripguide.MyApplication;
 import com.blancgrupo.apps.tripguide.R;
 import com.blancgrupo.apps.tripguide.data.entity.api.Location;
-import com.blancgrupo.apps.tripguide.data.entity.api.Photo;
 import com.blancgrupo.apps.tripguide.data.entity.api.PlaceTypesCover;
 import com.blancgrupo.apps.tripguide.data.entity.api.Tour;
 import com.blancgrupo.apps.tripguide.data.entity.api.TourWrapper;
@@ -42,6 +40,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.PolylineOptions;
 import com.rockerhieu.rvadapter.states.StatesRecyclerViewAdapter;
 
 import java.util.List;
@@ -61,6 +60,16 @@ public class SingleTourActivity extends AppCompatActivity
     ImageView headerImage;
     @BindView(R.id.places_rv)
     ShimmerRecyclerView recyclerView;
+
+    @BindView(R.id.name_text)
+    TextView nameText;
+    @BindView(R.id.places_text)
+    TextView placesText;
+    @BindView(R.id.time_text)
+    TextView timeText;
+    @BindView(R.id.distance_text)
+    TextView distanceText;
+
     StatesRecyclerViewAdapter statesRecyclerViewAdapter;
     TimelinePlaceAdapter adapter;
     @Inject
@@ -173,6 +182,10 @@ public class SingleTourActivity extends AppCompatActivity
         } else {
             toolbar.setTitle(tour.getName());
         }
+        nameText.setText(tour.getName());
+        placesText.setText(tour.getPlaces().size());
+        timeText.setText(ApiUtils.getTourTime(this, tour.getTotalTime()));
+        distanceText.setText(ApiUtils.getTourDistance(this, tour.getTotalDistance()));
         adapter.updateData(tour.getPlaces());
         if (tour.getPlaces() != null) {
             if (googleMap != null) {
@@ -193,14 +206,21 @@ public class SingleTourActivity extends AppCompatActivity
         Location last =places.get(places.size() - 1).getLocation();
         double centerLat = (first.getLat() + last.getLat()) / 2;
         double centerLng = (first.getLng() + last.getLng()) / 2;
+        PolylineOptions polylineOptions = new PolylineOptions();
         for (PlaceTypesCover cover : places) {
             LatLng where = new LatLng(cover.getLocation().getLat(), cover.getLocation().getLng());
+            polylineOptions.add(where);
             googleMap.addMarker(new MarkerOptions().icon(ApiUtils.drawMarkerByType(
                     this, "place"
             )).position(where).title(cover.getName()));
         }
         googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
                 new LatLng(centerLat, centerLng), 14.6f));
+        googleMap.addPolyline(polylineOptions
+                .color(ContextCompat.getColor(this, R.color.colorAccent))
+                .width(10)
+                .zIndex(2)
+                .geodesic(true));
 
     }
 

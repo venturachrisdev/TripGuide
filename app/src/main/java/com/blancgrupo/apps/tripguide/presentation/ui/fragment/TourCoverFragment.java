@@ -74,8 +74,8 @@ public class TourCoverFragment extends Fragment {
         }
         if (cover != null) {
             tourNameText.setText(cover.getName());
-            tourTimeText.setText(getTourTime(cover.getTotalTime()));
-            tourDistanceText.setText(getTourDistance(cover.getTotalDistance()));
+            tourTimeText.setText(ApiUtils.getTourTime(getContext(), cover.getTotalTime()));
+            tourDistanceText.setText(ApiUtils.getTourDistance(getContext(), cover.getTotalDistance()));
             if (cover.getPlaces() != null && cover.getPlaces().size() > 0) {
                 tourPlacesText.setText(String.valueOf(cover.getPlaces().size()));
             } else {
@@ -91,29 +91,5 @@ public class TourCoverFragment extends Fragment {
         return v;
     }
 
-    String getTourTime(int minutes) {
-        if (minutes <= 0) {
-            return getString(R.string.n_a);
-        }
-
-        if (minutes >= 60) { /* more than an hour */
-            return minutes/60 + "h " + minutes%60 + "min";
-        }
-        return minutes + " min";
-
-    }
-
-    String getTourDistance(int meters) {
-        if (meters <= 0) {
-            return getString(R.string.n_a);
-        }
-        if (meters >= 1000) { /* more than a kilometer */
-            if (meters%1000 == 0) {
-                return meters/1000 + "km";
-            }
-            return meters/1000 + "." + meters%1000 + "km";
-        }
-        return meters + "m";
-    }
 
 }

@@ -67,5 +67,31 @@ public class ApiUtils {
     public interface SingleTourListener {
         void onSingleTourClick(TourCover placeCover, String imageUrl);
     }
+
+
+    public static String getTourTime(Context context, int minutes) {
+        if (minutes <= 0) {
+            return context.getString(R.string.n_a);
+        }
+
+        if (minutes >= 60) { /* more than an hour */
+            return minutes/60 + "h " + minutes%60 + "min";
+        }
+        return minutes + " min";
+
+    }
+
+    public static String getTourDistance(Context context, int meters) {
+        if (meters <= 0) {
+            return context.getString(R.string.n_a);
+        }
+        if (meters >= 1000) { /* more than a kilometer */
+            if (meters%1000 == 0) {
+                return meters/1000 + "km";
+            }
+            return meters/1000 + "." + meters%1000 + "km";
+        }
+        return meters + "m";
+    }
 }
 
