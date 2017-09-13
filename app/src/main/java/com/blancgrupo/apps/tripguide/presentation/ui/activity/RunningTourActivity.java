@@ -1,5 +1,6 @@
 package com.blancgrupo.apps.tripguide.presentation.ui.activity;
 
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -8,6 +9,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -71,12 +73,6 @@ public class RunningTourActivity extends AppCompatActivity
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.running_place, menu);
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
             onBackPressed();
@@ -85,7 +81,6 @@ public class RunningTourActivity extends AppCompatActivity
             int limit = viewPager.getAdapter().getCount() - 1;
             if (currentPos < limit) {
                 viewPager.setCurrentItem(currentPos + 1, true);
-
             }
         }
         return super.onOptionsItemSelected(item);

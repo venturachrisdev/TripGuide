@@ -100,5 +100,6 @@ dependencies {
     compile 'com.github.chrisbanes:PhotoView:2.0.0'
     compile 'com.robohorse.pagerbullet:pagerbullet:1.0.9'
     compile 'com.github.vipulasri:timelineview:1.0.5'
+    compile 'com.github.jd-alexander:library:1.1.0'
     testCompile 'junit:junit:4.12'
 }

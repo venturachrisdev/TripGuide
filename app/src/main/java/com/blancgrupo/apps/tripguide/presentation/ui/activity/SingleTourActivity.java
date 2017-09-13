@@ -38,6 +38,11 @@ import com.blancgrupo.apps.tripguide.utils.LocationUtils;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.cooltechworks.views.shimmer.ShimmerRecyclerView;
+import com.directions.route.AbstractRouting;
+import com.directions.route.Route;
+import com.directions.route.RouteException;
+import com.directions.route.Routing;
+import com.directions.route.RoutingListener;
 import com.elyeproj.loaderviewlibrary.LoaderTextView;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -48,6 +53,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.rockerhieu.rvadapter.states.StatesRecyclerViewAdapter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -57,7 +63,7 @@ import butterknife.ButterKnife;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 public class SingleTourActivity extends AppCompatActivity
-    implements LifecycleRegistryOwner, TimelinePlaceAdapter.PlaceTimeLineListener, OnMapReadyCallback {
+    implements LifecycleRegistryOwner, TimelinePlaceAdapter.PlaceTimeLineListener, OnMapReadyCallback, RoutingListener {
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
@@ -221,25 +227,30 @@ public class SingleTourActivity extends AppCompatActivity
     }
 
     private void bindMap(List<PlaceTypesCover> places) {
-        Location first = places.get(0).getLocation();
-        Location last =places.get(places.size() - 1).getLocation();
-        double centerLat = (first.getLat() + last.getLat()) / 2;
-        double centerLng = (first.getLng() + last.getLng()) / 2;
-        PolylineOptions polylineOptions = new PolylineOptions();
+
+        List<LatLng> waypoints = new ArrayList<>();
         for (PlaceTypesCover cover : places) {
             LatLng where = new LatLng(cover.getLocation().getLat(), cover.getLocation().getLng());
-            polylineOptions.add(where);
+            waypoints.add(where);
             googleMap.addMarker(new MarkerOptions().icon(ApiUtils.drawMarkerByType(
                     this, "place"
             )).position(where).title(cover.getName()));
         }
+        Routing routing = new Routing.Builder()
+                .key(getString(R.string.google_maps_key))
+                .travelMode(Routing.TravelMode.WALKING)
+                .alternativeRoutes(false)
+                .optimize(true)
+                .withListener(this)
+                .waypoints(waypoints)
+                .build();
+        routing.execute();
+        Location first = places.get(0).getLocation();
+        Location last =places.get(places.size() - 1).getLocation();
+        double centerLat = (first.getLat() + last.getLat()) / 2;
+        double centerLng = (first.getLng() + last.getLng()) / 2;
         googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
                 new LatLng(centerLat, centerLng), 14.6f));
-        googleMap.addPolyline(polylineOptions
-                .color(ContextCompat.getColor(this, R.color.colorAccent))
-                .width(10)
-                .zIndex(2)
-                .geodesic(true));
 
     }
 
@@ -263,5 +274,31 @@ public class SingleTourActivity extends AppCompatActivity
     @Override
     public void onMapReady(GoogleMap googleMap) {
         this.googleMap = googleMap;
+    }
+
+    @Override
+    public void onRoutingFailure(RouteException e) {
+
+    }
+
+    @Override
+    public void onRoutingStart() {
+
+    }
+
+    @Override
+    public void onRoutingSuccess(ArrayList<Route> directions, int i) {
+        if (googleMap != null) {
+            for (Route route: directions) {
+                googleMap.addPolyline(route.getPolyOptions()
+                                .color(ContextCompat.getColor(this, R.color.colorAccent))
+                );
+            }
+        }
+    }
+
+    @Override
+    public void onRoutingCancelled() {
+
     }
 }

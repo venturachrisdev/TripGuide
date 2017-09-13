@@ -1,12 +1,17 @@
 package com.blancgrupo.apps.tripguide.presentation.ui.fragment;
 
 
+import android.app.NotificationManager;
 import android.content.Context;
 import android.location.Location;
 import android.location.LocationListener;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.NotificationCompat;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -73,7 +78,7 @@ public class RunningPlaceFragment extends Fragment implements LocationListener {
         View v = inflater.inflate(R.layout.fragment_running_place, container, false);
         ButterKnife.bind(this, v);
         progressBar.setProgress(0);
-
+        setHasOptionsMenu(true);
         Bundle args = getArguments();
         PlaceTypesCover place = args.getParcelable(Constants.EXTRA_PLACE_ID);
         if (place != null) {
@@ -123,6 +128,25 @@ public class RunningPlaceFragment extends Fragment implements LocationListener {
             calculateProgress();
         }
 
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.running_place, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.action_next) {
+            NotificationCompat.Builder builder = new NotificationCompat.Builder(getActivity())
+                    .setSmallIcon(R.mipmap.ic_launcher)
+                    .setContentTitle(cover.getName())
+                    .setContentText("Distance: " + LocationUtils.prettifyDistance(realDistance));
+            NotificationManager manager = (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
+            manager.notify(0, builder.build());
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override

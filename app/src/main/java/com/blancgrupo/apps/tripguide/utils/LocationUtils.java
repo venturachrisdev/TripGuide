@@ -186,6 +186,15 @@ public class LocationUtils {
         return "";
     }
 
+    public static String prettifyDistance(double dis) {
+        if (dis >= 1000) {
+            return String.format(Locale.getDefault(), "%d km", (int)(dis / 1000));
+        } else {
+            return String.format(Locale.getDefault(), "%d m", (int) dis);
+        }
+    }
+
+
     public static double measureDoubleDistance(Context context, Location currentLocation, double lat, double lng) {
         android.location.Location where = new android.location.Location("where");
         where.setLatitude(lat);
