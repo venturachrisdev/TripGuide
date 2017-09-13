@@ -1,6 +1,7 @@
 package com.blancgrupo.apps.tripguide.presentation.ui.fragment;
 
 
+import android.content.Context;
 import android.location.Location;
 import android.location.LocationListener;
 import android.os.Bundle;
@@ -12,14 +13,21 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.blancgrupo.apps.tripguide.MyApplication;
 import com.blancgrupo.apps.tripguide.R;
 import com.blancgrupo.apps.tripguide.data.entity.api.PlaceTypesCover;
+import com.blancgrupo.apps.tripguide.utils.ApiUtils;
 import com.blancgrupo.apps.tripguide.utils.Constants;
 import com.blancgrupo.apps.tripguide.utils.LocationUtils;
 import com.blancgrupo.apps.tripguide.utils.TextStringUtils;
+import com.bumptech.glide.Glide;
+
+import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import de.hdodenhof.circleimageview.CircleImageView;
+import io.reactivex.CompletableOnSubscribe;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -35,12 +43,28 @@ public class RunningPlaceFragment extends Fragment implements LocationListener {
     TextView placeDistance;
     @BindView(R.id.btn)
     Button placeBtn;
+    @BindView(R.id.place_item_photo)
+    CircleImageView placePhoto;
+    @BindView(R.id.current_page)
+    TextView currentPosition;
     PlaceTypesCover cover;
+    double startDistance = 0;
+    double realDistance = 0;
+    ApiUtils.RunningPlaceListener listener;
 
     public RunningPlaceFragment() {
         // Required empty public constructor
     }
 
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof ApiUtils.RunningPlaceListener) {
+            listener = (ApiUtils.RunningPlaceListener) context;
+        } else {
+            throw new RuntimeException(context.toString() + " must implement RunningPlaceListener");
+        }
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -48,7 +72,7 @@ public class RunningPlaceFragment extends Fragment implements LocationListener {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_running_place, container, false);
         ButterKnife.bind(this, v);
-        progressBar.setProgress(50);
+        progressBar.setProgress(0);
 
         Bundle args = getArguments();
         PlaceTypesCover place = args.getParcelable(Constants.EXTRA_PLACE_ID);
@@ -58,24 +82,45 @@ public class RunningPlaceFragment extends Fragment implements LocationListener {
             LocationUtils.requestLocationUpdates(getContext(), this);
         }
 
+        bindPosition(args.getInt(Constants.EXTRA_TOTAL), args.getInt(Constants.EXTRA_CURRENT_POSITION));
+
         return v;
     }
 
-    private void bindPlace(PlaceTypesCover place) {
+    private void bindPosition(int total, int current) {
+        String str = String.format(Locale.getDefault(), "%d %s %d", current, getString(R.string.of), total);
+        currentPosition.setText(str);
+    }
+
+    private void bindPlace(final PlaceTypesCover place) {
         placeBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                listener.onRunningPlaceClick(place);
             }
         });
-
         placeName.setText(place.getName());
         placeLocation.setText(TextStringUtils.shortText(place.getAddress(), 50));
+        Glide.with(getContext())
+                .load(ApiUtils.getPlacePhotoUrl((MyApplication) getActivity().getApplication(),
+                        place.getPhoto().getReference(), place.getPhoto().getWidth()))
+                .centerCrop()
+                .crossFade()
+                .into(placePhoto);
         Location currentLocation = LocationUtils.getCurrentLocation(getContext());
         com.blancgrupo.apps.tripguide.data.entity.api.Location coverLocation = place.getLocation();
         if (currentLocation != null) {
-            String distance = LocationUtils.measureDistance(getContext(), currentLocation, coverLocation.getLat(), coverLocation.getLng());
+            String distance = LocationUtils.measureDistance(getContext(), currentLocation,
+                    coverLocation.getLat(), coverLocation.getLng());
+            if (startDistance == 0) {
+                startDistance = LocationUtils.measureDoubleDistance(getContext(), currentLocation,
+                        coverLocation.getLat(), coverLocation.getLng());
+            }
+            if (realDistance == 0) {
+                realDistance = startDistance;
+            }
             placeDistance.setText(distance);
+            calculateProgress();
         }
 
     }
@@ -84,8 +129,26 @@ public class RunningPlaceFragment extends Fragment implements LocationListener {
     public void onLocationChanged(Location location) {
         if (cover != null) {
             com.blancgrupo.apps.tripguide.data.entity.api.Location coverLocation = cover.getLocation();
-            String distance = LocationUtils.measureDistance(getContext(), location, coverLocation.getLat(), coverLocation.getLng());
+            String distance = LocationUtils.measureDistance(getContext(), location,
+                    coverLocation.getLat(), coverLocation.getLng());
+            realDistance = LocationUtils.measureDoubleDistance(getContext(), location,
+                    coverLocation.getLat(), coverLocation.getLng());
+            if (startDistance == 0) {
+                startDistance = realDistance;
+            }
             placeDistance.setText(distance);
+            calculateProgress();
+
+        }
+    }
+
+    void calculateProgress() {
+        int percent = (int) (100 / (startDistance / realDistance));
+        int progress = 100 - percent;
+        if (progress >= 0) {
+            progressBar.setProgress(progress);
+        } else {
+            progressBar.setProgress(0);
         }
     }
 

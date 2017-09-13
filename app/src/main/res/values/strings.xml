@@ -128,5 +128,7 @@
     <string name="title_activity_running_tour">RunningTourActivity</string>
     <string name="view_place">View place</string>
     <string name="calculating">Calculating…</string>
+    <string name="of">Of</string>
+    <string name="next">Next</string>
 
 </resources>

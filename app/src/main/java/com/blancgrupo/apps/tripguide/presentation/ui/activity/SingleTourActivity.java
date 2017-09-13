@@ -34,6 +34,7 @@ import com.blancgrupo.apps.tripguide.presentation.ui.viewmodel.TourVMFactory;
 import com.blancgrupo.apps.tripguide.presentation.ui.viewmodel.TourViewModel;
 import com.blancgrupo.apps.tripguide.utils.ApiUtils;
 import com.blancgrupo.apps.tripguide.utils.Constants;
+import com.blancgrupo.apps.tripguide.utils.LocationUtils;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.cooltechworks.views.shimmer.ShimmerRecyclerView;
@@ -158,9 +159,7 @@ public class SingleTourActivity extends AppCompatActivity
                             navigateBtn.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View view) {
-                                    Intent intent = new Intent(SingleTourActivity.this, RunningTourActivity.class);
-                                    intent.putExtra(Constants.EXTRA_SINGLE_TOUR_ID, tour);
-                                    startActivity(intent);
+                                    goRunningTour(tour);
                                 }
                             });
                             bindTour(tour);
@@ -181,6 +180,17 @@ public class SingleTourActivity extends AppCompatActivity
             finish();
         }
     }
+
+    void goRunningTour(Tour tour) {
+        if (LocationUtils.isGpsEnabled(this)) {
+            Intent intent = new Intent(SingleTourActivity.this, RunningTourActivity.class);
+            intent.putExtra(Constants.EXTRA_SINGLE_TOUR_ID, tour);
+            startActivity(intent);
+        } else {
+            LocationUtils.showDialogEnableGps(this);
+        }
+    }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {

@@ -185,4 +185,14 @@ public class LocationUtils {
         }
         return "";
     }
+
+    public static double measureDoubleDistance(Context context, Location currentLocation, double lat, double lng) {
+        android.location.Location where = new android.location.Location("where");
+        where.setLatitude(lat);
+        where.setLongitude(lng);
+        if (currentLocation != null) {
+            return currentLocation.distanceTo(where);
+        }
+        return 0;
+    }
 }

@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory;
 
 import com.blancgrupo.apps.tripguide.MyApplication;
 import com.blancgrupo.apps.tripguide.R;
+import com.blancgrupo.apps.tripguide.data.entity.api.PlaceTypesCover;
 import com.blancgrupo.apps.tripguide.data.entity.api.TourCover;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -66,6 +67,10 @@ public class ApiUtils {
 
     public interface SingleTourListener {
         void onSingleTourClick(TourCover placeCover, String imageUrl);
+    }
+
+    public interface RunningPlaceListener {
+        void onRunningPlaceClick(PlaceTypesCover cover);
     }
 
 

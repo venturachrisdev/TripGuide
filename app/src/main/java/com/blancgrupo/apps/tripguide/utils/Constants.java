@@ -29,6 +29,8 @@ public class Constants {
     public static final String EXTRA_PLACE_TOUR_ID = createExtra("PLACE_TOUR_ID");
     public static final String EXTRA_SINGLE_TOUR_ID = createExtra("SINGLE_TOUR_ID");
     public static final String EXTRA_CURRENT_IMAGE_POSITION = createExtra("CURRENT_IMAGE_POSITION");
+    public static final String EXTRA_TOTAL = createExtra("TOTAL");
+    public static String EXTRA_CURRENT_POSITION = createExtra("CURRENT_POSITION");
 
 
     public static String createExtra(String name) {

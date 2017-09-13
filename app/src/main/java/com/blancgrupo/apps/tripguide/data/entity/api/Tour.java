@@ -55,6 +55,21 @@ public class Tour implements Parcelable {
         parent = in.readString();
         name = in.readString();
         createdAt = in.readString();
+        places = in.createTypedArrayList(PlaceTypesCover.CREATOR);
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(id);
+        dest.writeString(parent);
+        dest.writeString(name);
+        dest.writeString(createdAt);
+        dest.writeTypedList(places);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
     }
 
     public static final Creator<Tour> CREATOR = new Creator<Tour>() {
@@ -133,16 +148,4 @@ public class Tour implements Parcelable {
         this.places = places;
     }
 
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel parcel, int i) {
-        parcel.writeString(id);
-        parcel.writeString(parent);
-        parcel.writeString(name);
-        parcel.writeString(createdAt);
-    }
 }
