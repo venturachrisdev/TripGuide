@@ -15,6 +15,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -63,14 +65,13 @@ public class SingleTourActivity extends AppCompatActivity
     @BindView(R.id.places_rv)
     ShimmerRecyclerView recyclerView;
 
-    @BindView(R.id.name_text)
-    LoaderTextView nameText;
-    @BindView(R.id.places_text)
-    LoaderTextView placesText;
     @BindView(R.id.time_text)
     LoaderTextView timeText;
     @BindView(R.id.distance_text)
     LoaderTextView distanceText;
+
+    @BindView(R.id.navigate_btn)
+    Button navigateBtn;
 
     StatesRecyclerViewAdapter statesRecyclerViewAdapter;
     TimelinePlaceAdapter adapter;
@@ -151,9 +152,17 @@ public class SingleTourActivity extends AppCompatActivity
                 public void onChanged(@Nullable TourWrapper tourWrapper) {
                     recyclerView.hideShimmerAdapter();
                     if (tourWrapper != null) {
-                        Tour tour = tourWrapper.getTour();
+                        final Tour tour = tourWrapper.getTour();
                         if (tour != null) {
                             statesRecyclerViewAdapter.setState(StatesRecyclerViewAdapter.STATE_NORMAL);
+                            navigateBtn.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    Intent intent = new Intent(SingleTourActivity.this, RunningTourActivity.class);
+                                    intent.putExtra(Constants.EXTRA_SINGLE_TOUR_ID, tour);
+                                    startActivity(intent);
+                                }
+                            });
                             bindTour(tour);
                         } else {
                             //TODO: Handle
@@ -182,8 +191,6 @@ public class SingleTourActivity extends AppCompatActivity
     }
 
     private void bindTour(final Tour tour) {
-        nameText.setText(tour.getName());
-        placesText.setText(String.valueOf(tour.getPlaces().size()));
         timeText.setText(ApiUtils.getTourTime(this, tour.getTotalTime()));
         distanceText.setText(ApiUtils.getTourDistance(this, tour.getTotalDistance()));
         adapter.updateData(tour.getPlaces());

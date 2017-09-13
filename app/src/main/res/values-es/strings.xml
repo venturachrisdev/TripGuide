@@ -108,12 +108,13 @@
     <string name="please_wait">Por favor espere…</string>
     <string name="enable_location">Activar ubicación</string>
     <string name="cannot_find_your_location">Lo sentimos, no pudimos obtener tu ubicación. Intenta de nuevo.</string>
-    <string name="n_a"></string>
+    <string name="n_a">N/A</string>
     <string name="distance_in_meters">Distancia (metros)</string>
     <string name="estimated_time">Tiempo estimado</string>
     <string name="name">Nombre</string>
     <string name="no_tour_selected">No tour seleccionado</string>
     <string name="min">min</string>
     <string name="travel">Recorrido</string>
+    <string name="calculating">Calculando…</string>
 
 </resources>

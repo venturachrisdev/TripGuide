@@ -1,5 +1,8 @@
 package com.blancgrupo.apps.tripguide.data.entity.api;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -9,7 +12,7 @@ import java.util.List;
  * Created by root on 9/6/17.
  */
 
-public class Tour {
+public class Tour implements Parcelable {
 
     @SerializedName("_id")
     @Expose
@@ -46,6 +49,25 @@ public class Tour {
         this.createdAt = createdAt;
         this.places = places;
     }
+
+    protected Tour(Parcel in) {
+        id = in.readString();
+        parent = in.readString();
+        name = in.readString();
+        createdAt = in.readString();
+    }
+
+    public static final Creator<Tour> CREATOR = new Creator<Tour>() {
+        @Override
+        public Tour createFromParcel(Parcel in) {
+            return new Tour(in);
+        }
+
+        @Override
+        public Tour[] newArray(int size) {
+            return new Tour[size];
+        }
+    };
 
     public String getId() {
         return id;
@@ -111,4 +133,16 @@ public class Tour {
         this.places = places;
     }
 
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeString(id);
+        parcel.writeString(parent);
+        parcel.writeString(name);
+        parcel.writeString(createdAt);
+    }
 }

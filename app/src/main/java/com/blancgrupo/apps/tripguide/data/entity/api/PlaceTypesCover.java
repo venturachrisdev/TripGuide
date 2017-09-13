@@ -1,5 +1,8 @@
 package com.blancgrupo.apps.tripguide.data.entity.api;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -9,7 +12,7 @@ import java.util.List;
  * Created by root on 9/12/17.
  */
 
-public class PlaceTypesCover {
+public class PlaceTypesCover implements Parcelable {
     @SerializedName("_id")
     @Expose
     private String id;
@@ -60,6 +63,31 @@ public class PlaceTypesCover {
         this.location = location;
         this.phoneNumber = phoneNumber;
     }
+
+    protected PlaceTypesCover(Parcel in) {
+        id = in.readString();
+        types = in.createStringArrayList();
+        address = in.readString();
+        googleId = in.readString();
+        city = in.readString();
+        name = in.readString();
+        createdAt = in.readString();
+        photo = in.readParcelable(Photo.class.getClassLoader());
+        location = in.readParcelable(Location.class.getClassLoader());
+        phoneNumber = in.readString();
+    }
+
+    public static final Creator<PlaceTypesCover> CREATOR = new Creator<PlaceTypesCover>() {
+        @Override
+        public PlaceTypesCover createFromParcel(Parcel in) {
+            return new PlaceTypesCover(in);
+        }
+
+        @Override
+        public PlaceTypesCover[] newArray(int size) {
+            return new PlaceTypesCover[size];
+        }
+    };
 
     public String getId() {
         return id;
@@ -155,5 +183,24 @@ public class PlaceTypesCover {
 
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeString(id);
+        parcel.writeStringList(types);
+        parcel.writeString(address);
+        parcel.writeString(googleId);
+        parcel.writeString(city);
+        parcel.writeString(name);
+        parcel.writeString(createdAt);
+        parcel.writeParcelable(photo, i);
+        parcel.writeParcelable(location, i);
+        parcel.writeString(phoneNumber);
     }
 }

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v4.widget.NestedScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -8,7 +9,7 @@
     android:background="@color/colorBackground"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="com.blancgrupo.apps.tripguide.presentation.ui.activity.SingleTourActivity"
-    tools:showIn="@layout/activity_place_detail">
+    tools:showIn="@layout/activity_single_tour">
 
     <LinearLayout
         android:orientation="vertical"
@@ -74,171 +75,82 @@
 
         </LinearLayout>
 
-        <LinearLayout
-            android:orientation="vertical"
+
+        <FrameLayout
+            android:id="@+id/map"
+            android:layout_width="match_parent"
+            android:layout_height="160dp"/>
+
+        <android.support.v7.widget.CardView
+            android:id="@+id/cardview"
+            app:cardUseCompatPadding="true"
+            app:cardElevation="1dp"
+            android:layout_margin="15dp"
+            app:cardCornerRadius="@dimen/cardview_default_radius"
             android:layout_width="match_parent"
             android:layout_marginBottom="30dp"
             android:layout_height="wrap_content">
 
-            <android.support.constraint.ConstraintLayout
-                android:id="@+id/name_layout"
+
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:padding="@dimen/activity_horizontal_margin"
-                android:focusable="true"
-                android:clickable="true"
-                android:foreground="?attr/selectableItemBackgroundBorderless"
-                android:layout_marginBottom="15dp"
+                android:padding="15dp"
                 android:layout_height="wrap_content">
 
-
-                <com.elyeproj.loaderviewlibrary.LoaderTextView
-                    android:id="@+id/name_text"
-                    android:text="@string/no_available"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="32dp"
-                    android:layout_marginStart="16dp"
-                    android:textSize="18sp"
-                    android:textColor="@color/colorPrimaryText"
-                    app:layout_constraintLeft_toLeftOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    android:layout_marginTop="8dp" />
-
-                <com.elyeproj.loaderviewlibrary.LoaderTextView
-                    android:id="@+id/name_title"
-                    android:text="@string/name"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Small"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="7dp"
-                    android:layout_marginStart="16dp"
-                    app:layout_constraintLeft_toLeftOf="parent"
-                    android:layout_marginTop="4dp"
-                    app:layout_constraintTop_toBottomOf="@+id/name_text" />
-
-            </android.support.constraint.ConstraintLayout>
-
-            <android.support.constraint.ConstraintLayout
-                android:id="@+id/places_layout"
-                android:layout_width="match_parent"
-                android:padding="@dimen/activity_horizontal_margin"
-                android:focusable="true"
-                android:clickable="true"
-                android:foreground="?attr/selectableItemBackgroundBorderless"
-                android:layout_marginBottom="15dp"
-                android:layout_height="wrap_content">
-
-
-                <com.elyeproj.loaderviewlibrary.LoaderTextView
-                    android:id="@+id/places_text"
-                    android:text="@string/no_available"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="32dp"
-                    android:layout_marginStart="16dp"
-                    android:textSize="18sp"
-                    android:textColor="@color/colorPrimaryText"
-                    app:layout_constraintLeft_toLeftOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    android:layout_marginTop="8dp" />
-
-                <com.elyeproj.loaderviewlibrary.LoaderTextView
-                    android:id="@+id/places_title"
-                    android:text="@string/places"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Small"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="7dp"
-                    android:layout_marginStart="16dp"
-                    app:layout_constraintLeft_toLeftOf="parent"
-                    android:layout_marginTop="4dp"
-                    app:layout_constraintTop_toBottomOf="@+id/places_text" />
-
-            </android.support.constraint.ConstraintLayout>
-
-            <android.support.constraint.ConstraintLayout
-                android:id="@+id/time_layout"
-                android:layout_width="match_parent"
-                android:padding="@dimen/activity_horizontal_margin"
-                android:focusable="true"
-                android:clickable="true"
-                android:foreground="?attr/selectableItemBackgroundBorderless"
-                android:layout_marginBottom="15dp"
-                android:layout_height="wrap_content">
 
 
                 <com.elyeproj.loaderviewlibrary.LoaderTextView
                     android:id="@+id/time_text"
-                    android:text="@string/no_available"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="32dp"
-                    android:layout_marginStart="16dp"
-                    android:textSize="18sp"
                     android:textColor="@color/colorPrimaryText"
+                    android:textSize="18sp"
                     app:layout_constraintLeft_toLeftOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    android:layout_marginTop="8dp" />
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true" />
 
                 <com.elyeproj.loaderviewlibrary.LoaderTextView
                     android:id="@+id/time_title"
-                    android:text="@string/estimated_time"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Small"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="7dp"
-                    android:layout_marginStart="16dp"
+                    android:text="@string/estimated_time"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Small"
                     app:layout_constraintLeft_toLeftOf="parent"
-                    android:layout_marginTop="4dp"
-                    app:layout_constraintTop_toBottomOf="@+id/time_text" />
-
-            </android.support.constraint.ConstraintLayout>
-
-            <android.support.constraint.ConstraintLayout
-                android:id="@+id/distance_layout"
-                android:layout_width="match_parent"
-                android:padding="@dimen/activity_horizontal_margin"
-                android:focusable="true"
-                android:clickable="true"
-                android:foreground="?attr/selectableItemBackgroundBorderless"
-                android:layout_marginBottom="15dp"
-                android:layout_height="wrap_content">
+                    app:layout_constraintTop_toBottomOf="@+id/time_text"
+                    android:layout_below="@+id/time_text"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true" />
 
 
                 <com.elyeproj.loaderviewlibrary.LoaderTextView
                     android:id="@+id/distance_text"
-                    android:text="@string/no_available"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="32dp"
-                    android:layout_marginStart="16dp"
-                    android:textSize="18sp"
                     android:textColor="@color/colorPrimaryText"
+                    android:textSize="18sp"
                     app:layout_constraintLeft_toLeftOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    android:layout_marginTop="8dp" />
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentEnd="true" />
 
                 <com.elyeproj.loaderviewlibrary.LoaderTextView
                     android:id="@+id/distance_title"
-                    android:text="@string/distance_in_meters"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Small"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="7dp"
-                    android:layout_marginStart="16dp"
+                    android:text="@string/distance_in_meters"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Small"
                     app:layout_constraintLeft_toLeftOf="parent"
-                    android:layout_marginTop="4dp"
-                    app:layout_constraintTop_toBottomOf="@+id/distance_text" />
+                    app:layout_constraintTop_toBottomOf="@+id/distance_text"
+                    android:layout_below="@+id/distance_text"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentEnd="true" />
 
-            </android.support.constraint.ConstraintLayout>
+            </RelativeLayout>
 
-        </LinearLayout>
-
-        <FrameLayout
-            android:layout_marginBottom="20dp"
-            android:id="@+id/map"
-            android:layout_width="match_parent"
-            android:layout_height="160dp"/>
+        </android.support.v7.widget.CardView>
 
         <RelativeLayout
             android:layout_marginLeft="30dp"

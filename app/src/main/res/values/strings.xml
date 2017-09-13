@@ -125,5 +125,8 @@
     <string name="title_activity_city_tours">CityToursActivity</string>
     <string name="title_activity_single_tour">SingleTourActivity</string>
     <string name="travel">Travel</string>
+    <string name="title_activity_running_tour">RunningTourActivity</string>
+    <string name="view_place">View place</string>
+    <string name="calculating">Calculating…</string>
 
 </resources>

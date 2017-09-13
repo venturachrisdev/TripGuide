@@ -100,6 +100,10 @@
         <activity
             android:name=".presentation.ui.activity.SingleTourActivity"
             android:label="@string/title_activity_single_tour"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".presentation.ui.activity.RunningTourActivity"
+            android:label="@string/title_activity_running_tour"
             android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
