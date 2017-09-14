@@ -130,5 +130,7 @@
     <string name="calculating">Calculating…</string>
     <string name="of">Of</string>
     <string name="next">Next</string>
+    <string name="we_dit_it">We did it!</string>
+    <string name="we_arrived_to">We arrived to</string>
 
 </resources>

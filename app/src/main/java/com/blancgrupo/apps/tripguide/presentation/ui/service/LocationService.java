@@ -1,50 +1,30 @@
 package com.blancgrupo.apps.tripguide.presentation.ui.service;
 
-import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.app.Service;
 import android.arch.lifecycle.LifecycleService;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.location.Location;
 import android.location.LocationListener;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
-import android.widget.Toast;
 
-import com.blancgrupo.apps.tripguide.MyApplication;
 import com.blancgrupo.apps.tripguide.R;
-import com.blancgrupo.apps.tripguide.data.ApiCityRepository;
-import com.blancgrupo.apps.tripguide.presentation.di.component.DaggerActivityComponent;
-import com.blancgrupo.apps.tripguide.presentation.di.component.DaggerNetComponent;
-import com.blancgrupo.apps.tripguide.presentation.di.component.NetComponent;
-import com.blancgrupo.apps.tripguide.presentation.di.module.ActivityModule;
-import com.blancgrupo.apps.tripguide.presentation.di.module.AppModule;
-import com.blancgrupo.apps.tripguide.presentation.ui.activity.CityDetailActivity;
+import com.blancgrupo.apps.tripguide.data.entity.api.PlaceTypesCover;
+import com.blancgrupo.apps.tripguide.presentation.ui.activity.RunningTourActivity;
+import com.blancgrupo.apps.tripguide.presentation.ui.activity.SingleTourActivity;
 import com.blancgrupo.apps.tripguide.utils.Constants;
 import com.blancgrupo.apps.tripguide.utils.LocationUtils;
 
-import java.util.concurrent.TimeUnit;
-
-import javax.inject.Inject;
-
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.annotations.NonNull;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Consumer;
-import io.reactivex.schedulers.Schedulers;
-
 public class LocationService extends LifecycleService
         implements LocationListener {
-    @Inject
-    ApiCityRepository apiCityRepository;
-    @Inject
-    SharedPreferences sharedPreferences;
-    Disposable disposable;
     boolean listening = false;
+    NotificationCompat.Builder builder;
+    double startDistance;
+    double realDistance;
+    PlaceTypesCover cover;
+    int position;
     public LocationService() {
 
     }
@@ -52,7 +32,47 @@ public class LocationService extends LifecycleService
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         startListening();
+        Bundle data = intent.getExtras();
+        cover = data.getParcelable(Constants.EXTRA_PLACE_ID);
+        startDistance = data.getDouble(Constants.EXTRA_CURRENT_POSITION);
+        position = data.getInt(Constants.EXTRA_CURRENT_IMAGE_POSITION);
+        realDistance = startDistance;
+        // Se construye la notificación
+        builder = new NotificationCompat.Builder(this)
+                .setSmallIcon(R.drawable.ic_place_white_24dp)
+                .setContentTitle("Running to " + cover.getName())
+                .setContentText("Distance: " + LocationUtils.prettifyDistance(realDistance) );
+
+        // Crear Intent para iniciar una actividad al presionar la notificación
+        Intent notificationIntent = new Intent(this, SingleTourActivity.class);
+        notificationIntent.putExtra(Constants.EXTRA_IS_TOUR_RUNNING, true);
+        notificationIntent.putExtra(Constants.EXTRA_CURRENT_POSITION, realDistance);
+        notificationIntent.putExtra(Constants.EXTRA_CURRENT_IMAGE_POSITION, position);
+        PendingIntent pendingIntent = PendingIntent
+                .getActivity(this, 0, notificationIntent, 0);
+        builder.setContentIntent(pendingIntent);
+        calculateProgress();
+
+        // Poner en primer plano
+        startForeground(1, builder.build());
         return super.onStartCommand(intent, flags, startId);
+    }
+
+    void calculateProgress() {
+        builder.setContentText("Distance: " + LocationUtils.prettifyDistance(realDistance) );
+        int percent = (int) (100 / (startDistance / realDistance));
+        int progress = 100 - percent;
+        if (progress >= 0) {
+            builder.setProgress(100, progress, false);
+            if (progress >= 95 || (realDistance != 0 && realDistance < 150)) {
+                builder.setSmallIcon(R.mipmap.ic_launcher);
+                builder.setContentTitle(getString(R.string.we_arrived_to) + " " + cover.getName());
+                builder.setContentText(getString(R.string.we_dit_it));
+                builder.setProgress(0, 0, false);
+            }
+        } else {
+            builder.setProgress(100, 0, false);
+        }
     }
 
     private void startListening() {
@@ -63,40 +83,24 @@ public class LocationService extends LifecycleService
     }
 
     private void stopListening() {
-        if (listening) {
-            if (disposable != null && !disposable.isDisposed()) {
-                disposable.dispose();
-            }
-            listening = false;
-        }
+        listening = false;
     }
 
     @Override
     public void onLocationChanged(Location location) {
-        disposable = apiCityRepository.getCurrentCity(String.valueOf(location.getLatitude()),
-                String.valueOf(location.getLongitude()))
-                .debounce(15, TimeUnit.MINUTES)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Consumer<String>() {
-                    @Override
-                    public void accept(@NonNull String s) throws Exception {
-                        String currentCity = sharedPreferences.getString(Constants.CURRENT_LOCATION_SP, null);
-                        if (currentCity != null) {
-                            if (!currentCity.equals(s)) {
-                                NotificationCompat.Builder builder =
-                                        new NotificationCompat.Builder(LocationService.this)
-                                        .setSmallIcon(R.drawable.ic_place_black_24dp)
-                                        .setContentTitle("You dumbass are in another country!")
-                                        .setContentText("Explore the tours there");
-
-                                NotificationManager notificationManager = (NotificationManager)
-                                        getSystemService(Context.NOTIFICATION_SERVICE);
-                                notificationManager.notify(0, builder.build());
-                            }
-                        }
-                    }
-                });
+        // Crear Intent para iniciar una actividad al presionar la notificación
+        Intent notificationIntent = new Intent(this, SingleTourActivity.class);
+        notificationIntent.putExtra(Constants.EXTRA_IS_TOUR_RUNNING, true);
+        notificationIntent.putExtra(Constants.EXTRA_CURRENT_POSITION, realDistance);
+        notificationIntent.putExtra(Constants.EXTRA_CURRENT_IMAGE_POSITION, position);
+        PendingIntent pendingIntent = PendingIntent
+                .getActivity(this, 0, notificationIntent, 0);
+        realDistance = LocationUtils.measureDoubleDistance(this, location,
+                cover.getLocation().getLat(), cover.getLocation().getLng());
+        calculateProgress();
+        builder.setContentIntent(pendingIntent);
+        // Poner en primer plano
+        startForeground(1, builder.build());
     }
 
     @Override

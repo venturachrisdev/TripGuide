@@ -9,6 +9,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
@@ -23,6 +24,7 @@ import com.blancgrupo.apps.tripguide.R;
 import com.blancgrupo.apps.tripguide.data.entity.api.PlaceTypesCover;
 import com.blancgrupo.apps.tripguide.data.entity.api.Tour;
 import com.blancgrupo.apps.tripguide.presentation.ui.fragment.RunningPlaceFragment;
+import com.blancgrupo.apps.tripguide.presentation.ui.service.LocationService;
 import com.blancgrupo.apps.tripguide.utils.ApiUtils;
 import com.blancgrupo.apps.tripguide.utils.Constants;
 
@@ -44,6 +46,12 @@ public class RunningTourActivity extends AppCompatActivity
     protected void attachBaseContext(Context newBase) {
         super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
     }
+
+//    @Override
+//    protected void onDestroy() {
+//        super.onDestroy();
+//        stopService(new Intent(this, LocationService.class));
+//    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,9 +75,14 @@ public class RunningTourActivity extends AppCompatActivity
             finish();
         }
         Tour tour = data.getParcelable(Constants.EXTRA_SINGLE_TOUR_ID);
-        viewPager.setAdapter(new RunningPlaceViewPager(getSupportFragmentManager(), tour.getPlaces()));
-        viewPager.setOffscreenPageLimit(0);
-        viewPager.beginFakeDrag();
+        int position = data.getInt(Constants.EXTRA_CURRENT_IMAGE_POSITION);
+        if (tour != null) {
+            viewPager.setAdapter(new RunningPlaceViewPager(getSupportFragmentManager(), tour.getPlaces()));
+            viewPager.setOffscreenPageLimit(0);
+            viewPager.beginFakeDrag();
+            viewPager.setCurrentItem(position, true);
+        }
+
     }
 
     @Override
@@ -94,7 +107,7 @@ public class RunningTourActivity extends AppCompatActivity
     }
 
 
-    class RunningPlaceViewPager extends FragmentPagerAdapter {
+    class RunningPlaceViewPager extends FragmentStatePagerAdapter {
 
         private final List<PlaceTypesCover> places;
 

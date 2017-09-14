@@ -30,6 +30,7 @@ public class Constants {
     public static final String EXTRA_SINGLE_TOUR_ID = createExtra("SINGLE_TOUR_ID");
     public static final String EXTRA_CURRENT_IMAGE_POSITION = createExtra("CURRENT_IMAGE_POSITION");
     public static final String EXTRA_TOTAL = createExtra("TOTAL");
+    public static final java.lang.String EXTRA_IS_TOUR_RUNNING = createExtra("IS_TOUR_RUNNING");
     public static String EXTRA_CURRENT_POSITION = createExtra("CURRENT_POSITION");
 
 

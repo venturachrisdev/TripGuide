@@ -119,5 +119,7 @@
     <string name="view_place">Ver Lugar</string>
     <string name="of">De</string>
     <string name="next">Siguiente</string>
+    <string name="we_dit_it">Lo hicimos!</string>
+    <string name="we_arrived_to">Llegamos a</string>
 
 </resources>
