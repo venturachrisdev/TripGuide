@@ -82,9 +82,15 @@ public class RunningTourActivity extends AppCompatActivity
             viewPager.setAdapter(new RunningPlaceViewPager(getSupportFragmentManager(), tour.getPlaces()));
             viewPager.setOffscreenPageLimit(0);
             viewPager.beginFakeDrag();
-            viewPager.setCurrentItem(position, true);
+            viewPager.setCurrentItem(position - 1, true);
         }
 
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        stopService(new Intent(this, LocationService.class));
     }
 
     @Override

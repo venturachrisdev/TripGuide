@@ -9,6 +9,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
+import android.widget.Toast;
 
 import com.blancgrupo.apps.tripguide.R;
 import com.blancgrupo.apps.tripguide.data.entity.api.PlaceTypesCover;
@@ -51,8 +52,10 @@ public class LocationService extends LifecycleService
         notificationIntent.putExtra(Constants.EXTRA_IS_TOUR_RUNNING, true);
         notificationIntent.putExtra(Constants.EXTRA_CURRENT_POSITION, realDistance);
         notificationIntent.putExtra(Constants.EXTRA_CURRENT_IMAGE_POSITION, position);
+        notificationIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK |
+                Intent.FLAG_ACTIVITY_SINGLE_TOP);
         PendingIntent pendingIntent = PendingIntent
-                .getActivity(this, 0, notificationIntent, 0);
+                .getActivity(this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         builder.setContentIntent(pendingIntent);
         calculateProgress();
 
@@ -97,8 +100,10 @@ public class LocationService extends LifecycleService
         notificationIntent.putExtra(Constants.EXTRA_CURRENT_POSITION, realDistance);
         notificationIntent.putExtra(Constants.EXTRA_CURRENT_IMAGE_POSITION, position);
         notificationIntent.putExtra(Constants.EXTRA_SINGLE_TOUR_ID, tourId);
+        notificationIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK |
+                Intent.FLAG_ACTIVITY_SINGLE_TOP);
         PendingIntent pendingIntent = PendingIntent
-                .getActivity(this, 0, notificationIntent, 0);
+                .getActivity(this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         realDistance = LocationUtils.measureDoubleDistance(this, location,
                 cover.getLocation().getLat(), cover.getLocation().getLng());
         calculateProgress();

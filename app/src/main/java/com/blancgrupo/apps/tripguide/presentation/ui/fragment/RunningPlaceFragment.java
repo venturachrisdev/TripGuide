@@ -56,6 +56,7 @@ public class RunningPlaceFragment extends Fragment implements LocationListener {
     CircleImageView placePhoto;
     @BindView(R.id.current_page)
     TextView currentPosition;
+    int position = 0;
     PlaceTypesCover cover;
     double startDistance = 0;
     double realDistance = 0;
@@ -87,13 +88,14 @@ public class RunningPlaceFragment extends Fragment implements LocationListener {
         Bundle args = getArguments();
         PlaceTypesCover place = args.getParcelable(Constants.EXTRA_PLACE_ID);
         tourId = args.getString(Constants.EXTRA_SINGLE_TOUR_ID);
+        position = args.getInt(Constants.EXTRA_CURRENT_POSITION);
         if (place != null) {
             cover = place;
             bindPlace(place);
             LocationUtils.requestLocationUpdates(getContext(), this);
         }
 
-        bindPosition(args.getInt(Constants.EXTRA_TOTAL), args.getInt(Constants.EXTRA_CURRENT_POSITION));
+        bindPosition(args.getInt(Constants.EXTRA_TOTAL), position);
         return v;
     }
 
@@ -140,9 +142,8 @@ public class RunningPlaceFragment extends Fragment implements LocationListener {
         Intent backgroundIntent = new Intent(getActivity(), LocationService.class);
         backgroundIntent.putExtra(Constants.EXTRA_PLACE_ID, cover);
         backgroundIntent.putExtra(Constants.EXTRA_CURRENT_POSITION, startDistance);
-        backgroundIntent.putExtra(Constants.EXTRA_CURRENT_IMAGE_POSITION, String.valueOf(currentPosition.getText().charAt(0)));
+        backgroundIntent.putExtra(Constants.EXTRA_CURRENT_IMAGE_POSITION, position);
         backgroundIntent.putExtra(Constants.EXTRA_SINGLE_TOUR_ID, tourId);
-        Toast.makeText(getContext(), "Tour ID desde fragment: " + tourId, Toast.LENGTH_SHORT).show();
         getActivity().startService(backgroundIntent);
     }
 
