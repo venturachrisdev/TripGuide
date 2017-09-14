@@ -145,10 +145,11 @@ public class SingleTourActivity extends AppCompatActivity
         }
         Intent intent = getIntent();
         Bundle data = intent.getExtras();
-        final boolean running = data.getBoolean(Constants.EXTRA_IS_TOUR_RUNNING);
+        final boolean running = data.getBoolean(Constants.EXTRA_IS_TOUR_RUNNING, false);
         final int position = data.getInt(Constants.EXTRA_CURRENT_IMAGE_POSITION, 1);
         final double startDistance = data.getDouble(Constants.EXTRA_CURRENT_DISTANCE);
         final int currentProgress = data.getInt(Constants.EXTRA_PROGRESS);
+        final double startPosition = data.getDouble(Constants.EXTRA_START_POSITION);
         if (data != null && data.containsKey(Constants.EXTRA_SINGLE_TOUR_ID)) {
             imageUrl = data.getString(Constants.EXTRA_IMAGE_URL);
             Glide.with(this)
@@ -166,13 +167,13 @@ public class SingleTourActivity extends AppCompatActivity
                         final Tour tour = tourWrapper.getTour();
                         if (tour != null) {
                             if (running) {
-                                goRunningTour(tour, position, id, startDistance, currentProgress);
+                                goRunningTour(true, tour, position, id, startDistance, currentProgress, startPosition);
                             }
                             statesRecyclerViewAdapter.setState(StatesRecyclerViewAdapter.STATE_NORMAL);
                             navigateBtn.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View view) {
-                                    goRunningTour(tour, position, id, startDistance, currentProgress);
+                                    goRunningTour(running, tour, position, id, startDistance, currentProgress, startPosition);
                                 }
                             });
                             bindTour(tour);
@@ -198,7 +199,8 @@ public class SingleTourActivity extends AppCompatActivity
         }
     }
 
-    void goRunningTour(Tour tour, int position, String id, double currentDistance, int currentProgress) {
+    void goRunningTour(boolean isTourRunning, Tour tour, int position, String id, double currentDistance, int currentProgress,
+                       double startPosition) {
         if (LocationUtils.isGpsEnabled(this)) {
             Intent intent = new Intent(SingleTourActivity.this, RunningTourActivity.class);
             intent.putExtra(Constants.EXTRA_SINGLE_TOUR_PLACES, tour);
@@ -206,6 +208,8 @@ public class SingleTourActivity extends AppCompatActivity
             intent.putExtra(Constants.EXTRA_SINGLE_TOUR_ID, id);
             intent.putExtra(Constants.EXTRA_CURRENT_DISTANCE, currentDistance);
             intent.putExtra(Constants.EXTRA_PROGRESS, currentProgress);
+            intent.putExtra(Constants.EXTRA_IS_TOUR_RUNNING, isTourRunning);
+            intent.putExtra(Constants.EXTRA_START_POSITION, startPosition);
             startActivity(intent);
         } else {
             LocationUtils.showDialogEnableGps(this);

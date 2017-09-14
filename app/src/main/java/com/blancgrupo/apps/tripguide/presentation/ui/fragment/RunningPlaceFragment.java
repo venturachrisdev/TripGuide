@@ -60,6 +60,7 @@ public class RunningPlaceFragment extends Fragment {
     PlaceTypesCover cover;
     double realDistance = 0;
     int progress;
+    double startDistance = 0;
     ApiUtils.RunningPlaceListener listener;
 
     public RunningPlaceFragment() {
@@ -89,6 +90,7 @@ public class RunningPlaceFragment extends Fragment {
         position = args.getInt(Constants.EXTRA_CURRENT_POSITION);
         realDistance = args.getDouble(Constants.EXTRA_CURRENT_DISTANCE);
         progress = args.getInt(Constants.EXTRA_PROGRESS);
+        startDistance = args.getDouble(Constants.EXTRA_START_POSITION);
         bindProgress(realDistance, progress);
         if (place != null) {
             cover = place;
@@ -134,7 +136,11 @@ public class RunningPlaceFragment extends Fragment {
     }
 
     public void bindProgress(double distance, int progress) {
-        placeDistance.setText(LocationUtils.prettifyDistance(distance));
+        if (distance == 0) {
+            placeDistance.setText(LocationUtils.prettifyDistance(startDistance));
+        } else {
+            placeDistance.setText(LocationUtils.prettifyDistance(distance));
+        }
         progressBar.setProgress(progress);
     }
 

@@ -33,6 +33,7 @@ public class Constants {
     public static final java.lang.String EXTRA_IS_TOUR_RUNNING = createExtra("IS_TOUR_RUNNING");
     public static final String EXTRA_SINGLE_TOUR_PLACES = createExtra("EXTRA_SINGLE_TOUR_PLACES");
     public static final String EXTRA_CURRENT_DISTANCE = createExtra("CURRENT_DISTANCE");
+    public static final String EXTRA_START_POSITION = createExtra("START_POSITION");
     public static String EXTRA_CURRENT_POSITION = createExtra("CURRENT_POSITION");
     public static String EXTRA_PROGRESS = createExtra("PROGRESS");
 

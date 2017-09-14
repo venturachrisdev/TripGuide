@@ -1,12 +1,14 @@
 package com.blancgrupo.apps.tripguide.presentation.ui.service;
 
+import android.app.IntentService;
 import android.app.PendingIntent;
-import android.arch.lifecycle.LifecycleService;
 import android.content.Intent;
 import android.location.Location;
 import android.location.LocationListener;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
+import android.widget.Toast;
 
 import com.blancgrupo.apps.tripguide.R;
 import com.blancgrupo.apps.tripguide.data.entity.api.PlaceTypesCover;
@@ -14,7 +16,7 @@ import com.blancgrupo.apps.tripguide.presentation.ui.activity.SingleTourActivity
 import com.blancgrupo.apps.tripguide.utils.Constants;
 import com.blancgrupo.apps.tripguide.utils.LocationUtils;
 
-public class LocationService extends LifecycleService
+public class LocationService extends IntentService
         implements LocationListener {
     boolean listening = false;
     NotificationCompat.Builder builder;
@@ -24,21 +26,22 @@ public class LocationService extends LifecycleService
     int position;
     String tourId;
     int progress = 0;
-    public LocationService() {
 
+    public LocationService() {
+        super("LocationService");
     }
 
     @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
+    protected void onHandleIntent(@Nullable Intent intent) {
+        Toast.makeText(this, "From goddam service", Toast.LENGTH_SHORT).show();
         startListening();
         Bundle data = intent.getExtras();
         cover = data.getParcelable(Constants.EXTRA_PLACE_ID);
-        startDistance = data.getDouble(Constants.EXTRA_CURRENT_POSITION);
+        startDistance = data.getDouble(Constants.EXTRA_START_POSITION);
         position = data.getInt(Constants.EXTRA_CURRENT_IMAGE_POSITION);
         tourId = data.getString(Constants.EXTRA_SINGLE_TOUR_ID);
-
-        startDistance = calcuteDistance(LocationUtils.getCurrentLocation(this), cover.getLocation());
-        realDistance = startDistance;
+        progress = data.getInt(Constants.EXTRA_PROGRESS, 0);
+        realDistance = calcuteDistance(LocationUtils.getCurrentLocation(this), cover.getLocation());
 
         // Se construye la notificación
         builder = new NotificationCompat.Builder(this)
@@ -53,6 +56,7 @@ public class LocationService extends LifecycleService
         notificationIntent.putExtra(Constants.EXTRA_CURRENT_POSITION, realDistance);
         notificationIntent.putExtra(Constants.EXTRA_CURRENT_IMAGE_POSITION, position);
         notificationIntent.putExtra(Constants.EXTRA_PROGRESS, progress);
+        notificationIntent.putExtra(Constants.EXTRA_CURRENT_DISTANCE, realDistance);
         notificationIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK |
                 Intent.FLAG_ACTIVITY_SINGLE_TOP);
         PendingIntent pendingIntent = PendingIntent
@@ -62,7 +66,6 @@ public class LocationService extends LifecycleService
 
         // Poner en primer plano
         startForeground(1, builder.build());
-        return super.onStartCommand(intent, flags, startId);
     }
 
     void calculateProgress() {
@@ -101,21 +104,25 @@ public class LocationService extends LifecycleService
     @Override
     public void onLocationChanged(Location location) {
         // Crear Intent para iniciar una actividad al presionar la notificación
+        realDistance = calcuteDistance(location, cover.getLocation());
         Intent notificationIntent = new Intent(this, SingleTourActivity.class);
+        notificationIntent.setAction("android.intent.action.RUN");
         notificationIntent.putExtra(Constants.EXTRA_IS_TOUR_RUNNING, true);
         notificationIntent.putExtra(Constants.EXTRA_CURRENT_POSITION, realDistance);
         notificationIntent.putExtra(Constants.EXTRA_CURRENT_IMAGE_POSITION, position);
         notificationIntent.putExtra(Constants.EXTRA_SINGLE_TOUR_ID, tourId);
         notificationIntent.putExtra(Constants.EXTRA_PROGRESS, progress);
+        notificationIntent.putExtra(Constants.EXTRA_CURRENT_DISTANCE, realDistance);
+        notificationIntent.putExtra(Constants.EXTRA_START_POSITION, startDistance);
         notificationIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK |
                 Intent.FLAG_ACTIVITY_SINGLE_TOP);
         PendingIntent pendingIntent = PendingIntent
                 .getActivity(this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-        realDistance = calcuteDistance(location, cover.getLocation());
         calculateProgress();
         builder.setContentIntent(pendingIntent);
         // Poner en primer plano
         startForeground(1, builder.build());
+        sendBroadcast(notificationIntent);
     }
 
     @Override
