@@ -41,7 +41,7 @@ import io.reactivex.CompletableOnSubscribe;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class RunningPlaceFragment extends Fragment implements LocationListener {
+public class RunningPlaceFragment extends Fragment {
     @BindView(R.id.progressbar)
     ProgressBar progressBar;
     @BindView(R.id.place_item_title)
@@ -58,10 +58,9 @@ public class RunningPlaceFragment extends Fragment implements LocationListener {
     TextView currentPosition;
     int position = 0;
     PlaceTypesCover cover;
-    double startDistance = 0;
     double realDistance = 0;
+    int progress;
     ApiUtils.RunningPlaceListener listener;
-    private String tourId;
 
     public RunningPlaceFragment() {
         // Required empty public constructor
@@ -87,12 +86,13 @@ public class RunningPlaceFragment extends Fragment implements LocationListener {
         setHasOptionsMenu(true);
         Bundle args = getArguments();
         PlaceTypesCover place = args.getParcelable(Constants.EXTRA_PLACE_ID);
-        tourId = args.getString(Constants.EXTRA_SINGLE_TOUR_ID);
         position = args.getInt(Constants.EXTRA_CURRENT_POSITION);
+        realDistance = args.getDouble(Constants.EXTRA_CURRENT_DISTANCE);
+        progress = args.getInt(Constants.EXTRA_PROGRESS);
+        bindProgress(realDistance, progress);
         if (place != null) {
             cover = place;
             bindPlace(place);
-            LocationUtils.requestLocationUpdates(getContext(), this);
         }
 
         bindPosition(args.getInt(Constants.EXTRA_TOTAL), position);
@@ -119,32 +119,11 @@ public class RunningPlaceFragment extends Fragment implements LocationListener {
                 .centerCrop()
                 .crossFade()
                 .into(placePhoto);
-        Location currentLocation = LocationUtils.getCurrentLocation(getContext());
-        com.blancgrupo.apps.tripguide.data.entity.api.Location coverLocation = place.getLocation();
-        if (currentLocation != null) {
-            String distance = LocationUtils.measureDistance(getContext(), currentLocation,
-                    coverLocation.getLat(), coverLocation.getLng());
-            if (startDistance == 0) {
-                startDistance = LocationUtils.measureDoubleDistance(getContext(), currentLocation,
-                        coverLocation.getLat(), coverLocation.getLng());
-            }
-            if (realDistance == 0) {
-                realDistance = startDistance;
-            }
-            placeDistance.setText(distance);
-            calculateProgress();
-        }
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        Intent backgroundIntent = new Intent(getActivity(), LocationService.class);
-        backgroundIntent.putExtra(Constants.EXTRA_PLACE_ID, cover);
-        backgroundIntent.putExtra(Constants.EXTRA_CURRENT_POSITION, startDistance);
-        backgroundIntent.putExtra(Constants.EXTRA_CURRENT_IMAGE_POSITION, position);
-        backgroundIntent.putExtra(Constants.EXTRA_SINGLE_TOUR_ID, tourId);
-        getActivity().startService(backgroundIntent);
     }
 
 
@@ -154,57 +133,9 @@ public class RunningPlaceFragment extends Fragment implements LocationListener {
         inflater.inflate(R.menu.running_place, menu);
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.action_next) {
-//            NotificationCompat.Builder builder = new NotificationCompat.Builder(getActivity())
-//                    .setSmallIcon(R.mipmap.ic_launcher)
-//                    .setContentTitle(cover.getName())
-//                    .setContentText("Distance: " + LocationUtils.prettifyDistance(realDistance));
-//            NotificationManager manager = (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
-//            manager.notify(0, builder.build());
-        }
-        return super.onOptionsItemSelected(item);
+    public void bindProgress(double distance, int progress) {
+        placeDistance.setText(LocationUtils.prettifyDistance(distance));
+        progressBar.setProgress(progress);
     }
 
-    @Override
-    public void onLocationChanged(Location location) {
-        if (cover != null) {
-            com.blancgrupo.apps.tripguide.data.entity.api.Location coverLocation = cover.getLocation();
-            String distance = LocationUtils.measureDistance(getContext(), location,
-                    coverLocation.getLat(), coverLocation.getLng());
-            realDistance = LocationUtils.measureDoubleDistance(getContext(), location,
-                    coverLocation.getLat(), coverLocation.getLng());
-            if (startDistance == 0) {
-                startDistance = realDistance;
-            }
-            placeDistance.setText(distance);
-
-        }
-    }
-
-    void calculateProgress() {
-        int percent = (int) (100 / (startDistance / realDistance));
-        int progress = 100 - percent;
-        if (progress >= 0) {
-            progressBar.setProgress(progress);
-        } else {
-            progressBar.setProgress(0);
-        }
-    }
-
-    @Override
-    public void onStatusChanged(String s, int i, Bundle bundle) {
-
-    }
-
-    @Override
-    public void onProviderEnabled(String s) {
-
-    }
-
-    @Override
-    public void onProviderDisabled(String s) {
-
-    }
 }

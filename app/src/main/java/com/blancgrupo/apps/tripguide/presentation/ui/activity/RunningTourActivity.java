@@ -1,23 +1,19 @@
 package com.blancgrupo.apps.tripguide.presentation.ui.activity;
 
-import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentStatePagerAdapter;
-import android.support.v4.app.NotificationCompat;
+import android.support.v4.view.ViewGroupCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
+import android.util.Log;
 import android.view.MenuItem;
-import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import com.blancgrupo.apps.tripguide.R;
@@ -39,9 +35,12 @@ public class RunningTourActivity extends AppCompatActivity
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
-    @BindView(R.id.viewpager)
-    ViewPager viewPager;
     private String tourId;
+    int currentPosition = 0;
+    Tour tour;
+    private double currentDistance;
+    RunningPlaceFragment fragment;
+    int currentProgress;
 
     @Override
     protected void attachBaseContext(Context newBase) {
@@ -75,16 +74,45 @@ public class RunningTourActivity extends AppCompatActivity
             Toast.makeText(this, R.string.no_tour_selected, Toast.LENGTH_SHORT).show();
             finish();
         }
-        Tour tour = data.getParcelable(Constants.EXTRA_SINGLE_TOUR_PLACES);
-        int position = data.getInt(Constants.EXTRA_CURRENT_IMAGE_POSITION);
+        tour = data.getParcelable(Constants.EXTRA_SINGLE_TOUR_PLACES);
+        currentPosition = data.getInt(Constants.EXTRA_CURRENT_IMAGE_POSITION, 1);
+        currentDistance = data.getDouble(Constants.EXTRA_CURRENT_DISTANCE);
         tourId = data.getString(Constants.EXTRA_SINGLE_TOUR_ID);
+        currentProgress = data.getInt(Constants.EXTRA_PROGRESS);
         if (tour != null) {
-            viewPager.setAdapter(new RunningPlaceViewPager(getSupportFragmentManager(), tour.getPlaces()));
-            viewPager.setOffscreenPageLimit(0);
-            viewPager.beginFakeDrag();
-            viewPager.setCurrentItem(position - 1, true);
+            if (currentPosition < tour.getPlaces().size() - 1) {
+                setContentFragment(tour, currentPosition, currentDistance);
+            } else {
+                Toast.makeText(this, "Position: " + currentPosition, Toast.LENGTH_SHORT).show();
+                FrameLayout parent = findViewById(R.id.content);
+                getLayoutInflater().inflate(R.layout.nothing_to_show_layout, parent, false);
+            }
         }
 
+    }
+
+    void setContentFragment(Tour tour, int position, double  currentDistance) {
+            PlaceTypesCover cover = tour.getPlaces().get(position);
+            Intent backgroundIntent = new Intent(this, LocationService.class);
+            backgroundIntent.putExtra(Constants.EXTRA_PLACE_ID, cover);
+            backgroundIntent.putExtra(Constants.EXTRA_CURRENT_POSITION, currentDistance);
+            backgroundIntent.putExtra(Constants.EXTRA_CURRENT_IMAGE_POSITION, position);
+            backgroundIntent.putExtra(Constants.EXTRA_SINGLE_TOUR_ID, tourId);
+            startService(backgroundIntent);
+            PlaceTypesCover place = tour.getPlaces().get(position);
+            fragment = new RunningPlaceFragment();
+            Bundle args = new Bundle();
+            args.putParcelable(Constants.EXTRA_PLACE_ID, place);
+            args.putInt(Constants.EXTRA_CURRENT_POSITION, position);
+            args.putString(Constants.EXTRA_SINGLE_TOUR_ID, tourId);
+            args.putInt(Constants.EXTRA_TOTAL, tour.getPlaces().size());
+            args.putDouble(Constants.EXTRA_CURRENT_DISTANCE, currentDistance);
+            args.putInt(Constants.EXTRA_PROGRESS, currentProgress);
+            fragment.setArguments(args);
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.content, fragment)
+                    .commit();
     }
 
     @Override
@@ -98,10 +126,9 @@ public class RunningTourActivity extends AppCompatActivity
         if (item.getItemId() == android.R.id.home) {
             onBackPressed();
         } else if (item.getItemId() == R.id.action_next) {
-            int currentPos = viewPager.getCurrentItem();
-            int limit = viewPager.getAdapter().getCount() - 1;
-            if (currentPos < limit) {
-                viewPager.setCurrentItem(currentPos + 1, true);
+            if (currentPosition < tour.getPlaces().size() - 1) {
+                currentPosition += 1;
+                setContentFragment(tour, currentPosition, currentDistance);
             }
         }
         return super.onOptionsItemSelected(item);
@@ -114,36 +141,4 @@ public class RunningTourActivity extends AppCompatActivity
         startActivity(intent);
     }
 
-
-    class RunningPlaceViewPager extends FragmentStatePagerAdapter {
-
-        private final List<PlaceTypesCover> places;
-
-
-        public RunningPlaceViewPager(FragmentManager supportFragmentManager, List<PlaceTypesCover> places) {
-            super(supportFragmentManager);
-            this.places = places;
-        }
-
-        @Override
-        public Fragment getItem(int position) {
-            PlaceTypesCover place = places.get(position);
-            RunningPlaceFragment fragment = new RunningPlaceFragment();
-            Bundle args = new Bundle();
-            args.putParcelable(Constants.EXTRA_PLACE_ID, place);
-            args.putInt(Constants.EXTRA_CURRENT_POSITION, position + 1);
-            args.putString(Constants.EXTRA_SINGLE_TOUR_ID, tourId);
-            args.putInt(Constants.EXTRA_TOTAL, getCount());
-            fragment.setArguments(args);
-            return fragment;
-        }
-
-        @Override
-        public int getCount() {
-            if (places != null) {
-                return places.size();
-            }
-            return 0;
-        }
-    }
 }

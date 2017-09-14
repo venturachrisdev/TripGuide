@@ -8,8 +8,8 @@
     tools:context="com.blancgrupo.apps.tripguide.presentation.ui.activity.RunningTourActivity"
     tools:showIn="@layout/activity_running_tour">
 
-    <android.support.v4.view.ViewPager
-        android:id="@+id/viewpager"
+    <FrameLayout
+        android:id="@+id/content"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 

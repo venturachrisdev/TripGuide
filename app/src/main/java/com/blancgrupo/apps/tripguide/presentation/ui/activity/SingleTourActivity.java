@@ -146,7 +146,9 @@ public class SingleTourActivity extends AppCompatActivity
         Intent intent = getIntent();
         Bundle data = intent.getExtras();
         final boolean running = data.getBoolean(Constants.EXTRA_IS_TOUR_RUNNING);
-        final int position = data.getInt(Constants.EXTRA_CURRENT_IMAGE_POSITION, 0);
+        final int position = data.getInt(Constants.EXTRA_CURRENT_IMAGE_POSITION, 1);
+        final double startDistance = data.getDouble(Constants.EXTRA_CURRENT_DISTANCE);
+        final int currentProgress = data.getInt(Constants.EXTRA_PROGRESS);
         if (data != null && data.containsKey(Constants.EXTRA_SINGLE_TOUR_ID)) {
             imageUrl = data.getString(Constants.EXTRA_IMAGE_URL);
             Glide.with(this)
@@ -164,13 +166,13 @@ public class SingleTourActivity extends AppCompatActivity
                         final Tour tour = tourWrapper.getTour();
                         if (tour != null) {
                             if (running) {
-                                goRunningTour(tour, position, id);
+                                goRunningTour(tour, position, id, startDistance, currentProgress);
                             }
                             statesRecyclerViewAdapter.setState(StatesRecyclerViewAdapter.STATE_NORMAL);
                             navigateBtn.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View view) {
-                                    goRunningTour(tour, position, id);
+                                    goRunningTour(tour, position, id, startDistance, currentProgress);
                                 }
                             });
                             bindTour(tour);
@@ -196,12 +198,14 @@ public class SingleTourActivity extends AppCompatActivity
         }
     }
 
-    void goRunningTour(Tour tour, int position, String id) {
+    void goRunningTour(Tour tour, int position, String id, double currentDistance, int currentProgress) {
         if (LocationUtils.isGpsEnabled(this)) {
             Intent intent = new Intent(SingleTourActivity.this, RunningTourActivity.class);
             intent.putExtra(Constants.EXTRA_SINGLE_TOUR_PLACES, tour);
             intent.putExtra(Constants.EXTRA_CURRENT_IMAGE_POSITION, position);
             intent.putExtra(Constants.EXTRA_SINGLE_TOUR_ID, id);
+            intent.putExtra(Constants.EXTRA_CURRENT_DISTANCE, currentDistance);
+            intent.putExtra(Constants.EXTRA_PROGRESS, currentProgress);
             startActivity(intent);
         } else {
             LocationUtils.showDialogEnableGps(this);
