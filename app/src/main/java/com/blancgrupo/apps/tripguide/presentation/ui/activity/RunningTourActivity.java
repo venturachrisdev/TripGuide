@@ -41,6 +41,7 @@ public class RunningTourActivity extends AppCompatActivity
     Toolbar toolbar;
     @BindView(R.id.viewpager)
     ViewPager viewPager;
+    private String tourId;
 
     @Override
     protected void attachBaseContext(Context newBase) {
@@ -70,12 +71,13 @@ public class RunningTourActivity extends AppCompatActivity
     protected void onStart() {
         super.onStart();
         Bundle data = getIntent().getExtras();
-        if (data == null || !data.containsKey(Constants.EXTRA_SINGLE_TOUR_ID)) {
+        if (data == null || !data.containsKey(Constants.EXTRA_SINGLE_TOUR_PLACES)) {
             Toast.makeText(this, R.string.no_tour_selected, Toast.LENGTH_SHORT).show();
             finish();
         }
-        Tour tour = data.getParcelable(Constants.EXTRA_SINGLE_TOUR_ID);
+        Tour tour = data.getParcelable(Constants.EXTRA_SINGLE_TOUR_PLACES);
         int position = data.getInt(Constants.EXTRA_CURRENT_IMAGE_POSITION);
+        tourId = data.getString(Constants.EXTRA_SINGLE_TOUR_ID);
         if (tour != null) {
             viewPager.setAdapter(new RunningPlaceViewPager(getSupportFragmentManager(), tour.getPlaces()));
             viewPager.setOffscreenPageLimit(0);
@@ -124,6 +126,7 @@ public class RunningTourActivity extends AppCompatActivity
             Bundle args = new Bundle();
             args.putParcelable(Constants.EXTRA_PLACE_ID, place);
             args.putInt(Constants.EXTRA_CURRENT_POSITION, position + 1);
+            args.putString(Constants.EXTRA_SINGLE_TOUR_ID, tourId);
             args.putInt(Constants.EXTRA_TOTAL, getCount());
             fragment.setArguments(args);
             return fragment;

@@ -155,7 +155,7 @@ public class SingleTourActivity extends AppCompatActivity
                     .crossFade()
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .into(headerImage);
-            String id = data.getString(Constants.EXTRA_SINGLE_TOUR_ID);
+            final String id = data.getString(Constants.EXTRA_SINGLE_TOUR_ID);
             tourViewModel.getSingleTour(id).observe(this, new Observer<TourWrapper>() {
                 @Override
                 public void onChanged(@Nullable TourWrapper tourWrapper) {
@@ -164,13 +164,13 @@ public class SingleTourActivity extends AppCompatActivity
                         final Tour tour = tourWrapper.getTour();
                         if (tour != null) {
                             if (running) {
-                                goRunningTour(tour, position);
+                                goRunningTour(tour, position, id);
                             }
                             statesRecyclerViewAdapter.setState(StatesRecyclerViewAdapter.STATE_NORMAL);
                             navigateBtn.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View view) {
-                                    goRunningTour(tour, position);
+                                    goRunningTour(tour, position, id);
                                 }
                             });
                             bindTour(tour);
@@ -180,23 +180,28 @@ public class SingleTourActivity extends AppCompatActivity
                                     tourWrapper.getStatus(), Toast.LENGTH_LONG).show();
                         }
                     } else {
-                        // TODO: Handle
                         Toast.makeText(SingleTourActivity.this,
-                                R.string.network_error, Toast.LENGTH_LONG).show();
+                                "tourWrapper es null", Toast.LENGTH_LONG).show();
+                        // TODO: Handle
+//                        Toast.makeText(SingleTourActivity.this,
+//                                R.string.network_error, Toast.LENGTH_LONG).show();
                     }
                 }
             });
         } else {
-            Toast.makeText(this, R.string.network_error, Toast.LENGTH_LONG).show();
+            Toast.makeText(SingleTourActivity.this,
+                    "SINGLE_TOUR_ID NO SE ENCUENTRA", Toast.LENGTH_LONG).show();
+            //Toast.makeText(this, R.string.network_error, Toast.LENGTH_LONG).show();
             finish();
         }
     }
 
-    void goRunningTour(Tour tour, int position) {
+    void goRunningTour(Tour tour, int position, String id) {
         if (LocationUtils.isGpsEnabled(this)) {
             Intent intent = new Intent(SingleTourActivity.this, RunningTourActivity.class);
-            intent.putExtra(Constants.EXTRA_SINGLE_TOUR_ID, tour);
+            intent.putExtra(Constants.EXTRA_SINGLE_TOUR_PLACES, tour);
             intent.putExtra(Constants.EXTRA_CURRENT_IMAGE_POSITION, position);
+            intent.putExtra(Constants.EXTRA_SINGLE_TOUR_ID, id);
             startActivity(intent);
         } else {
             LocationUtils.showDialogEnableGps(this);

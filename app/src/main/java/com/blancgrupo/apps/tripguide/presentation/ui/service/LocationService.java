@@ -25,6 +25,7 @@ public class LocationService extends LifecycleService
     double realDistance;
     PlaceTypesCover cover;
     int position;
+    String tourId;
     public LocationService() {
 
     }
@@ -36,6 +37,7 @@ public class LocationService extends LifecycleService
         cover = data.getParcelable(Constants.EXTRA_PLACE_ID);
         startDistance = data.getDouble(Constants.EXTRA_CURRENT_POSITION);
         position = data.getInt(Constants.EXTRA_CURRENT_IMAGE_POSITION);
+        tourId = data.getString(Constants.EXTRA_SINGLE_TOUR_ID);
         realDistance = startDistance;
         // Se construye la notificación
         builder = new NotificationCompat.Builder(this)
@@ -45,6 +47,7 @@ public class LocationService extends LifecycleService
 
         // Crear Intent para iniciar una actividad al presionar la notificación
         Intent notificationIntent = new Intent(this, SingleTourActivity.class);
+        notificationIntent.putExtra(Constants.EXTRA_SINGLE_TOUR_ID, tourId);
         notificationIntent.putExtra(Constants.EXTRA_IS_TOUR_RUNNING, true);
         notificationIntent.putExtra(Constants.EXTRA_CURRENT_POSITION, realDistance);
         notificationIntent.putExtra(Constants.EXTRA_CURRENT_IMAGE_POSITION, position);
@@ -93,6 +96,7 @@ public class LocationService extends LifecycleService
         notificationIntent.putExtra(Constants.EXTRA_IS_TOUR_RUNNING, true);
         notificationIntent.putExtra(Constants.EXTRA_CURRENT_POSITION, realDistance);
         notificationIntent.putExtra(Constants.EXTRA_CURRENT_IMAGE_POSITION, position);
+        notificationIntent.putExtra(Constants.EXTRA_SINGLE_TOUR_ID, tourId);
         PendingIntent pendingIntent = PendingIntent
                 .getActivity(this, 0, notificationIntent, 0);
         realDistance = LocationUtils.measureDoubleDistance(this, location,

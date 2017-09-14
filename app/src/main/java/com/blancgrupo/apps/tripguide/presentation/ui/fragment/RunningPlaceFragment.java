@@ -19,6 +19,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.blancgrupo.apps.tripguide.MyApplication;
 import com.blancgrupo.apps.tripguide.R;
@@ -59,6 +60,7 @@ public class RunningPlaceFragment extends Fragment implements LocationListener {
     double startDistance = 0;
     double realDistance = 0;
     ApiUtils.RunningPlaceListener listener;
+    private String tourId;
 
     public RunningPlaceFragment() {
         // Required empty public constructor
@@ -84,6 +86,7 @@ public class RunningPlaceFragment extends Fragment implements LocationListener {
         setHasOptionsMenu(true);
         Bundle args = getArguments();
         PlaceTypesCover place = args.getParcelable(Constants.EXTRA_PLACE_ID);
+        tourId = args.getString(Constants.EXTRA_SINGLE_TOUR_ID);
         if (place != null) {
             cover = place;
             bindPlace(place);
@@ -138,6 +141,8 @@ public class RunningPlaceFragment extends Fragment implements LocationListener {
         backgroundIntent.putExtra(Constants.EXTRA_PLACE_ID, cover);
         backgroundIntent.putExtra(Constants.EXTRA_CURRENT_POSITION, startDistance);
         backgroundIntent.putExtra(Constants.EXTRA_CURRENT_IMAGE_POSITION, String.valueOf(currentPosition.getText().charAt(0)));
+        backgroundIntent.putExtra(Constants.EXTRA_SINGLE_TOUR_ID, tourId);
+        Toast.makeText(getContext(), "Tour ID desde fragment: " + tourId, Toast.LENGTH_SHORT).show();
         getActivity().startService(backgroundIntent);
     }
 
@@ -173,7 +178,6 @@ public class RunningPlaceFragment extends Fragment implements LocationListener {
                 startDistance = realDistance;
             }
             placeDistance.setText(distance);
-            calculateProgress();
 
         }
     }
