@@ -12,6 +12,7 @@ import com.blancgrupo.apps.tripguide.presentation.ui.activity.SingleTourActivity
 import com.blancgrupo.apps.tripguide.presentation.ui.activity.SplashScreenActivity;
 import com.blancgrupo.apps.tripguide.presentation.ui.activity.TourActivity;
 import com.blancgrupo.apps.tripguide.presentation.ui.fragment.CitiesFragment;
+import com.blancgrupo.apps.tripguide.presentation.ui.fragment.CityDetailFragment;
 import com.blancgrupo.apps.tripguide.presentation.ui.fragment.MapFragment;
 import com.blancgrupo.apps.tripguide.presentation.ui.fragment.ToursFragment;
 import com.blancgrupo.apps.tripguide.presentation.ui.service.LocationService;
@@ -37,5 +38,6 @@ public interface ActivityComponent {
     void inject(TourActivity tourActivity);
     void inject(CityToursActivity cityToursActivity);
     void inject(SingleTourActivity singleTourActivity);
+    void inject(CityDetailFragment cityDetailFragment);
 }
 

@@ -7,13 +7,14 @@
         />
 
     <item
-        android:id="@+id/action_search"
-        android:title="@string/search"
-        android:icon="@drawable/ic_search_black_24dp"
+        android:id="@+id/action_favorites"
+        android:title="@string/favorites"
+        android:icon="@drawable/ic_favorite_black_24dp"
         />
+
     <item
-        android:id="@+id/action_tours"
-        android:title="@string/tours"
-        android:icon="@drawable/ic_directions_black_24dp"
+        android:id="@+id/action_profile"
+        android:title="@string/profile"
+        android:icon="@drawable/ic_person_black_24dp"
         />
 </menu>
