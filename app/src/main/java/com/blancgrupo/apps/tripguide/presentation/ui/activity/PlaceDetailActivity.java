@@ -27,14 +27,12 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RatingBar;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.blancgrupo.apps.tripguide.MyApplication;
 import com.blancgrupo.apps.tripguide.R;
-import com.blancgrupo.apps.tripguide.data.entity.api.Location;
 import com.blancgrupo.apps.tripguide.data.entity.api.OpeningHours;
 import com.blancgrupo.apps.tripguide.data.entity.api.Photo;
 import com.blancgrupo.apps.tripguide.data.entity.api.Place;
@@ -270,6 +268,8 @@ public class PlaceDetailActivity extends AppCompatActivity
                 mapIntent.setPackage("com.google.android.apps.maps");
                 if (mapIntent.resolveActivity(getPackageManager()) != null) {
                     startActivity(mapIntent);
+                } else {
+                    Toast.makeText(PlaceDetailActivity.this, R.string.please_install_google_maps, Toast.LENGTH_SHORT).show();
                 }
 
             }
@@ -420,7 +420,11 @@ public class PlaceDetailActivity extends AppCompatActivity
             public void onClick(View view) {
                 String location = String.format("%s,%s", place.getLocation().getLat(),
                         place.getLocation().getLng());
-                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("google.navigation:q=" + location)));
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("google.navigation:q=" + location));
+                if (intent.resolveActivity(getPackageManager()) != null) {
+                    startActivity(intent);
+                }
+                Toast.makeText(PlaceDetailActivity.this, R.string.please_install_google_maps, Toast.LENGTH_SHORT).show();
             }
         });
         if (LocationUtils.checkForPermission(this)) {
@@ -438,7 +442,11 @@ public class PlaceDetailActivity extends AppCompatActivity
                     public void onClick(View view) {
                         String location = String.format("%s,%s", place.getLocation().getLat(),
                                 place.getLocation().getLng());
-                        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("google.navigation:q=" + location)));
+                        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("google.navigation:q=" + location));
+                        if (intent.resolveActivity(getPackageManager()) != null) {
+                            startActivity(intent);
+                        }
+                        Toast.makeText(PlaceDetailActivity.this, R.string.please_install_google_maps, Toast.LENGTH_SHORT).show();
                     }
                 });
             }

@@ -7,18 +7,16 @@ import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationListener;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -37,7 +35,6 @@ import com.blancgrupo.apps.tripguide.presentation.di.module.ActivityModule;
 import com.blancgrupo.apps.tripguide.presentation.ui.activity.ChooseLocationActivity;
 import com.blancgrupo.apps.tripguide.presentation.ui.activity.CityToursActivity;
 import com.blancgrupo.apps.tripguide.presentation.ui.activity.DisplayImageActivity;
-import com.blancgrupo.apps.tripguide.presentation.ui.activity.HomeActivity;
 import com.blancgrupo.apps.tripguide.presentation.ui.activity.PlaceDetailActivity;
 import com.blancgrupo.apps.tripguide.presentation.ui.activity.SearchActivity;
 import com.blancgrupo.apps.tripguide.presentation.ui.activity.TourActivity;
@@ -101,6 +98,7 @@ public class CityDetailFragment extends Fragment
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_city_detail, container, false);
         ButterKnife.bind(this, v);
+        setHasOptionsMenu(true);
         adapter = new TopicAdapter(this, this, getActivity().getApplication());
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
         View emptyView = getLayoutInflater().inflate(R.layout.nothing_to_show_layout, recyclerView, false);
@@ -123,6 +121,12 @@ public class CityDetailFragment extends Fragment
         }
 
         return v;
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.main, menu);
     }
 
     @Override

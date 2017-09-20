@@ -11,7 +11,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.blancgrupo.apps.tripguide.R;
-import com.blancgrupo.apps.tripguide.data.entity.api.PlaceCover;
 import com.blancgrupo.apps.tripguide.presentation.ui.adapter.PlaceAdapter;
 import com.cooltechworks.views.shimmer.ShimmerRecyclerView;
 import com.rockerhieu.rvadapter.states.StatesRecyclerViewAdapter;
@@ -22,14 +21,12 @@ import butterknife.ButterKnife;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class FavoritesFragment extends Fragment
-        implements PlaceAdapter.PlaceAdapterListener {
-    @BindView(R.id.favorites_rv)
+public class ProfileFragment extends Fragment {
+    @BindView(R.id.profile_rv)
     ShimmerRecyclerView recyclerView;
     StatesRecyclerViewAdapter statesRecyclerViewAdapter;
-    PlaceAdapter adapter;
 
-    public FavoritesFragment() {
+    public ProfileFragment() {
         // Required empty public constructor
     }
 
@@ -38,27 +35,28 @@ public class FavoritesFragment extends Fragment
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View v = inflater.inflate(R.layout.fragment_favorites, container, false);
+        View v = inflater.inflate(R.layout.fragment_profile, container, false);
         ButterKnife.bind(this, v);
         setHasOptionsMenu(true);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
+        View emptyView = getLayoutInflater().inflate(R.layout.empty_profile_layout,
+                recyclerView, false);
+        statesRecyclerViewAdapter = new StatesRecyclerViewAdapter(
+                new PlaceAdapter(null, 0, getActivity().getApplication()),
+                null,
+                emptyView,
+                null
+        );
         recyclerView.setHasFixedSize(true);
-        adapter = new PlaceAdapter(this, PlaceAdapter.PLACE_VERTICAL_ADAPTER, getActivity().getApplication());
-        View emptyView = getLayoutInflater().inflate(R.layout.favorites_empty_layout, recyclerView, false);
-        statesRecyclerViewAdapter = new StatesRecyclerViewAdapter(adapter, null, emptyView, null);
+        recyclerView.setLayoutManager(new LinearLayoutManager(
+                getContext(), LinearLayoutManager.VERTICAL, false));
         recyclerView.setAdapter(statesRecyclerViewAdapter);
         statesRecyclerViewAdapter.setState(StatesRecyclerViewAdapter.STATE_EMPTY);
         return v;
     }
 
     @Override
-    public void onPlaceClick(PlaceCover place) {
-
-    }
-
-    @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
-        inflater.inflate(R.menu.favorites, menu);
+        inflater.inflate(R.menu.profile, menu);
     }
 }

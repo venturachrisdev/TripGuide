@@ -133,5 +133,7 @@
     <string name="we_dit_it">We did it!</string>
     <string name="we_arrived_to">We arrived to</string>
     <string name="profile">Profile</string>
+    <string name="please_install_google_maps">Please install Google Maps</string>
+    <string name="logout">Logout</string>
 
 </resources>

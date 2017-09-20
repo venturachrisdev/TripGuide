@@ -1,0 +1,113 @@
+<android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    android:layout_height="match_parent"
+    tools:context="com.blancgrupo.apps.tripguide.presentation.ui.fragment.ProfileFragment">
+
+    <LinearLayout
+        android:focusableInTouchMode="true"
+        android:layout_width="match_parent"
+        android:orientation="vertical"
+        android:layout_height="match_parent">
+
+        <RelativeLayout
+            android:paddingTop="85dp"
+            android:paddingBottom="40dp"
+            android:paddingLeft="20dp"
+            android:paddingStart="20dp"
+            android:paddingEnd="20dp"
+            android:paddingRight="20dp"
+            android:background="@color/colorAccent"
+            app:theme="@style/ThemeOverlay.AppCompat.Dark"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/user_profile_image"
+                android:layout_width="85dp"
+                android:src="@mipmap/blured"
+                android:layout_marginBottom="14dp"
+                android:layout_height="85dp"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true" />
+
+            <TextView
+                android:id="@+id/user_profile_name"
+                android:textColor="@color/colorIcon"
+                android:text="Christopher Ventura"
+                android:layout_width="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:textSize="26sp"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/user_profile_image"
+                android:layout_centerHorizontal="true" />
+
+            <ImageView
+                android:id="@+id/user_profile_location_icon"
+                app:srcCompat="@drawable/ic_place_white_24dp"
+                android:alpha="0.9"
+                android:layout_width="14dp"
+                android:layout_height="14dp"
+                android:layout_marginBottom="2dp"
+                android:layout_marginRight="2dp"
+                android:layout_marginEnd="2dp"
+                android:layout_alignBottom="@+id/user_profile_location"
+                android:layout_toLeftOf="@+id/user_profile_location"
+                android:layout_toStartOf="@+id/user_profile_location" />
+
+            <TextView
+                android:id="@+id/user_profile_location"
+                android:text="Santo Domingo, Republica Dominicana"
+                android:textSize="14sp"
+                android:textAlignment="center"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/user_profile_name"
+                android:layout_alignRight="@+id/user_profile_name"
+                android:layout_alignEnd="@+id/user_profile_name" />
+
+
+            <FrameLayout
+                android:layout_width="wrap_content"
+                app:theme="@style/ThemeOverlay.AppCompat.Light"
+                android:layout_below="@+id/user_profile_location"
+                android:layout_centerHorizontal="true"
+                android:layout_height="wrap_content">
+
+            <Button
+                android:textColor="@color/colorAccent"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp"
+                android:paddingLeft="25dp"
+                android:paddingRight="25dp"
+                android:paddingStart="25dp"
+                android:paddingEnd="25dp"
+                android:id="@+id/user_profile_xp"
+                android:textAppearance="@style/TextAppearance.AppCompat.Display4"
+                android:text="55 XP"
+                android:layout_marginTop="30dp"
+                android:textSize="30sp"
+                fontPath="fonts/Montserrat/Montserrat-Light.ttf"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                />
+
+        </FrameLayout>
+
+
+
+        </RelativeLayout>
+
+
+        <com.cooltechworks.views.shimmer.ShimmerRecyclerView
+            android:id="@+id/profile_rv"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+
+    </LinearLayout>
+
+
+</android.support.v4.widget.NestedScrollView>

@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -12,16 +13,17 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
 import android.view.MenuItem;
 
 import com.blancgrupo.apps.tripguide.R;
+import com.blancgrupo.apps.tripguide.presentation.ui.custom.NoSwipePager;
 import com.blancgrupo.apps.tripguide.presentation.ui.fragment.CityDetailFragment;
 import com.blancgrupo.apps.tripguide.presentation.ui.fragment.FavoritesFragment;
+import com.blancgrupo.apps.tripguide.presentation.ui.fragment.ProfileFragment;
+import com.blancgrupo.apps.tripguide.presentation.ui.fragment.SignInFragment;
 import com.blancgrupo.apps.tripguide.utils.Constants;
 import com.blancgrupo.apps.tripguide.utils.LocationUtils;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
@@ -39,9 +41,10 @@ public class HomeActivity extends AppCompatActivity
     @BindView(R.id.toolbar)
     Toolbar toolbar;
     @BindView(R.id.viewpager)
-    ViewPager viewPager;
+    NoSwipePager viewPager;
     @BindView(R.id.bottom_nav)
     BottomNavigationViewEx bottomNavigationViewEx;
+    boolean logged = true;
 
     @Override
     protected void attachBaseContext(Context newBase) {
@@ -51,7 +54,7 @@ public class HomeActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_city_detail);
+        setContentView(R.layout.activity_home);
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -62,8 +65,52 @@ public class HomeActivity extends AppCompatActivity
         String cityId = getIntent().getStringExtra(Constants.EXTRA_CITY_ID);
         viewPager.setAdapter(new PagerAdapter(getSupportFragmentManager(), cityId));
         viewPager.setOffscreenPageLimit(3);
+        viewPager.setPagingEnabled(false);
         bottomNavigationViewEx.setupWithViewPager(viewPager);
         bottomNavigationViewEx.enableAnimation(true);
+        bottomNavigationViewEx.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.action_home:
+                        viewPager.setCurrentItem(0);
+                        break;
+                    case R.id.action_favorites:
+                        viewPager.setCurrentItem(1);
+                        break;
+                    case R.id.action_profile:
+                        viewPager.setCurrentItem(2);
+                        break;
+                }
+                return true;
+            }
+        });
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                if (getSupportActionBar() != null) {
+                    switch (position) {
+                        case 1:
+                            getSupportActionBar().setTitle(R.string.favorites);
+                            break;
+                        case 2:
+                            getSupportActionBar().setTitle(R.string.profile);
+                            break;
+                        default:
+                            getSupportActionBar().setTitle(R.string.app_name);
+                    }
+                }
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
     }
 
 
@@ -88,6 +135,14 @@ public class HomeActivity extends AppCompatActivity
                 case 1:
                     FavoritesFragment favoritesFragment = new FavoritesFragment();
                     return favoritesFragment;
+                case 2:
+                    if (HomeActivity.this.logged) {
+                        ProfileFragment profileFragment = new ProfileFragment();
+                        return profileFragment;
+                    } else {
+                        SignInFragment signInFragment = new SignInFragment();
+                        return signInFragment;
+                    }
             }
             return new Fragment();
         }
@@ -134,11 +189,6 @@ public class HomeActivity extends AppCompatActivity
         return false;
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main, menu);
-        return super.onCreateOptionsMenu(menu);
-    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -147,6 +197,11 @@ public class HomeActivity extends AppCompatActivity
             case R.id.action_search:
                 startActivity(new Intent(this, SearchActivity.class));
                 break;
+            case R.id.action_logout:
+                logged = false;
+                viewPager.getAdapter().notifyDataSetChanged();
+                break;
+
         }
         return super.onOptionsItemSelected(item);
     }

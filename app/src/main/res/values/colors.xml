@@ -15,4 +15,7 @@
     <color name="black_overlay">#66000000</color>
     <color name="pager_bullet_active">#FFFFFF</color>
     <color name="pager_bullet_inactive">#33000000</color>
+    <color name="colorBlue">#6DD0F7</color>
+    <color name="colorGoogle">#C42924</color>
+    <color name="colorFacebook">#3954A1</color>
 </resources>

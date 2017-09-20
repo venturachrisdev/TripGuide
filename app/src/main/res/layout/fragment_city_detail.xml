@@ -2,9 +2,8 @@
 <android.support.v4.widget.NestedScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_marginBottom="60dp"
+    android:layout_marginBottom="50dp"
     app:elevation="0dp"
     android:id="@+id/nestedscrollview"
     android:layout_height="match_parent"
@@ -28,6 +27,7 @@
                 android:id="@+id/header_image"
                 android:focusable="true"
                 android:clickable="true"
+                android:fitsSystemWindows="true"
                 android:foreground="?attr/selectableItemBackgroundBorderless"
                 android:alpha="0.5"
                 android:layout_width="match_parent"
@@ -48,6 +48,7 @@
 
             <View
                 android:layout_width="match_parent"
+                android:fitsSystemWindows="true"
                 android:layout_height="match_parent"
                 android:background="@drawable/city_gradient"/>
 
