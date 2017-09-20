@@ -3,24 +3,21 @@ package com.blancgrupo.apps.tripguide.presentation.ui.activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentStatePagerAdapter;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import com.blancgrupo.apps.tripguide.R;
 import com.blancgrupo.apps.tripguide.presentation.ui.fragment.CityDetailFragment;
@@ -33,7 +30,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
-public class CityDetailActivity extends AppCompatActivity
+public class HomeActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
     @BindView(R.id.drawer_layout)
     DrawerLayout drawerLayout;
@@ -68,6 +65,7 @@ public class CityDetailActivity extends AppCompatActivity
         bottomNavigationViewEx.setupWithViewPager(viewPager);
         bottomNavigationViewEx.enableAnimation(true);
     }
+
 
 
     class PagerAdapter extends FragmentStatePagerAdapter {
@@ -106,12 +104,12 @@ public class CityDetailActivity extends AppCompatActivity
         if (requestCode == LocationUtils.PERMISSION_LOCATION_REQUEST_CODE) {
             if (grantResults.length > 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED
                     && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
-                if (LocationUtils.gpsEnabledOrShowDialog(CityDetailActivity.this)) {
-                    startActivity(new Intent(CityDetailActivity.this, MapActivity.class));
+                if (LocationUtils.gpsEnabledOrShowDialog(HomeActivity.this)) {
+                    startActivity(new Intent(HomeActivity.this, MapActivity.class));
                 }
 
             } else if (grantResults[0] == PackageManager.PERMISSION_DENIED){
-                LocationUtils.showAreYouSureLocation(CityDetailActivity.this);
+                LocationUtils.showAreYouSureLocation(HomeActivity.this);
             }
         }
     }

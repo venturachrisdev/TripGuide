@@ -2,8 +2,6 @@ package com.blancgrupo.apps.tripguide.presentation.ui.activity;
 
 import android.arch.lifecycle.LifecycleRegistry;
 import android.arch.lifecycle.LifecycleRegistryOwner;
-import android.arch.lifecycle.Observer;
-import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -16,8 +14,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.PagerAdapter;
-import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -33,7 +29,6 @@ import com.blancgrupo.apps.tripguide.presentation.di.module.ActivityModule;
 import com.blancgrupo.apps.tripguide.presentation.ui.viewmodel.CityVMFactory;
 import com.blancgrupo.apps.tripguide.presentation.ui.viewmodel.CityViewModel;
 import com.blancgrupo.apps.tripguide.utils.ApiUtils;
-import com.blancgrupo.apps.tripguide.utils.ConnectivityUtils;
 import com.blancgrupo.apps.tripguide.utils.Constants;
 import com.blancgrupo.apps.tripguide.utils.LocationUtils;
 import com.robohorse.pagerbullet.PagerBullet;
@@ -244,7 +239,7 @@ public class GettingStartedActivity extends AppCompatActivity
 //
     void startCityActivityAndFinish() {
         startActivity(new Intent(GettingStartedActivity.this,
-                CityDetailActivity.class));
+                HomeActivity.class));
         finish();
     }
 //
@@ -343,7 +338,7 @@ public class GettingStartedActivity extends AppCompatActivity
 //                                        editor.putString(Constants.CURRENT_LOCATION_SP, s);
 //                                        editor.apply();
 //                                        startActivity(new Intent(GettingStartedActivity.this,
-//                                                CityDetailActivity.class));
+//                                                HomeActivity.class));
 //                                        finish();
 //                                    } else {
 //                                        showNoConnectionLayout();

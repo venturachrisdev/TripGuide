@@ -8,7 +8,6 @@
     app:elevation="0dp"
     android:id="@+id/nestedscrollview"
     android:layout_height="match_parent"
-    tools:showIn="@layout/activity_city_detail"
     >
 
     <LinearLayout
@@ -35,10 +34,23 @@
                 android:layout_height="match_parent" />
 
 
+            <TextView
+                android:id="@+id/city_name"
+                android:textColor="@color/colorIcon"
+                android:layout_gravity="right|end|bottom"
+                android:textSize="14sp"
+                android:paddingRight="20dp"
+                android:paddingEnd="20dp"
+                android:paddingBottom="15dp"
+                android:textAlignment="textEnd"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
             <View
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="@drawable/city_gradient"/>
+
 
         </FrameLayout>
 

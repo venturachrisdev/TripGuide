@@ -7,24 +7,18 @@ import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationListener;
 import android.os.Bundle;
 import android.os.Parcelable;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.CollapsingToolbarLayout;
-import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -41,9 +35,9 @@ import com.blancgrupo.apps.tripguide.data.entity.api.Topic;
 import com.blancgrupo.apps.tripguide.presentation.di.component.DaggerActivityComponent;
 import com.blancgrupo.apps.tripguide.presentation.di.module.ActivityModule;
 import com.blancgrupo.apps.tripguide.presentation.ui.activity.ChooseLocationActivity;
-import com.blancgrupo.apps.tripguide.presentation.ui.activity.CityDetailActivity;
 import com.blancgrupo.apps.tripguide.presentation.ui.activity.CityToursActivity;
 import com.blancgrupo.apps.tripguide.presentation.ui.activity.DisplayImageActivity;
+import com.blancgrupo.apps.tripguide.presentation.ui.activity.HomeActivity;
 import com.blancgrupo.apps.tripguide.presentation.ui.activity.PlaceDetailActivity;
 import com.blancgrupo.apps.tripguide.presentation.ui.activity.SearchActivity;
 import com.blancgrupo.apps.tripguide.presentation.ui.activity.TourActivity;
@@ -59,7 +53,6 @@ import com.blancgrupo.apps.tripguide.utils.LocationUtils;
 import com.blancgrupo.apps.tripguide.utils.TextStringUtils;
 import com.bumptech.glide.Glide;
 import com.cooltechworks.views.shimmer.ShimmerRecyclerView;
-import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 import com.rockerhieu.rvadapter.states.StatesRecyclerViewAdapter;
 
 import java.util.ArrayList;
@@ -86,6 +79,8 @@ public class CityDetailFragment extends Fragment
 
     @BindView(R.id.header_image)
     ImageView headerImage;
+    @BindView(R.id.city_name)
+    TextView cityNameText;
     @BindView(R.id.featurecardview)
     FeatureCardView featureCardView;
     @BindView(R.id.all_topics_rv)
@@ -193,9 +188,8 @@ public class CityDetailFragment extends Fragment
 
 
     void bindCity(City city) {
+        cityNameText.setText(city.getName());
         recyclerView.hideShimmerAdapter();
-        //toolbarLayout.setTitle(city.getName());
-//        toolbarTitle.setText(city.getName());
         featureCardView.show();
         Photo header = city.getPhoto();
 
@@ -262,8 +256,8 @@ public class CityDetailFragment extends Fragment
         } else {
             Intent intent = new Intent(getActivity(), SearchActivity.class);
             String topify = TextStringUtils.formatTitle(topicTitle);
-//            intent.putExtra(Constants.EXTRA_SEARCH_PLACE_QUERY, topify + " " +
-//                    getString(R.string.in) + " " + toolbarLayout.getTitle());
+            intent.putExtra(Constants.EXTRA_SEARCH_PLACE_QUERY, topify + " " +
+                    getString(R.string.in) + " " + cityNameText.getText());
             startActivity(intent);
         }
     }

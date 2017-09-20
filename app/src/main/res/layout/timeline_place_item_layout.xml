@@ -6,8 +6,8 @@
 
     <com.github.vipulasri.timelineview.TimelineView
         android:id="@+id/timeline_view"
-        android:paddingTop="28dp"
-        android:paddingBottom="28dp"
+        android:paddingTop="32dp"
+        android:paddingBottom="32dp"
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
         app:markerSize="20dp"
