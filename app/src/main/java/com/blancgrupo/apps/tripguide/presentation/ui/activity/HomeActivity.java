@@ -44,7 +44,8 @@ public class HomeActivity extends AppCompatActivity
     NoSwipePager viewPager;
     @BindView(R.id.bottom_nav)
     BottomNavigationViewEx bottomNavigationViewEx;
-    boolean logged = true;
+
+    PagerAdapter pagerAdapter;
 
     @Override
     protected void attachBaseContext(Context newBase) {
@@ -63,7 +64,8 @@ public class HomeActivity extends AppCompatActivity
         toggle.syncState();
         navigationView.setNavigationItemSelectedListener(this);
         String cityId = getIntent().getStringExtra(Constants.EXTRA_CITY_ID);
-        viewPager.setAdapter(new PagerAdapter(getSupportFragmentManager(), cityId));
+        pagerAdapter = new PagerAdapter(getSupportFragmentManager(), cityId, true);
+        viewPager.setAdapter(pagerAdapter);
         viewPager.setOffscreenPageLimit(3);
         viewPager.setPagingEnabled(false);
         bottomNavigationViewEx.setupWithViewPager(viewPager);
@@ -117,10 +119,12 @@ public class HomeActivity extends AppCompatActivity
 
     class PagerAdapter extends FragmentStatePagerAdapter {
         String cityId;
+        boolean logged;
 
-        public PagerAdapter(FragmentManager fm, String cityId) {
+        public PagerAdapter(FragmentManager fm, String cityId, boolean logged) {
             super(fm);
             this.cityId = cityId;
+            this.logged = logged;
         }
 
         @Override
@@ -136,7 +140,7 @@ public class HomeActivity extends AppCompatActivity
                     FavoritesFragment favoritesFragment = new FavoritesFragment();
                     return favoritesFragment;
                 case 2:
-                    if (HomeActivity.this.logged) {
+                    if (this.logged) {
                         ProfileFragment profileFragment = new ProfileFragment();
                         return profileFragment;
                     } else {
@@ -148,8 +152,23 @@ public class HomeActivity extends AppCompatActivity
         }
 
         @Override
+        public int getItemPosition(Object object) {
+            return POSITION_NONE;
+        }
+
+        @Override
         public int getCount() {
             return 3;
+        }
+
+        public void setCityId(String cityId) {
+            this.cityId = cityId;
+            notifyDataSetChanged();
+        }
+
+        public void setLogged(boolean logged) {
+            this.logged = logged;
+            notifyDataSetChanged();
         }
     }
 
@@ -198,8 +217,7 @@ public class HomeActivity extends AppCompatActivity
                 startActivity(new Intent(this, SearchActivity.class));
                 break;
             case R.id.action_logout:
-                logged = false;
-                viewPager.getAdapter().notifyDataSetChanged();
+                pagerAdapter.setLogged(false);
                 break;
 
         }
@@ -222,8 +240,7 @@ public class HomeActivity extends AppCompatActivity
         super.onActivityResult(requestCode, resultCode, data);
         if (data != null) {
             String newCityId = data.getStringExtra(Constants.EXTRA_CITY_ID);
-            viewPager.setAdapter(new PagerAdapter(getSupportFragmentManager(), newCityId));
-            viewPager.getAdapter().notifyDataSetChanged();
+            pagerAdapter.setCityId(newCityId);
         }
 //        statesRecyclerViewAdapter.setState(StatesRecyclerViewAdapter.STATE_NORMAL);
 //        if (requestCode == Constants.CHOOSE_LOCATION_RC) {
