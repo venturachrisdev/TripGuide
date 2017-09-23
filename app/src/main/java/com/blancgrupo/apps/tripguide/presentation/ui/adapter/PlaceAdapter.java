@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -87,6 +88,7 @@ public class PlaceAdapter extends RecyclerView.Adapter<PlaceAdapter.PlaceViewHol
                 break;
             case PlaceViewHolder.PLACE_GRID:
                 ((HorizontalPlaceViewHolder) holder).setDistance(app, place.getLocation());
+//                ((HorizontalPlaceViewHolder) holder).setRating(place.getR);
                 break;
             case PlaceViewHolder.PLACE_TOUR:
                 break;
@@ -153,11 +155,17 @@ public class PlaceAdapter extends RecyclerView.Adapter<PlaceAdapter.PlaceViewHol
     class HorizontalPlaceViewHolder extends PlaceViewHolder {
         @BindView(R.id.place_item_distance)
         LoaderTextView distanceText;
+        @BindView(R.id.rating_bar)
+        RatingBar ratingBar;
 
         public HorizontalPlaceViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
             this.holderType = PlaceViewHolder.PLACE_GRID;
+        }
+
+        public void setRating(double rating) {
+            ratingBar.setRating((float) rating);
         }
 
         @Override

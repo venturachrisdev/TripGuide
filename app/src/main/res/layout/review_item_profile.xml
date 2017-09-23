@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:cardElevation="@dimen/cardview_default_elevation"
+    app:cardCornerRadius="@dimen/cardview_default_radius"
+    app:cardUseCompatPadding="true"
+    android:foreground="?attr/selectableItemBackgroundBorderless"
+    android:clickable="true"
+    android:focusable="true"
+    android:layout_height="wrap_content">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:padding="20dp"
+            android:layout_height="wrap_content">
+
+
+            <TextView
+                android:id="@+id/review_place_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="14dp"
+                android:layout_marginStart="14dp"
+                android:textAppearance="@style/Base.TextAppearance.AppCompat.Body2"
+                android:layout_marginTop="4dp"
+                android:textSize="18sp"
+                android:layout_alignParentTop="true" />
+
+            <TextView
+                android:id="@+id/review_profile_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="12sp"
+                android:layout_below="@+id/review_place_name"
+                android:layout_alignLeft="@+id/review_place_name"
+                android:layout_alignStart="@+id/review_place_name" />
+
+            <RatingBar
+                android:id="@+id/rating_bar"
+                style="?attr/ratingBarStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:layout_below="@+id/review_profile_date"
+                android:layout_alignLeft="@+id/review_profile_date"
+                android:layout_alignStart="@+id/review_profile_date" />
+
+            <TextView
+                android:id="@+id/review_profile_message"
+                android:layout_width="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_height="wrap_content"
+                android:textColor="@color/colorSecondaryText"
+                android:textAppearance="@style/Base.TextAppearance.AppCompat.Body1"
+                android:layout_below="@id/rating_bar"
+                android:layout_alignLeft="@+id/rating_bar"
+                android:layout_alignStart="@+id/rating_bar" />
+
+        </RelativeLayout>
+
+
+</android.support.v7.widget.CardView>

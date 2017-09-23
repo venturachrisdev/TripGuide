@@ -7,7 +7,12 @@ import android.graphics.BitmapFactory;
 import com.blancgrupo.apps.tripguide.MyApplication;
 import com.blancgrupo.apps.tripguide.R;
 import com.blancgrupo.apps.tripguide.data.entity.api.PlaceTypesCover;
+import com.blancgrupo.apps.tripguide.data.entity.api.Profile;
 import com.blancgrupo.apps.tripguide.data.entity.api.TourCover;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.Status;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 
@@ -97,6 +102,12 @@ public class ApiUtils {
             return meters/1000 + "." + meters%1000 + "km";
         }
         return meters + "m";
+    }
+    public interface AuthFragment {
+        void handleSignInResult(GoogleSignInResult result);
+        void handleSignOut(Status status);
+        boolean isUserSaved();
+        void initializeProfileLayout(Profile profile);
     }
 }
 

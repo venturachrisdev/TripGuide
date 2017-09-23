@@ -3,15 +3,11 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorBlue"
-    android:paddingTop="70dp"
-    android:paddingBottom="40dp"
-    android:paddingLeft="40dp"
-    android:paddingRight="40dp"
-    android:paddingStart="40dp"
-    android:paddingEnd="40dp"
+    android:padding="40dp"
     tools:context="com.blancgrupo.apps.tripguide.presentation.ui.fragment.SignInFragment">
 
     <Button
+        android:layout_marginTop="70dp"
         android:id="@+id/btn_fb"
         android:text="Sign in with facebook"
         android:background="@color/colorFacebook"
@@ -19,17 +15,14 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
-    <Button
-        android:id="@+id/btn_google"
-        android:text="Sign in with google"
-        android:background="@color/colorGoogle"
-        android:textColor="@color/colorIcon"
+    <com.google.android.gms.common.SignInButton
+        android:id="@+id/sign_in_button"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
         android:layout_marginTop="22dp"
         android:layout_below="@+id/btn_fb"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"
+        android:layout_height="wrap_content" />
 
     <Button
         android:id="@+id/btn"

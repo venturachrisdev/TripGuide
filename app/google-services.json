@@ -1,0 +1,79 @@
+{
+  "project_info": {
+    "project_number": "673852365047",
+    "project_id": "firebase-tripguide"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:673852365047:android:c255f264da8b04f5",
+        "android_client_info": {
+          "package_name": "com.grupoblanc.apps.trupiguide"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "673852365047-clq4o0s1euq33878ppouu5m6n8vqvito.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCtlR9sOH-O25W1nvjBkEVmW0ivWkQQez0"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:673852365047:android:26ee7735df02ae1b",
+        "android_client_info": {
+          "package_name": "com.blancgrupo.apps.tripguide"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "673852365047-1iblqscs37hm6q26hpe55rljjvmho37k.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.blancgrupo.apps.tripguide",
+            "certificate_hash": "02dab3b6ca30a25fb32f88931f243f29b560d53d"
+          }
+        },
+        {
+          "client_id": "673852365047-clq4o0s1euq33878ppouu5m6n8vqvito.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCtlR9sOH-O25W1nvjBkEVmW0ivWkQQez0"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

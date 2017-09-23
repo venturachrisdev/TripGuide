@@ -12,6 +12,7 @@
 
     <LinearLayout
         android:orientation="vertical"
+        android:focusableInTouchMode="true"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -96,27 +97,6 @@
             android:animateLayoutChanges="true"
             android:layout_height="wrap_content"/>
 
-
-        <RelativeLayout
-            android:id="@+id/rating_layout"
-            android:clickable="true"
-            android:foreground="?attr/selectableItemBackgroundBorderless"
-            android:focusable="true"
-            android:padding="20dp"
-            android:visibility="gone"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <android.support.v7.widget.AppCompatRatingBar
-                android:id="@+id/rating_bar"
-                android:layout_centerInParent="true"
-                style="?android:attr/ratingBarStyleIndicator"
-                android:isIndicator="false"
-                android:numStars="5"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-
-        </RelativeLayout>
 
         <LinearLayout
             android:id="@+id/photos_layout"
@@ -423,6 +403,55 @@
 
 
         </LinearLayout>
+
+        <RelativeLayout
+            android:id="@+id/rating_layout"
+            android:clickable="true"
+            android:foreground="?attr/selectableItemBackgroundBorderless"
+            android:focusable="true"
+            android:padding="20dp"
+            android:visibility="gone"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <com.iarcuschin.simpleratingbar.SimpleRatingBar
+                android:id="@+id/rating_bar"
+                android:layout_centerInParent="true"
+                android:isIndicator="false"
+                app:srb_numberOfStars="5"
+                app:srb_starCornerRadius="0"
+                app:srb_starBorderWidth="2"
+                app:srb_stepSize="0.5"
+                app:srb_fillColor="@color/colorAccent"
+                app:srb_borderColor="@color/colorAccent"
+                app:srb_starSize="40dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+        </RelativeLayout>
+
+
+        <TextView
+            android:paddingTop="16dp"
+            android:paddingBottom="16dp"
+            android:paddingEnd="32dp"
+            android:paddingStart="32dp"
+            android:paddingLeft="32dp"
+            android:paddingRight="32dp"
+            android:text="Reviews"
+            android:textColor="@color/colorPrimaryText"
+            android:textSize="18sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+
+        <com.cooltechworks.views.shimmer.ShimmerRecyclerView
+            android:id="@+id/reviews_rv"
+            android:layout_width="match_parent"
+            app:shimmer_demo_child_count="1"
+            android:nestedScrollingEnabled="false"
+            app:shimmer_demo_layout_manager_type="linear_vertical"
+            android:layout_height="wrap_content"/>
 
     </LinearLayout>
 

@@ -1,5 +1,6 @@
 package com.blancgrupo.apps.tripguide.presentation.ui.activity;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -17,15 +18,26 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.blancgrupo.apps.tripguide.R;
+import com.blancgrupo.apps.tripguide.data.entity.api.Review;
+import com.blancgrupo.apps.tripguide.presentation.ui.adapter.ReviewAdapter;
 import com.blancgrupo.apps.tripguide.presentation.ui.custom.NoSwipePager;
 import com.blancgrupo.apps.tripguide.presentation.ui.fragment.CityDetailFragment;
 import com.blancgrupo.apps.tripguide.presentation.ui.fragment.FavoritesFragment;
 import com.blancgrupo.apps.tripguide.presentation.ui.fragment.ProfileFragment;
-import com.blancgrupo.apps.tripguide.presentation.ui.fragment.SignInFragment;
+import com.blancgrupo.apps.tripguide.utils.ApiUtils;
 import com.blancgrupo.apps.tripguide.utils.Constants;
 import com.blancgrupo.apps.tripguide.utils.LocationUtils;
+import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.auth.api.signin.GoogleSignInResult;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.OptionalPendingResult;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 
 import butterknife.BindView;
@@ -33,7 +45,10 @@ import butterknife.ButterKnife;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 public class HomeActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener,
+        GoogleApiClient.OnConnectionFailedListener,
+        ReviewAdapter.ReviewProfileListener,
+        ProfileFragment.AuthListener {
     @BindView(R.id.drawer_layout)
     DrawerLayout drawerLayout;
     @BindView(R.id.nav_view)
@@ -45,7 +60,11 @@ public class HomeActivity extends AppCompatActivity
     @BindView(R.id.bottom_nav)
     BottomNavigationViewEx bottomNavigationViewEx;
 
+    GoogleApiClient mGoogleApiClient;
     PagerAdapter pagerAdapter;
+    ApiUtils.AuthFragment authFragment;
+
+    private static final int RC_SIGN_IN = 1001;
 
     @Override
     protected void attachBaseContext(Context newBase) {
@@ -55,6 +74,21 @@ public class HomeActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Inflate the layout for this fragment
+        // Configure sign-in to request the user's ID, email address, and basic
+        // profile. ID and basic profile are included in DEFAULT_SIGN_IN.
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestEmail()
+                .build();
+        // Build a GoogleApiClient with access to the Google Sign-In API and the
+        // options specified by gso.
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .enableAutoManage(this /* FragmentActivity */, this /* OnConnectionFailedListener */)
+                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
+                .build();
+
+
         setContentView(R.layout.activity_home);
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);
@@ -64,7 +98,7 @@ public class HomeActivity extends AppCompatActivity
         toggle.syncState();
         navigationView.setNavigationItemSelectedListener(this);
         String cityId = getIntent().getStringExtra(Constants.EXTRA_CITY_ID);
-        pagerAdapter = new PagerAdapter(getSupportFragmentManager(), cityId, true);
+        pagerAdapter = new PagerAdapter(getSupportFragmentManager(), cityId);
         viewPager.setAdapter(pagerAdapter);
         viewPager.setOffscreenPageLimit(3);
         viewPager.setPagingEnabled(false);
@@ -115,16 +149,64 @@ public class HomeActivity extends AppCompatActivity
         });
     }
 
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+
+    }
+
+    @Override
+    public void signInWithGoogle() {
+        Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
+        startActivityForResult(signInIntent, RC_SIGN_IN);
+    }
+
+    @Override
+    public void loadAccount() {
+////        final ProgressDialog dialog = new ProgressDialog(this);
+////        dialog.setMessage("Signing in...");
+//        Toast.makeText(this, "Loading Account!!!!", Toast.LENGTH_SHORT).show();
+//        if (!mGoogleApiClient.isConnected() && !mGoogleApiClient.isConnecting()) {
+//            Toast.makeText(this, "Not logged", Toast.LENGTH_SHORT).show();
+//            if (authFragment.isUserSaved()) {
+//                OptionalPendingResult<GoogleSignInResult> pendingResult =
+//                        Auth.GoogleSignInApi.silentSignIn(mGoogleApiClient);
+//                if (pendingResult.isDone()) {
+//                    // There's immediate result available.
+//                    //authFragment.initializeProfileLayout(pendingResult.get().getSignInAccount());
+//                } else {
+//                    // There's no immediate result ready, displays some progress indicator and waits for the
+//                    // async callback.
+////                    dialog.show();
+////                    pendingResult.setResultCallback(new ResultCallback<GoogleSignInResult>() {
+////                        @Override
+////                        public void onResult(@NonNull GoogleSignInResult result) {
+////                            //authFragment.initializeProfileLayout(result.getSignInAccount());
+////                            dialog.hide();
+////                        }
+////                    });
+//                }
+//            } else {
+//                Toast.makeText(this, "User not saved", Toast.LENGTH_SHORT).show();
+//            }
+//        } else {
+//            Toast.makeText(this, "Theres a session.", Toast.LENGTH_SHORT).show();
+//        }
+    }
+
+    @Override
+    public void onReviewProfileClick(Review.ReviewPlace reviewPlace) {
+        Intent i = new Intent(this, PlaceDetailActivity.class);
+        i.putExtra(Constants.EXTRA_PLACE_ID, reviewPlace.get_id());
+        startActivity(i);
+    }
 
 
     class PagerAdapter extends FragmentStatePagerAdapter {
         String cityId;
-        boolean logged;
 
-        public PagerAdapter(FragmentManager fm, String cityId, boolean logged) {
+        public PagerAdapter(FragmentManager fm, String cityId) {
             super(fm);
             this.cityId = cityId;
-            this.logged = logged;
         }
 
         @Override
@@ -140,13 +222,10 @@ public class HomeActivity extends AppCompatActivity
                     FavoritesFragment favoritesFragment = new FavoritesFragment();
                     return favoritesFragment;
                 case 2:
-                    if (this.logged) {
-                        ProfileFragment profileFragment = new ProfileFragment();
-                        return profileFragment;
-                    } else {
-                        SignInFragment signInFragment = new SignInFragment();
-                        return signInFragment;
-                    }
+                    ProfileFragment profileFragment = new ProfileFragment();
+                    authFragment = profileFragment;
+                    return profileFragment;
+
             }
             return new Fragment();
         }
@@ -163,11 +242,6 @@ public class HomeActivity extends AppCompatActivity
 
         public void setCityId(String cityId) {
             this.cityId = cityId;
-            notifyDataSetChanged();
-        }
-
-        public void setLogged(boolean logged) {
-            this.logged = logged;
             notifyDataSetChanged();
         }
     }
@@ -217,11 +291,25 @@ public class HomeActivity extends AppCompatActivity
                 startActivity(new Intent(this, SearchActivity.class));
                 break;
             case R.id.action_logout:
-                pagerAdapter.setLogged(false);
-                break;
+                signOutWithGoogle();
 
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void signOutWithGoogle() {
+        if (mGoogleApiClient.isConnected()) {
+            Auth.GoogleSignInApi.signOut(mGoogleApiClient).setResultCallback(new ResultCallback<Status>() {
+                @Override
+                public void onResult(@NonNull Status status) {
+                    if (authFragment != null) {
+                        authFragment.handleSignOut(status);
+                    } else {
+                        Toast.makeText(HomeActivity.this, R.string.network_error, Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+        }
     }
 
 
@@ -235,12 +323,19 @@ public class HomeActivity extends AppCompatActivity
         }
     }
 
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (data != null) {
-            String newCityId = data.getStringExtra(Constants.EXTRA_CITY_ID);
-            pagerAdapter.setCityId(newCityId);
+        if (requestCode == RC_SIGN_IN) {
+            GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
+            handleSignInResult(result);
+        }
+        if (requestCode == Constants.CHOOSE_LOCATION_RC) {
+            if (data != null) {
+                String newCityId = data.getStringExtra(Constants.EXTRA_CITY_ID);
+                pagerAdapter.setCityId(newCityId);
+            }
         }
 //        statesRecyclerViewAdapter.setState(StatesRecyclerViewAdapter.STATE_NORMAL);
 //        if (requestCode == Constants.CHOOSE_LOCATION_RC) {
@@ -249,6 +344,12 @@ public class HomeActivity extends AppCompatActivity
 //                cityViewModel.loadSingleCity(id);
 //            }
 //        }
+    }
+
+    private void handleSignInResult(GoogleSignInResult result) {
+        if (authFragment != null) {
+            authFragment.handleSignInResult(result);
+        }
     }
 
 }

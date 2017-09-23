@@ -7,10 +7,17 @@ import com.blancgrupo.apps.tripguide.data.entity.api.PlaceDescriptionWrapper;
 import com.blancgrupo.apps.tripguide.data.entity.api.PlaceWrapper;
 import com.blancgrupo.apps.tripguide.data.entity.api.PlacesCoverWrapper;
 import com.blancgrupo.apps.tripguide.data.entity.api.PlacesWrapper;
+import com.blancgrupo.apps.tripguide.data.entity.api.Profile;
+import com.blancgrupo.apps.tripguide.data.entity.api.ProfileWrapper;
+import com.blancgrupo.apps.tripguide.data.entity.api.Review;
+import com.blancgrupo.apps.tripguide.data.entity.api.ReviewResponseWrapper;
+import com.blancgrupo.apps.tripguide.data.entity.api.ReviewWrapper;
 import com.blancgrupo.apps.tripguide.data.entity.api.TourWrapper;
 
 import io.reactivex.Observable;
+import retrofit2.http.Body;
 import retrofit2.http.GET;
+import retrofit2.http.POST;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 
@@ -48,4 +55,13 @@ public interface ApiPlaceService {
     Observable<PlaceDescriptionWrapper>
     getPlaceDescription(@Path("place_id") String place_id,
                         @Path("lang") String lang);
+
+    @GET("profiles/{profile_id}?json")
+    Observable<ProfileWrapper> getSingleProfile(@Path("profile_id") String profileId);
+
+    @POST("profiles/access?json")
+    Observable<ProfileWrapper> loginOrRegisterProfile(@Body Profile profile);
+
+    @POST("reviews/add?json")
+    Observable<ReviewResponseWrapper> addReview(@Body Review review);
 }

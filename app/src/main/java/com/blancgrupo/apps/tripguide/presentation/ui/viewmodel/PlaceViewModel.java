@@ -55,7 +55,7 @@ public class PlaceViewModel extends ViewModel {
     }
 
 
-    private void loadSinglePlace(String placeId) {
+    public void loadSinglePlace(String placeId) {
         if (singlePlaceLiveData != null) {
                 singlePlaceLiveData.loadSinglePlace(
                         placeRepository.getSinglePlace(placeId)

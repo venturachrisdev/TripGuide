@@ -58,12 +58,15 @@ public class Place implements Parcelable {
     private String website;
     @SerializedName("rating")
     Double rating;
+    @SerializedName("reviews")
+    @Expose
+    List<Review> reviews;
 
     public Place() {
     }
 
     public Place(String id, List<String> types, String address, String googleId, City city, String name, Integer v, String createdAt, OpeningHours openingHours, Photo photo, List<Photo> photos, Location location,
-                 String phoneNumber, String website, Double rating, String description) {
+                 String phoneNumber, String website, Double rating, String description, List<Review> reviews) {
         this.id = id;
         this.types = types;
         this.address = address;
@@ -80,6 +83,7 @@ public class Place implements Parcelable {
         this.phoneNumber = phoneNumber;
         this.website = website;
         this.rating = rating;
+        this.reviews = reviews;
     }
 
     protected Place(Parcel in) {
@@ -96,6 +100,7 @@ public class Place implements Parcelable {
         location = in.readParcelable(Location.class.getClassLoader());
         phoneNumber = in.readString();
         website = in.readString();
+        reviews = in.createTypedArrayList(Review.CREATOR);
     }
 
     @Override
@@ -113,6 +118,7 @@ public class Place implements Parcelable {
         dest.writeParcelable(location, flags);
         dest.writeString(phoneNumber);
         dest.writeString(website);
+        dest.writeTypedList(reviews);
     }
 
     @Override
@@ -260,4 +266,11 @@ public class Place implements Parcelable {
         this.location = location;
     }
 
+    public List<Review> getReviews() {
+        return reviews;
+    }
+
+    public void setReviews(List<Review> reviews) {
+        this.reviews = reviews;
+    }
 }

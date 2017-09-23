@@ -44,7 +44,7 @@
             android:textSize="22sp"
             android:textColor="@color/colorIcon"
             android:layout_width="wrap_content"
-            fontPath="fonts/Montserrat/Monstserrat-Light.ttf"
+            fontPath="fonts/Montserrat/Montserrat-Light.ttf"
             android:layout_height="wrap_content"
             android:layout_below="@+id/imageView3"
             android:layout_toRightOf="@+id/imageView4"

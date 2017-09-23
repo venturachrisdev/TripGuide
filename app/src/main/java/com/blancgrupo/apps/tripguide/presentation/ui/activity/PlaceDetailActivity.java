@@ -27,6 +27,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RatingBar;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
@@ -39,9 +40,11 @@ import com.blancgrupo.apps.tripguide.data.entity.api.Place;
 import com.blancgrupo.apps.tripguide.data.entity.api.PlaceDescription;
 import com.blancgrupo.apps.tripguide.data.entity.api.PlaceDescriptionWrapper;
 import com.blancgrupo.apps.tripguide.data.entity.api.PlaceWrapper;
+import com.blancgrupo.apps.tripguide.data.entity.api.Review;
 import com.blancgrupo.apps.tripguide.presentation.di.component.DaggerActivityComponent;
 import com.blancgrupo.apps.tripguide.presentation.di.module.ActivityModule;
 import com.blancgrupo.apps.tripguide.presentation.ui.adapter.PhotoAdapter;
+import com.blancgrupo.apps.tripguide.presentation.ui.adapter.ReviewAdapter;
 import com.blancgrupo.apps.tripguide.presentation.ui.custom.InfoView;
 import com.blancgrupo.apps.tripguide.presentation.ui.viewmodel.PlaceVMFactory;
 import com.blancgrupo.apps.tripguide.presentation.ui.viewmodel.PlaceViewModel;
@@ -59,6 +62,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.iarcuschin.simpleratingbar.SimpleRatingBar;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -115,10 +119,15 @@ public class PlaceDetailActivity extends AppCompatActivity
     @BindView(R.id.rating_layout)
     RelativeLayout ratingLayout;
     @BindView(R.id.rating_bar)
-    AppCompatRatingBar ratingBar;
+    SimpleRatingBar ratingBar;
+    @BindView(R.id.rating_toolbar)
+    SimpleRatingBar ratingToolbar;
     @BindView(R.id.info_layout)
     InfoView infoView;
     List<Photo> myPhotos;
+
+    @BindView(R.id.reviews_rv)
+    ShimmerRecyclerView reviewsRecyclerView;
 
     @Inject
     PlaceVMFactory placeVMFactory;
@@ -247,6 +256,12 @@ public class PlaceDetailActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        ratingBar.setRating(0);
+    }
+
     void bindPlace(@NonNull final Place place) {
         toolbarLayout.setTitle(place.getName());
         if (place.getCity() != null) {
@@ -311,11 +326,22 @@ public class PlaceDetailActivity extends AppCompatActivity
             });
         }
 
+        ratingLayout.setVisibility(View.VISIBLE);
+        ratingBar.setOnRatingBarChangeListener(new SimpleRatingBar.OnRatingBarChangeListener() {
+            @Override
+            public void onRatingChanged(SimpleRatingBar simpleRatingBar, float rating, boolean fromUser) {
+                if (fromUser) {
+                    Intent intent = new Intent(PlaceDetailActivity.this, AddReviewActivity.class);
+                    intent.putExtra(Constants.EXTRA_PLACE_ID, place.getId());
+                    intent.putExtra(Constants.EXTRA_PROGRESS, simpleRatingBar.getRating());
+                    startActivityForResult(intent, 999);
+                }
+            }
+        });
+        ratingToolbar.setEnabled(false);
+        ratingToolbar.setActivated(false);
         if (place.getRating() != null) {
-            ratingLayout.setVisibility(View.VISIBLE);
-            ratingBar.setRating(place.getRating().floatValue());
-            ratingBar.setActivated(false);
-            ratingBar.setEnabled(false);
+            ratingToolbar.setRating(place.getRating().floatValue());
         }
 
         categoryText.setText(TextStringUtils.formatTitle(place.getTypes().get(0)));
@@ -451,7 +477,29 @@ public class PlaceDetailActivity extends AppCompatActivity
                 });
             }
         }
+
+        // Reviews
+        List<Review> placeReviews = place.getReviews();
+        ReviewAdapter reviewAdapter = new ReviewAdapter(ReviewAdapter.REVIEW_PLACE_TYPE, null);
+        //reviewsRecyclerView.setHasFixedSize(true);
+        reviewsRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+        reviewsRecyclerView.setAdapter(reviewAdapter);
+        if (placeReviews != null && placeReviews.size() > 0) {
+            reviewAdapter.updateData(placeReviews);
+        } else {
+            reviewsRecyclerView.hideShimmerAdapter();
+        }
         updateMap(place);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 999) {
+            if (place != null) {
+                placeViewModel.loadSinglePlace(place.getId());
+            }
+        }
     }
 
     void openMap(@NonNull Place place) {
@@ -463,27 +511,29 @@ public class PlaceDetailActivity extends AppCompatActivity
 
 
     void mapLocation(@NonNull GoogleMap map, @NonNull final Place place) {
-        LatLng where = new LatLng(place.getLocation().getLat(), place.getLocation().getLng());
-        map.addMarker(new MarkerOptions()
-                .title(place.getName())
-                .snippet(place.getAddress())
-                .position(where)
-                .icon(ApiUtils.drawMarkerByType(getApplicationContext() , place.getTypes().get(0)))
-        );
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(where, 18f));
-        map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
-            @Override
-            public boolean onMarkerClick(Marker marker) {
-                openMap(place);
-                return true;
-            }
-        });
-        map.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
-            @Override
-            public void onMapClick(LatLng latLng) {
-                openMap(place);
-            }
-        });
+        if (place.getLocation() != null) {
+            LatLng where = new LatLng(place.getLocation().getLat(), place.getLocation().getLng());
+            map.addMarker(new MarkerOptions()
+                    .title(place.getName())
+                    .snippet(place.getAddress())
+                    .position(where)
+                    .icon(ApiUtils.drawMarkerByType(getApplicationContext() , place.getTypes().get(0)))
+            );
+            map.moveCamera(CameraUpdateFactory.newLatLngZoom(where, 18f));
+            map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+                @Override
+                public boolean onMarkerClick(Marker marker) {
+                    openMap(place);
+                    return true;
+                }
+            });
+            map.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+                @Override
+                public void onMapClick(LatLng latLng) {
+                    openMap(place);
+                }
+            });
+        }
     }
 
     private void updateMap(@NonNull final Place place) {
