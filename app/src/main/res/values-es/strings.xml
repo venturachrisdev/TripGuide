@@ -43,7 +43,6 @@
 
     /* Buttons */
     <string name="more">Explorar</string>
-    <string name="title_activity_place_detail">PlaceDetailActivity</string>
     <string name="large_text">
     </string>
     <string name="no_connection">Sin conexion</string>
@@ -122,5 +121,23 @@
     <string name="we_dit_it">Lo hicimos!</string>
     <string name="we_arrived_to">Llegamos a</string>
     <string name="profile">Perfil</string>
+    <string name="add_photo">Agregar foto</string>
+    <string name="add_review">Agregar Evaluacion</string>
+    <string name="discard">Descartar</string>
+    <string name="logout">Cerrar sesion</string>
+    <string name="please_install_google_maps">Por favor, instala Google Maps</string>
+    <string name="sending_review">Enviando evaluacion…</string>
+    <string name="send_review">Enviar evaluacioon</string>
+    <string name="rate_this_place">Evaluar este lugar</string>
+    <string name="reviews">Evaluaciones</string>
+    <string name="write_your_review">Escribe un comentario (opcional)</string>
+    <string name="you_are_not_logged_in">No has iniciado sesion</string>
+    <string name="uploading_image">Subiendo foto…</string>
+    <string name="updating_profile">Actualizando Perfil…</string>
+    <string name="sign_in_aborted">Inicio de sesion cancelado</string>
+    <string name="reviews_number">%d Evaluaciones</string>
+    <string name="no_reviews_yet_be_first">Aun no hay evaluaciones, se el primero!</string>
+    <string name="no_reviews_profile">Parece que no has escrito ninguna evaluacion. Empieza ahora mismo.</string>
+    <string name="dont_discard">No descartar</string>
 
 </resources>

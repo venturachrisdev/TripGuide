@@ -46,7 +46,7 @@
 
     /* Buttons */
     <string name="more">More</string>
-    <string name="title_activity_place_detail">PlaceDetailActivity</string>
+    <string name="title_activity_place_detail" translatable="false">PlaceDetailActivity</string>
     <string name="large_text">o</string>
     <string name="website">Website</string>
     <string name="edit">Edit</string>
@@ -122,10 +122,10 @@
     <string name="distance_in_meters">Distance (in meters)</string>
     <string name="n_a">N/A</string>
     <string name="min">min</string>
-    <string name="title_activity_city_tours">CityToursActivity</string>
-    <string name="title_activity_single_tour">SingleTourActivity</string>
+    <string name="title_activity_city_tours" translatable="false">CityToursActivity</string>
+    <string name="title_activity_single_tour" translatable="false">SingleTourActivity</string>
     <string name="travel">Travel</string>
-    <string name="title_activity_running_tour">RunningTourActivity</string>
+    <string name="title_activity_running_tour" translatable="false">RunningTourActivity</string>
     <string name="view_place">View place</string>
     <string name="calculating">Calculating…</string>
     <string name="of">Of</string>
@@ -144,12 +144,13 @@
     <string name="you_are_not_logged_in">You are not logged in.</string>
     <string name="discard">Discard</string>
     <string name="dont_discard">Don\'t Discard</string>
-    <string name="santo_domingo_republica_dominicana">Santo Domingo, Republica Dominicana</string>
+    <string name="santo_domingo_republica_dominicana" translatable="false">Santo Domingo, Republica Dominicana</string>
     <string name="reviews">Reviews</string>
     <string name="rate_this_place">Rate this place</string>
-    <string name="send_review">Send Review!</string>
+    <string name="send_review">Send Review</string>
     <string name="no_reviews_profile">It looks like you have not write any review about your visited places. Start now.</string>
     <string name="add_photo">Add Photo</string>
     <string name="no_reviews_yet_be_first">There is no reviews yet, be the first!</string>
+    <string name="write_your_review">Write your review (optional)</string>
 
 </resources>
