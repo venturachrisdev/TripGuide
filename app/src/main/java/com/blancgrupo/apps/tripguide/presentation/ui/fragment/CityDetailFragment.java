@@ -194,7 +194,7 @@ public class CityDetailFragment extends Fragment
     void bindCity(City city) {
         cityNameText.setText(city.getName());
         recyclerView.hideShimmerAdapter();
-        featureCardView.show();
+//        featureCardView.show();
         Photo header = city.getPhoto();
 
         if (header != null && header.getReference() != null) {
@@ -221,11 +221,11 @@ public class CityDetailFragment extends Fragment
         // BIND TOPICS
         List<Topic> topics = city.getTopics();
         if (topics.size() > 0) {
-            if (topics.get(0).get_id().equals("tour")) {
-                featureCardView.hide();
-            } else {
-                featureCardView.show();
-            }
+//            if (topics.get(0).get_id().equals("tour")) {
+//                featureCardView.hide();
+//            } else {
+//                featureCardView.show();
+//            }
             adapter.updateData(topics);
         } else {
             Intent intent = new Intent(getActivity(), PlaceDetailActivity.class);
@@ -268,7 +268,7 @@ public class CityDetailFragment extends Fragment
 
     @Override
     public void onTourPresence() {
-        featureCardView.hide();
+//        featureCardView.hide();
     }
 
     @Override

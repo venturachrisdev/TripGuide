@@ -5,8 +5,8 @@
     app:cardUseCompatPadding="true"
     app:cardBackgroundColor="@color/colorAccent"
     android:foreground="?attr/selectableItemBackground"
-    app:cardCornerRadius="@dimen/cardview_default_radius"
-    app:cardElevation="@dimen/cardview_default_elevation"
+    app:cardCornerRadius="5dp"
+    app:cardElevation="0dp"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 

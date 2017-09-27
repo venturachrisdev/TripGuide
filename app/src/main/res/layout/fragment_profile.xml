@@ -19,7 +19,7 @@
             android:paddingStart="20dp"
             android:paddingEnd="20dp"
             android:paddingRight="20dp"
-            android:background="@color/colorAccent"
+            android:background="@mipmap/blured"
             app:theme="@style/ThemeOverlay.AppCompat.Dark"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
@@ -28,6 +28,7 @@
                 android:id="@+id/user_profile_image"
                 android:layout_width="70dp"
                 android:layout_marginBottom="14dp"
+                app:srcCompat="@mipmap/profile_placeholder"
                 android:layout_height="70dp"
                 android:layout_alignParentTop="true"
                 android:layout_centerHorizontal="true" />
@@ -55,6 +56,7 @@
                 android:id="@+id/user_profile_location_icon"
                 app:srcCompat="@drawable/ic_place_white_24dp"
                 android:alpha="0.9"
+                android:contentDescription="@string/app_name"
                 android:layout_width="14dp"
                 android:layout_height="14dp"
                 android:layout_marginBottom="2dp"
@@ -66,37 +68,36 @@
 
             <TextView
                 android:id="@+id/user_profile_location"
-                android:text="Santo Domingo, Republica Dominicana"
+                android:text="@string/santo_domingo_republica_dominicana"
                 android:textSize="14sp"
                 android:textAlignment="center"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/user_profile_email"
-                android:layout_alignRight="@+id/user_profile_name"
-                android:layout_alignEnd="@+id/user_profile_name" />
-
-
-            <FrameLayout
-                android:layout_width="wrap_content"
-                app:theme="@style/ThemeOverlay.AppCompat.Light"
-                android:layout_below="@+id/user_profile_location"
                 android:layout_centerHorizontal="true"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/user_profile_email"/>
 
-        </FrameLayout>
-
-
+            <TextView
+                android:id="@+id/review_number"
+                android:layout_below="@id/user_profile_location"
+                android:layout_marginTop="20dp"
+                android:textSize="32sp"
+                android:layout_centerHorizontal="true"
+                android:textAlignment="center"
+                fontPath="fonts/Montserrat/Montserrat-Light.ttf"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
 
         </RelativeLayout>
 
         <RelativeLayout
-            android:layout_marginLeft="16dp"
+            android:layout_marginLeft="14dp"
             android:layout_marginTop="16dp"
-            android:layout_marginStart="16dp"
+            android:layout_marginStart="14dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
             <ImageView
+                android:contentDescription="@string/app_name"
                 android:id="@+id/topic_icon"
                 app:srcCompat="@drawable/ic_rate_review_black_24dp"
                 android:alpha="0.5"
@@ -128,7 +129,7 @@
 
         <com.cooltechworks.views.shimmer.ShimmerRecyclerView
             android:id="@+id/profile_rv"
-            android:padding="15dp"
+            android:padding="10dp"
             android:nestedScrollingEnabled="false"
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>

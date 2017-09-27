@@ -9,9 +9,7 @@ import com.blancgrupo.apps.tripguide.R;
 import com.blancgrupo.apps.tripguide.data.entity.api.PlaceTypesCover;
 import com.blancgrupo.apps.tripguide.data.entity.api.Profile;
 import com.blancgrupo.apps.tripguide.data.entity.api.TourCover;
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
-import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -58,8 +56,8 @@ public class ApiUtils {
         }
         Bitmap resource = BitmapFactory.decodeResource(context.getResources(), mipmap);
         //Bitmap bitmap = Bitmap.createScaledBitmap(resource, 80, 80, false);
-        Bitmap bitmap = resource;
-        return BitmapDescriptorFactory.fromBitmap(bitmap);
+//        Bitmap bitmap = resource;
+        return BitmapDescriptorFactory.fromBitmap(resource);
     }
 
     public interface OnBoardingListener {
@@ -107,7 +105,7 @@ public class ApiUtils {
         void handleSignInResult(GoogleSignInResult result);
         void handleSignOut(Status status);
         boolean isUserSaved();
-        void initializeProfileLayout(Profile profile);
+        void initializeProfileLayout(Profile profile, String token);
     }
 }
 

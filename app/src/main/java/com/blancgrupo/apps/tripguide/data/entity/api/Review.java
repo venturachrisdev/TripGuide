@@ -29,41 +29,12 @@ public class Review implements Parcelable {
     @SerializedName("profile")
     @Expose
     ReviewProfile profile;
-
-    public Review(Parcel in) {
-        _id = in.readString();
-        rating = in.readDouble();
-        message = in.readString();
-        createdAt = in.readString();
-    }
-
-    public static final Creator<Review> CREATOR = new Creator<Review>() {
-        @Override
-        public Review createFromParcel(Parcel in) {
-            return new Review(in);
-        }
-
-        @Override
-        public Review[] newArray(int size) {
-            return new Review[size];
-        }
-    };
+    @SerializedName("photo")
+    @Expose
+    String photo;
 
     public Review() {
 
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel parcel, int i) {
-        parcel.writeString(_id);
-        parcel.writeDouble(rating);
-        parcel.writeString(message);
-        parcel.writeString(createdAt);
     }
 
     public static class ReviewPlace {
@@ -216,6 +187,48 @@ public class Review implements Parcelable {
         public void setPhotoUrl(String photoUrl) {
             this.photoUrl = photoUrl;
         }
+    }
+
+    protected Review(Parcel in) {
+        _id = in.readString();
+        rating = in.readDouble();
+        message = in.readString();
+        createdAt = in.readString();
+        photo = in.readString();
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(_id);
+        dest.writeDouble(rating);
+        dest.writeString(message);
+        dest.writeString(createdAt);
+        dest.writeString(photo);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    public static final Creator<Review> CREATOR = new Creator<Review>() {
+        @Override
+        public Review createFromParcel(Parcel in) {
+            return new Review(in);
+        }
+
+        @Override
+        public Review[] newArray(int size) {
+            return new Review[size];
+        }
+    };
+
+    public String getPhoto() {
+        return photo;
+    }
+
+    public void setPhoto(String photo) {
+        this.photo = photo;
     }
 
     public String get_id() {

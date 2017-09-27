@@ -4,12 +4,15 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
 import com.blancgrupo.apps.tripguide.R;
 import com.blancgrupo.apps.tripguide.data.entity.api.Review;
+import com.blancgrupo.apps.tripguide.utils.Constants;
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -22,6 +25,8 @@ import java.util.Locale;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
+
+import static com.blancgrupo.apps.tripguide.utils.Constants.API_UPLOAD_URL;
 
 /**
  * Created by venturachrisdev on 9/22/17.
@@ -59,14 +64,20 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewView
         holder.setDate(review.getCreatedAt());
         holder.setMessage(review.getMessage());
         holder.setRating(review.getRating());
-
+        holder.setPhoto(review.getPhoto());
         switch (holder.getType()) {
             case REVIEW_PLACE_TYPE:
-                ((ReviewPlaceViewHolder) holder).setName(review.getProfile().getName());
-                ((ReviewPlaceViewHolder) holder).setPhoto(review.getProfile().getPhotoUrl());
+                if (review.getProfile() != null) {
+                    if (review.getProfile() != null) {
+                        ((ReviewPlaceViewHolder) holder).setName(review.getProfile().getName());
+                        ((ReviewPlaceViewHolder) holder).setProfilePhoto(review.getProfile().getPhotoUrl());
+                    }
+                }
                 break;
             case REVIEW_PROFILE_TYPE:
-                ((ReviewProfileViewHolder) holder).setPlaceName(review.getPlace().getName());
+                if (review.getPlace() != null) {
+                    ((ReviewProfileViewHolder) holder).setPlaceName(review.getPlace().getName());
+                }
                 ((ReviewProfileViewHolder) holder).setOnReviewPlaceClickListener(
                         profileListener, review.getPlace());
                 break;
@@ -94,6 +105,8 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewView
         TextView profileMessage;
         @BindView(R.id.rating_bar)
         RatingBar ratingBar;
+        @BindView(R.id.photo)
+        ImageView photo;
         int type;
 
         public ReviewViewHolder(View itemView) {
@@ -118,7 +131,11 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewView
         }
 
         public void setMessage(String message) {
-            profileMessage.setText(message);
+            if (message != null && message.length() > 0) {
+                profileMessage.setText(message);
+            } else {
+                profileMessage.setVisibility(View.GONE);
+            }
         }
 
         public void setRating(double rating) {
@@ -127,6 +144,19 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewView
 
         public int getType() {
             return this.type;
+        }
+
+        public void setPhoto(String photoUrl) {
+            if (photoUrl != null && photoUrl.length() > 0) {
+                Glide.with(itemView.getContext())
+                        .load(API_UPLOAD_URL + photoUrl)
+                        .centerCrop()
+                        .crossFade()
+                        .into(photo);
+
+            } else {
+                photo.setVisibility(View.GONE);
+            }
         }
     }
 
@@ -145,14 +175,18 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewView
             profileName.setText(name);
         }
 
-        public void setPhoto(String photoUrl) {
-            Glide.with(itemView.getContext())
-                    .load(photoUrl)
-                    .centerCrop()
-                    .crossFade()
-                    .placeholder(R.mipmap.profile_placeholder)
-                    .into(profilePhoto);
+        public void setProfilePhoto(String photoUrl) {
+            if (photoUrl != null) {
+                Glide.with(itemView.getContext())
+                        .load(Constants.API_UPLOAD_URL + photoUrl)
+                        .diskCacheStrategy(DiskCacheStrategy.RESULT)
+                        .centerCrop()
+                        .crossFade()
+                        .placeholder(R.mipmap.profile_placeholder)
+                        .into(profilePhoto);
+            }
         }
+
     }
 
     public class ReviewProfileViewHolder extends ReviewViewHolder {

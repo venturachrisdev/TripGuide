@@ -61,12 +61,15 @@ public class Place implements Parcelable {
     @SerializedName("reviews")
     @Expose
     List<Review> reviews;
+    @SerializedName("userHasReviewed")
+    @Expose
+    boolean userHasReviewed;
 
     public Place() {
     }
 
     public Place(String id, List<String> types, String address, String googleId, City city, String name, Integer v, String createdAt, OpeningHours openingHours, Photo photo, List<Photo> photos, Location location,
-                 String phoneNumber, String website, Double rating, String description, List<Review> reviews) {
+                 String phoneNumber, String website, Double rating, String description, List<Review> reviews, boolean userHasReviewed) {
         this.id = id;
         this.types = types;
         this.address = address;
@@ -84,6 +87,7 @@ public class Place implements Parcelable {
         this.website = website;
         this.rating = rating;
         this.reviews = reviews;
+        this.userHasReviewed = userHasReviewed;
     }
 
     protected Place(Parcel in) {
@@ -101,6 +105,7 @@ public class Place implements Parcelable {
         phoneNumber = in.readString();
         website = in.readString();
         reviews = in.createTypedArrayList(Review.CREATOR);
+        userHasReviewed = in.readByte() != 0;
     }
 
     @Override
@@ -119,6 +124,7 @@ public class Place implements Parcelable {
         dest.writeString(phoneNumber);
         dest.writeString(website);
         dest.writeTypedList(reviews);
+        dest.writeByte((byte) (userHasReviewed ? 1 : 0));
     }
 
     @Override
@@ -137,6 +143,15 @@ public class Place implements Parcelable {
             return new Place[size];
         }
     };
+
+
+    public boolean isUserHasReviewed() {
+        return userHasReviewed;
+    }
+
+    public void setUserHasReviewed(boolean userHasReviewed) {
+        this.userHasReviewed = userHasReviewed;
+    }
 
     public String getDescription() {
         return description;

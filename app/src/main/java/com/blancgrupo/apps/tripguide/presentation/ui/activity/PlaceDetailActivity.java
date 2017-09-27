@@ -8,6 +8,7 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -18,7 +19,6 @@ import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.AppCompatRatingBar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -27,7 +27,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RatingBar;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
@@ -63,6 +62,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.iarcuschin.simpleratingbar.SimpleRatingBar;
+import com.rockerhieu.rvadapter.states.StatesRecyclerViewAdapter;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -131,6 +131,8 @@ public class PlaceDetailActivity extends AppCompatActivity
 
     @Inject
     PlaceVMFactory placeVMFactory;
+    @Inject
+    SharedPreferences sharedPreferences;
 
     PlaceViewModel placeViewModel;
     GoogleMap map;
@@ -171,6 +173,8 @@ public class PlaceDetailActivity extends AppCompatActivity
         } else {
             placeId = data.getString(Constants.EXTRA_PLACE_ID);
         }
+        String apiToken = sharedPreferences
+                .getString(Constants.USER_LOGGED_API_TOKEN_SP, null);
 
         Observer<PlaceWrapper> observer = new Observer<PlaceWrapper>() {
             @Override
@@ -193,7 +197,7 @@ public class PlaceDetailActivity extends AppCompatActivity
         if (placeViewModel.isPlaceLoaded()) {
             placeViewModel.getLoadedSinglePlace().observe(this, observer);
         } else {
-            placeViewModel.getSinglePlace(placeId).observe(this, observer);
+            placeViewModel.getSinglePlace(placeId, apiToken).observe(this, observer);
             placeViewModel.getPlaceDescription(placeId).observe(this, new Observer<PlaceDescriptionWrapper>() {
                 @Override
                 public void onChanged(@Nullable PlaceDescriptionWrapper placeDescriptionWrapper) {
@@ -334,6 +338,7 @@ public class PlaceDetailActivity extends AppCompatActivity
                     Intent intent = new Intent(PlaceDetailActivity.this, AddReviewActivity.class);
                     intent.putExtra(Constants.EXTRA_PLACE_ID, place.getId());
                     intent.putExtra(Constants.EXTRA_PROGRESS, simpleRatingBar.getRating());
+                    intent.putExtra(Constants.EXTRA_PLACE_NAME, place.getName());
                     startActivityForResult(intent, 999);
                 }
             }
@@ -478,16 +483,28 @@ public class PlaceDetailActivity extends AppCompatActivity
             }
         }
 
+        if (place.getId() == null || place.getV() == null ||
+                place.getCreatedAt() == null || place.isUserHasReviewed()) {
+            ratingLayout.setVisibility(View.GONE);
+            ratingBar.setVisibility(View.GONE);
+        }
+
         // Reviews
         List<Review> placeReviews = place.getReviews();
+        View emptyView1 = getLayoutInflater()
+                .inflate(R.layout.empty_reviews_layout, reviewsRecyclerView, false);
         ReviewAdapter reviewAdapter = new ReviewAdapter(ReviewAdapter.REVIEW_PLACE_TYPE, null);
+        StatesRecyclerViewAdapter statesRecyclerViewAdapter1 = new StatesRecyclerViewAdapter(
+                reviewAdapter, null, emptyView1, null);
         //reviewsRecyclerView.setHasFixedSize(true);
         reviewsRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
-        reviewsRecyclerView.setAdapter(reviewAdapter);
+        reviewsRecyclerView.setAdapter(statesRecyclerViewAdapter1);
         if (placeReviews != null && placeReviews.size() > 0) {
             reviewAdapter.updateData(placeReviews);
+            statesRecyclerViewAdapter1.setState(StatesRecyclerViewAdapter.STATE_NORMAL);
         } else {
             reviewsRecyclerView.hideShimmerAdapter();
+            statesRecyclerViewAdapter1.setState(StatesRecyclerViewAdapter.STATE_EMPTY);
         }
         updateMap(place);
     }
@@ -497,7 +514,9 @@ public class PlaceDetailActivity extends AppCompatActivity
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 999) {
             if (place != null) {
-                placeViewModel.loadSinglePlace(place.getId());
+                String apiToken = sharedPreferences
+                        .getString(Constants.USER_LOGGED_API_TOKEN_SP, null);
+                placeViewModel.loadSinglePlace(place.getId(), apiToken);
             }
         }
     }

@@ -5,19 +5,22 @@ import com.blancgrupo.apps.tripguide.data.entity.api.CityWrapper;
 import com.blancgrupo.apps.tripguide.data.entity.api.ParentTourWrapper;
 import com.blancgrupo.apps.tripguide.data.entity.api.PlaceDescriptionWrapper;
 import com.blancgrupo.apps.tripguide.data.entity.api.PlaceWrapper;
-import com.blancgrupo.apps.tripguide.data.entity.api.PlacesCoverWrapper;
 import com.blancgrupo.apps.tripguide.data.entity.api.PlacesWrapper;
 import com.blancgrupo.apps.tripguide.data.entity.api.Profile;
 import com.blancgrupo.apps.tripguide.data.entity.api.ProfileWrapper;
 import com.blancgrupo.apps.tripguide.data.entity.api.Review;
 import com.blancgrupo.apps.tripguide.data.entity.api.ReviewResponseWrapper;
-import com.blancgrupo.apps.tripguide.data.entity.api.ReviewWrapper;
 import com.blancgrupo.apps.tripguide.data.entity.api.TourWrapper;
+import com.blancgrupo.apps.tripguide.data.entity.api.UploadPhotoWrapper;
 
 import io.reactivex.Observable;
+import okhttp3.MultipartBody;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
+import retrofit2.http.Header;
+import retrofit2.http.Multipart;
 import retrofit2.http.POST;
+import retrofit2.http.Part;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 
@@ -34,7 +37,7 @@ public interface ApiPlaceService {
     Observable<PlacesWrapper> getPlaces();
 
     @GET("places/{place_id}?json")
-    Observable<PlaceWrapper> getSinglePlace(@Path("place_id") String placeId);
+    Observable<PlaceWrapper> getSinglePlace(@Path("place_id") String placeId, @Header("x-access-token") String apiToken);
 
     @GET("cities?json")
     Observable<CitiesWrapper> getCities();
@@ -62,6 +65,13 @@ public interface ApiPlaceService {
     @POST("profiles/access?json")
     Observable<ProfileWrapper> loginOrRegisterProfile(@Body Profile profile);
 
+    @Multipart
+    @POST("photo/upload?json")
+    Observable<UploadPhotoWrapper> uploadPhoto(@Part MultipartBody.Part image, @Header("x-access-token") String apiToken);
+
+    @POST("profiles/changephoto")
+    Observable<String> changeProfilePhoto(@Body Profile profile, @Header("x-access-token") String apiToken);
+
     @POST("reviews/add?json")
-    Observable<ReviewResponseWrapper> addReview(@Body Review review);
+    Observable<ReviewResponseWrapper> addReview(@Body Review review, @Header("x-access-token") String apiToken);
 }

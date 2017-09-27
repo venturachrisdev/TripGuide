@@ -8,7 +8,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.blancgrupo.apps.tripguide.MyApplication;
 import com.blancgrupo.apps.tripguide.R;
@@ -88,7 +87,7 @@ public class PlaceAdapter extends RecyclerView.Adapter<PlaceAdapter.PlaceViewHol
                 break;
             case PlaceViewHolder.PLACE_GRID:
                 ((HorizontalPlaceViewHolder) holder).setDistance(app, place.getLocation());
-//                ((HorizontalPlaceViewHolder) holder).setRating(place.getR);
+                ((HorizontalPlaceViewHolder) holder).setRating(place.getRating());
                 break;
             case PlaceViewHolder.PLACE_TOUR:
                 break;

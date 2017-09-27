@@ -14,10 +14,27 @@ public class ProfileWrapper {
     @SerializedName("status")
     @Expose
     String status;
+    @SerializedName("token")
+    @Expose
+    String token;
+
+    public ProfileWrapper(Profile profile, String status, String token) {
+        this.profile = profile;
+        this.status = status;
+        this.token = token;
+    }
 
     public ProfileWrapper(Profile profile, String status) {
         this.profile = profile;
         this.status = status;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
     }
 
     public Profile getProfile() {

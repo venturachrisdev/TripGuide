@@ -11,21 +11,13 @@
         android:layout_gravity="center"
         android:layout_width="150dp"
         android:layout_marginBottom="20dp"
-        android:layout_height="150dp" />
+        android:layout_height="150dp"
+        android:contentDescription="@string/app_name" />
 
     <TextView
-        android:text="It looks like you have not write any review about your visited places. Start now."
+        android:text="@string/no_reviews_profile"
         android:layout_width="match_parent"
         android:layout_marginBottom="20dp"
-        android:layout_height="wrap_content" />
-
-
-    <Button
-        android:id="@+id/btn"
-        android:textColor="@color/colorIcon"
-        android:text="Write your first review"
-        android:background="@color/colorAccent"
-        android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
 </LinearLayout>

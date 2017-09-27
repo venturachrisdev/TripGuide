@@ -1,10 +1,8 @@
 package com.blancgrupo.apps.tripguide.presentation.ui.viewmodel;
 
 import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
 
-import com.blancgrupo.apps.tripguide.data.GooglePlaceRepository;
 import com.blancgrupo.apps.tripguide.data.entity.api.PlaceDescriptionWrapper;
 import com.blancgrupo.apps.tripguide.data.entity.api.PlaceWrapper;
 import com.blancgrupo.apps.tripguide.data.entity.api.PlacesWrapper;
@@ -14,12 +12,6 @@ import com.blancgrupo.apps.tripguide.presentation.ui.viewmodel.livedata.PlaceLiv
 import com.blancgrupo.apps.tripguide.presentation.ui.viewmodel.livedata.PlacesLiveData;
 
 import java.util.Locale;
-
-import io.reactivex.Observer;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.annotations.NonNull;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.schedulers.Schedulers;
 
 /**
  * Created by root on 8/18/17.
@@ -31,20 +23,23 @@ public class PlaceViewModel extends ViewModel {
     private PlacesLiveData placesLiveData;
     private PlaceDescriptionLiveData placeDescriptionLiveData;
     private String placeId;
+    private String apiToken;
 
     public PlaceViewModel(PlaceRepository placeRepository) {
         this.placeRepository = placeRepository;
     }
 
-    public LiveData<PlaceWrapper> getSinglePlace(String placeId) {
+    public LiveData<PlaceWrapper> getSinglePlace(String placeId, String apiToken) {
         if (singlePlaceLiveData == null) {
             singlePlaceLiveData = new PlaceLiveData();
-            loadSinglePlace(placeId);
+            loadSinglePlace(placeId, apiToken);
             this.placeId = placeId;
+            this.apiToken = apiToken;
+
         } else {
             if (this.placeId == null || !this.placeId.equals(placeId)) {
                 this.placeId = placeId;
-                loadSinglePlace(this.placeId);
+                loadSinglePlace(this.placeId, this.apiToken);
             }
         }
         return singlePlaceLiveData;
@@ -55,10 +50,10 @@ public class PlaceViewModel extends ViewModel {
     }
 
 
-    public void loadSinglePlace(String placeId) {
+    public void loadSinglePlace(String placeId, String apiToken) {
         if (singlePlaceLiveData != null) {
                 singlePlaceLiveData.loadSinglePlace(
-                        placeRepository.getSinglePlace(placeId)
+                        placeRepository.getSinglePlace(placeId, apiToken)
                 );
         }
     }
@@ -78,7 +73,7 @@ public class PlaceViewModel extends ViewModel {
     }
 
     public LiveData<PlaceWrapper> getLoadedSinglePlace() {
-        return getSinglePlace(this.placeId);
+        return getSinglePlace(this.placeId, this.apiToken);
     }
 
     public LiveData<PlaceDescriptionWrapper> getPlaceDescription(String placeId) {

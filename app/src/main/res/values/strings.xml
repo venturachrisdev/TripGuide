@@ -84,7 +84,7 @@
     <string name="update_settings">Update settings</string>
     <string name="no_image_found">No image found.</string>
     <string name="no_tours_yet">We are working with the tours, please come back later for a better experience</string>
-    <string name="address_copied_to_clipboard">Adress copied to clipboard</string>
+    <string name="address_copied_to_clipboard">Address copied to clipboard</string>
     <string name="phone_copied_to_clipboard">Phone number copied to clipboard</string>
     <string name="website_copied_to_clipboard">Website copied to clipboard</string>
     <string name="change_location">Change location</string>
@@ -97,7 +97,7 @@
     <string name="in">in</string>
     <string name="network_error_tap_to_retry">We could not establish a connection
     with our servers. Please Tap to retry.</string>
-    <string name="ok_got_it">Ok, got it!</string>
+    <string name="ok_got_it">OK, got it!</string>
     <string name="hello_visitor">Hello, visitor!</string>
     <string name="no_thanks">No, thanks.</string>
     <string name="one_last_step">Just one more step!</string>
@@ -108,12 +108,12 @@
     <string name="tour_feature_title">Explore the world with our tours.</string>
     <string name="copied_to_clipboard">Copied to clipboard</string>
     <string name="coming_soon">Coming soon</string>
-    <string name="ok">Ok</string>
+    <string name="ok">OK</string>
     <string name="explore_places_title">Explore my city</string>
     <string name="explore_places_message">We\'ll find your city based on your current location using your GPS connection.</string>
     <string name="skip">Skip</string>
     <string name="finish">Finish</string>
-    <string name="please_wait">Please wait...</string>
+    <string name="please_wait">Please wait…</string>
     <string name="enable_location">Enable location</string>
     <string name="cannot_find_your_location">Sorry, we could not get your location, try again.</string>
     <string name="no_tour_selected">No tour selected</string>
@@ -135,5 +135,21 @@
     <string name="profile">Profile</string>
     <string name="please_install_google_maps">Please install Google Maps</string>
     <string name="logout">Logout</string>
+    <string name="reviews_number">%d Reviews</string>
+    <string name="updating_profile">Updating Profile…</string>
+    <string name="uploading_image">Uploading image…</string>
+    <string name="sign_in_aborted">Sign in aborted</string>
+    <string name="sending_review">Sending review…</string>
+    <string name="add_review">Add Review</string>
+    <string name="you_are_not_logged_in">You are not logged in.</string>
+    <string name="discard">Discard</string>
+    <string name="dont_discard">Don\'t Discard</string>
+    <string name="santo_domingo_republica_dominicana">Santo Domingo, Republica Dominicana</string>
+    <string name="reviews">Reviews</string>
+    <string name="rate_this_place">Rate this place</string>
+    <string name="send_review">Send Review!</string>
+    <string name="no_reviews_profile">It looks like you have not write any review about your visited places. Start now.</string>
+    <string name="add_photo">Add Photo</string>
+    <string name="no_reviews_yet_be_first">There is no reviews yet, be the first!</string>
 
 </resources>

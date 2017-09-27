@@ -1,30 +1,42 @@
 package com.blancgrupo.apps.tripguide.presentation.ui.activity;
 
+import android.Manifest;
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.net.Uri;
+import android.os.Build;
+import android.os.Bundle;
+import android.provider.DocumentsContract;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TextInputEditText;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.blancgrupo.apps.tripguide.MyApplication;
 import com.blancgrupo.apps.tripguide.R;
-import com.blancgrupo.apps.tripguide.data.ApiProfileRepository;
 import com.blancgrupo.apps.tripguide.data.entity.api.Review;
 import com.blancgrupo.apps.tripguide.data.entity.api.ReviewResponseWrapper;
-import com.blancgrupo.apps.tripguide.data.entity.api.ReviewWrapper;
+import com.blancgrupo.apps.tripguide.data.entity.api.UploadPhotoWrapper;
 import com.blancgrupo.apps.tripguide.domain.repository.ProfileRepository;
 import com.blancgrupo.apps.tripguide.presentation.di.component.DaggerActivityComponent;
 import com.blancgrupo.apps.tripguide.presentation.di.module.ActivityModule;
 import com.blancgrupo.apps.tripguide.utils.Constants;
+import com.bumptech.glide.Glide;
 import com.iarcuschin.simpleratingbar.SimpleRatingBar;
+
+import java.io.File;
 
 import javax.inject.Inject;
 
@@ -34,6 +46,11 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
+
+import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 
 public class AddReviewActivity extends AppCompatActivity {
     @BindView(R.id.toolbar)
@@ -44,8 +61,18 @@ public class AddReviewActivity extends AppCompatActivity {
     TextInputEditText reviewMessageEditText;
     @BindView(R.id.btn)
     Button sendReviewBtn;
+    @BindView(R.id.addphoto_btn)
+    Button addPhotoBtn;
+    @BindView(R.id.photo)
+    ImageView photo;
+    @BindView(R.id.review_place_name)
+    TextView placeName;
+    @BindView(R.id.close)
+            ImageView closeImage;
     Disposable disposable;
     String placeId;
+    String filePath;
+    ProgressDialog dialog;
 
     @Inject
     SharedPreferences sharedPreferences;
@@ -58,8 +85,10 @@ public class AddReviewActivity extends AppCompatActivity {
         setContentView(R.layout.activity_add_review);
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("Add Review");
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setTitle(R.string.add_review);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
 
         DaggerActivityComponent.builder()
                 .activityModule(new ActivityModule())
@@ -69,25 +98,164 @@ public class AddReviewActivity extends AppCompatActivity {
 
         Bundle data = getIntent().getExtras();
         float rating = data.getFloat(Constants.EXTRA_PROGRESS);
+        String place = data.getString(Constants.EXTRA_PLACE_NAME);
         ratingBar.setRating(rating);
         placeId = data.getString(Constants.EXTRA_PLACE_ID);
+        placeName.setText(place);
 
         sendReviewBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                sendReview();
+                uploadImage();
+            }
+        });
+
+        addPhotoBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                photoIntent();
             }
         });
 
 
     }
 
+    private void photoIntent() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (ActivityCompat.checkSelfPermission(this,
+                    Manifest.permission.READ_EXTERNAL_STORAGE) != PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, new String[] {
+                        Manifest.permission.READ_EXTERNAL_STORAGE,
+                }, 765);
+                return;
+            }
+        }
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        intent.setType("image/*");
+        startActivityForResult(intent, 9898);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == 765 && grantResults[0] == PERMISSION_GRANTED) {
+            photoIntent();
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 9898 && resultCode == RESULT_OK) {
+            Uri uri = data.getData();
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
+                try {
+                    String wholeId = DocumentsContract.getDocumentId(uri);
+                    String id = wholeId.split(":")[1];
+                    String[] column = {MediaStore.Images.Media.DATA};
+                    String sel = MediaStore.Images.Media._ID + "=?";
+                    Cursor cursor = getContentResolver().query(
+                            MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                            column, sel, new String[] {id}, null
+                    );
+                    if (cursor != null) {
+                        int columnIndex = cursor.getColumnIndex(column[0]);
+                        if (cursor.moveToFirst()) {
+                            filePath = cursor.getString(columnIndex);
+                        } else {
+                            Toast.makeText(this, R.string.network_error, Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                        cursor.close();
+                    }
+                } catch (IllegalArgumentException ex) {
+                    ex.printStackTrace();
+                    Cursor c = null;
+                    String column = "_data";
+                    String[] projection = {column};
+                    try {
+                        c = getContentResolver().query(
+                                uri, projection, null, null, null
+                        );
+                        if (c != null && c.moveToFirst()) {
+                            int index = c.getColumnIndexOrThrow(column);
+                            filePath = c.getString(index);
+                        }
+
+                    } finally {
+                        if (c != null) {
+                            c.close();
+                        }
+                    }
+                }
+                Toast.makeText(this, filePath, Toast.LENGTH_SHORT).show();
+            }
+            File file = new File(filePath);
+            Glide.with(this)
+                    .load(file)
+                    .centerCrop()
+                    .crossFade()
+                    .into(photo);
+            photo.setVisibility(View.VISIBLE);
+            addPhotoBtn.setVisibility(View.GONE);
+            closeImage.setVisibility(View.VISIBLE);
+            closeImage.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    filePath = null;
+                    photo.setVisibility(View.GONE);
+                    addPhotoBtn.setVisibility(View.VISIBLE);
+                    view.setVisibility(View.GONE);
+                }
+            });
+        }
+    }
+
+    private void uploadImage() {
+        dialog = new ProgressDialog(this);
+        if (filePath != null && filePath.length() > 1) {
+            String apiToken = sharedPreferences.getString(Constants.USER_LOGGED_API_TOKEN_SP, null);
+            File file = new File(filePath);
+            MultipartBody.Part image = MultipartBody.Part .createFormData("photo", file.getName(),
+                    RequestBody.create(MediaType.parse("image/*"), file));
+            dialog.setMessage(getString(R.string.uploading_image));
+            dialog.setIndeterminate(true);
+            dialog.show();
+            disposable = profileRepository.uploadPhoto(image, apiToken)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new Consumer<UploadPhotoWrapper>() {
+                        @Override
+                        public void accept(@io.reactivex.annotations.NonNull
+                                                   UploadPhotoWrapper uploadPhotoWrapper)
+                                throws Exception {
+                            Toast.makeText(AddReviewActivity.this, uploadPhotoWrapper.getPhotoUrl(),
+                                    Toast.LENGTH_SHORT).show();
+                            sendReview(uploadPhotoWrapper.getPhotoUrl());
+                        }
+                    }, new Consumer<Throwable>() {
+                        @Override
+                        public void accept(@io.reactivex.annotations.NonNull Throwable throwable) throws Exception {
+                            Toast.makeText(AddReviewActivity.this, throwable.getMessage(), Toast.LENGTH_SHORT).show();
+                            dialog.hide();
+                        }
+                    });
+        } else {
+            sendReview(null);
+        }
+    }
+
     private void
-    sendReview() {
+    sendReview(String photoUrl) {
+        dialog.cancel();
         String profileId = sharedPreferences.getString(Constants.USER_LOGGED_ID_SP, null);
+        String apiToken = sharedPreferences.getString(Constants.USER_LOGGED_API_TOKEN_SP, null);
         if (profileId != null) {
             float rating = ratingBar.getRating();
             String message = reviewMessageEditText.getText().toString();
+            if (message.length() > 0) {
+                message = message.trim();
+            }
             Review review = new Review();
             review.setRating(rating);
             review.setMessage(message);
@@ -97,18 +265,17 @@ public class AddReviewActivity extends AppCompatActivity {
             Review.ReviewPlace place = new Review.ReviewPlace();
             place.set_id(placeId);
             review.setPlace(place);
+            review.setPhoto(photoUrl);
             // send review
-            final ProgressDialog dialog = new ProgressDialog(this);
-            dialog.setMessage("Sending review...");
+            dialog.setMessage(getString(R.string.sending_review));
             dialog.setIndeterminate(true);
             dialog.show();
-            disposable = profileRepository.addReview(review)
+            disposable = profileRepository.addReview(review, apiToken)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(new Consumer<ReviewResponseWrapper>() {
                         @Override
-                        public void accept(@io.reactivex.annotations.NonNull ReviewResponseWrapper reviewWrapper) throws Exception {
-                            Toast.makeText(AddReviewActivity.this, "Thanks for review this place.", Toast.LENGTH_SHORT).show();
+                        public void accept(@io.reactivex.annotations.NonNull ReviewResponseWrapper reviewResponseWrapper) throws Exception {
                             dialog.hide();
                             finish();
                         }
@@ -119,8 +286,9 @@ public class AddReviewActivity extends AppCompatActivity {
                             dialog.hide();
                         }
                     });
+
         } else {
-            Toast.makeText(this, "You are not logged in.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.you_are_not_logged_in, Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -136,9 +304,9 @@ public class AddReviewActivity extends AppCompatActivity {
     public void onBackPressed() {
         if (reviewMessageEditText.getText().toString().length() > 0) {
             MaterialDialog dialog = new MaterialDialog.Builder(this)
-                    .content("Are you sure?")
-                    .positiveText("Discard")
-                    .negativeText("Dont Discard")
+                    .content(R.string.are_you_sure)
+                    .positiveText(R.string.discard)
+                    .negativeText(R.string.dont_discard)
                     .onPositive(new MaterialDialog.SingleButtonCallback() {
                         @Override
                         public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {

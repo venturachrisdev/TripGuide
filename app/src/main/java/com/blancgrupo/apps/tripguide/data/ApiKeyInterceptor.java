@@ -1,5 +1,7 @@
 package com.blancgrupo.apps.tripguide.data;
 
+import android.support.annotation.NonNull;
+
 import java.io.IOException;
 
 import okhttp3.HttpUrl;
@@ -19,7 +21,7 @@ public class ApiKeyInterceptor implements Interceptor {
     }
 
     @Override
-    public Response intercept(Chain chain) throws IOException {
+    public Response intercept(@NonNull Chain chain) throws IOException {
         Request oldRequest = chain.request();
         HttpUrl oldUrl = oldRequest.url();
 
@@ -29,6 +31,7 @@ public class ApiKeyInterceptor implements Interceptor {
 
         Request newRequest = oldRequest.newBuilder()
                 .url(newUrl)
+                .addHeader("Authorization", "Basic")
                 .build();
 
         return chain.proceed(newRequest);

@@ -41,13 +41,16 @@ public class PlaceCover {
     @SerializedName("location")
     @Expose
     private Location location;
+    @SerializedName("rating")
+    @Expose
+    private double rating;
     @SerializedName("phone_number")
     private String phoneNumber;
 
     public PlaceCover() {
     }
 
-    public PlaceCover(String id, String type, String address, String googleId, String city, String name, Integer v, String createdAt, OpeningHours openingHours, Photo photo, Location location, String phoneNumber) {
+    public PlaceCover(String id, String type, String address, String googleId, String city, String name, Integer v, String createdAt, OpeningHours openingHours, Photo photo, Location location, double rating, String phoneNumber) {
         this.id = id;
         this.type = type;
         this.address = address;
@@ -59,9 +62,17 @@ public class PlaceCover {
         this.openingHours = openingHours;
         this.photo = photo;
         this.location = location;
+        this.rating = rating;
         this.phoneNumber = phoneNumber;
     }
 
+    public double getRating() {
+        return rating;
+    }
+
+    public void setRating(double rating) {
+        this.rating = rating;
+    }
 
     public String getId() {
         return id;

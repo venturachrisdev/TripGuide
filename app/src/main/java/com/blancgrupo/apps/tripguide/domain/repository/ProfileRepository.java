@@ -4,9 +4,10 @@ import com.blancgrupo.apps.tripguide.data.entity.api.Profile;
 import com.blancgrupo.apps.tripguide.data.entity.api.ProfileWrapper;
 import com.blancgrupo.apps.tripguide.data.entity.api.Review;
 import com.blancgrupo.apps.tripguide.data.entity.api.ReviewResponseWrapper;
-import com.blancgrupo.apps.tripguide.data.entity.api.ReviewWrapper;
+import com.blancgrupo.apps.tripguide.data.entity.api.UploadPhotoWrapper;
 
 import io.reactivex.Observable;
+import okhttp3.MultipartBody;
 
 /**
  * Created by venturachrisdev on 9/21/17.
@@ -15,5 +16,7 @@ import io.reactivex.Observable;
 public interface ProfileRepository {
     Observable<ProfileWrapper> getSingleProfile(String profileId);
     Observable<ProfileWrapper> loginOrRegisterProfile(Profile profile);
-    Observable<ReviewResponseWrapper> addReview(Review review);
+    Observable<UploadPhotoWrapper> uploadPhoto(MultipartBody.Part image, String apiToken);
+    Observable<ReviewResponseWrapper> addReview(Review review, String apiToken);
+    Observable<String> changeProfilePhoto(Profile profile, String apiToken);
 }
