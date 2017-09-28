@@ -1,10 +1,10 @@
 package com.blancgrupo.apps.tripguide.presentation.ui.activity;
 
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.NavigationView;
@@ -35,7 +35,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.OptionalPendingResult;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
@@ -160,8 +159,8 @@ public class HomeActivity extends AppCompatActivity
         startActivityForResult(signInIntent, RC_SIGN_IN);
     }
 
-    @Override
-    public void loadAccount() {
+//    @Override
+//    public void loadAccount() {
 ////        final ProgressDialog dialog = new ProgressDialog(this);
 ////        dialog.setMessage("Signing in...");
 //        Toast.makeText(this, "Loading Account!!!!", Toast.LENGTH_SHORT).show();
@@ -191,7 +190,7 @@ public class HomeActivity extends AppCompatActivity
 //        } else {
 //            Toast.makeText(this, "Theres a session.", Toast.LENGTH_SHORT).show();
 //        }
-    }
+//    }
 
     @Override
     public void onReviewProfileClick(Review.ReviewPlace reviewPlace) {
@@ -219,8 +218,7 @@ public class HomeActivity extends AppCompatActivity
                     cityDetailFragment.setArguments(args);
                     return cityDetailFragment;
                 case 1:
-                    FavoritesFragment favoritesFragment = new FavoritesFragment();
-                    return favoritesFragment;
+                    return new FavoritesFragment();
                 case 2:
                     ProfileFragment profileFragment = new ProfileFragment();
                     authFragment = profileFragment;
@@ -328,6 +326,7 @@ public class HomeActivity extends AppCompatActivity
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == RC_SIGN_IN) {
+            pagerAdapter.notifyDataSetChanged();
             GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
             handleSignInResult(result);
         }
@@ -349,6 +348,8 @@ public class HomeActivity extends AppCompatActivity
     private void handleSignInResult(GoogleSignInResult result) {
         if (authFragment != null) {
             authFragment.handleSignInResult(result);
+        } else {
+            Toast.makeText(this, "Dude got null", Toast.LENGTH_LONG).show();
         }
     }
 

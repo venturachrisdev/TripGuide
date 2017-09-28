@@ -105,7 +105,6 @@ public class ApiUtils {
         void handleSignInResult(GoogleSignInResult result);
         void handleSignOut(Status status);
         boolean isUserSaved();
-        void initializeProfileLayout(Profile profile, String token);
     }
 }
 
