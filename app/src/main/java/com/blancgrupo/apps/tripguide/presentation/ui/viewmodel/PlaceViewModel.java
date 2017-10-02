@@ -45,6 +45,20 @@ public class PlaceViewModel extends ViewModel {
         return singlePlaceLiveData;
     }
 
+    public LiveData<PlacesWrapper> getMyFavorites(String apiToken) {
+        if (placesLiveData == null) {
+            placesLiveData = new PlacesLiveData();
+        }
+        loadMyFavorites(apiToken);
+        return placesLiveData;
+    }
+
+    private void loadMyFavorites(String apiToken) {
+        if (placesLiveData != null) {
+            placesLiveData.loadPlaces(placeRepository.getMyFavorites(apiToken));
+        }
+    }
+
     public boolean isPlaceLoaded() {
         return this.placeId != null;
     }

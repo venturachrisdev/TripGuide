@@ -3,16 +3,22 @@ package com.blancgrupo.apps.tripguide.utils;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
+import android.media.ExifInterface;
+import android.util.Log;
 
 import com.blancgrupo.apps.tripguide.MyApplication;
 import com.blancgrupo.apps.tripguide.R;
 import com.blancgrupo.apps.tripguide.data.entity.api.PlaceTypesCover;
-import com.blancgrupo.apps.tripguide.data.entity.api.Profile;
 import com.blancgrupo.apps.tripguide.data.entity.api.TourCover;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 
 /**
  * Created by root on 8/18/17.
@@ -105,6 +111,78 @@ public class ApiUtils {
         void handleSignInResult(GoogleSignInResult result);
         void handleSignOut(Status status);
         boolean isUserSaved();
+    }
+
+
+    public static File resizeImage(String id, File file, int requiredSize, int quality){
+        try {
+            // BitmapFactory options to downsize the image
+            BitmapFactory.Options o = new BitmapFactory.Options();
+            o.inJustDecodeBounds = true;
+            o.inSampleSize = 6;
+            // factor of downsizing the image
+
+            FileInputStream inputStream = new FileInputStream(file);
+            //Bitmap selectedBitmap = null;
+            BitmapFactory.decodeStream(inputStream, null, o);
+            inputStream.close();
+
+            // The new size we want to scale to
+            final int REQUIRED_SIZE = requiredSize;
+
+            // Find the correct scale value. It should be the power of 2.
+            int scale = 1;
+            while(o.outWidth / scale / 2 >= REQUIRED_SIZE &&
+                    o.outHeight / scale / 2 >= REQUIRED_SIZE) {
+                scale *= 2;
+            }
+
+            BitmapFactory.Options o2 = new BitmapFactory.Options();
+            o2.inSampleSize = scale;
+            inputStream = new FileInputStream(file);
+            Bitmap selectedBitmap = BitmapFactory.decodeStream(inputStream, null, o2);
+            int orientation = 1;
+            ExifInterface exif = new ExifInterface(file.getAbsolutePath());
+            orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, 1);
+            Log.d("Tripguide", "Imagen Orientation: " + orientation);
+            inputStream.close();
+            if (orientation > 2) {
+                boolean xy = false;
+                int degrees = 0;
+                Matrix matrix = new Matrix();
+                switch (orientation) {
+                    case 3:
+                    case 4:
+                        degrees = 180;
+                        break;
+                    case 5:
+                    case 6:
+                        degrees = 90;
+                        xy = true;
+                        break;
+                    case 7:
+                    case 8:
+                        degrees = 270;
+                        break;
+                }
+                matrix.postRotate(degrees);
+                int square = selectedBitmap.getWidth();
+                if (xy) {
+                    square = selectedBitmap.getHeight();
+                }
+                selectedBitmap = Bitmap.createBitmap(selectedBitmap, 0, 0, square, square,
+                        matrix, true);
+            }
+
+            File newFile = new File("/storage/emulated/0/DCIM/tripguide-profile-" + id + ".jpg");
+            FileOutputStream outputStream = new FileOutputStream(newFile);
+            selectedBitmap.compress(Bitmap.CompressFormat.JPEG, quality, outputStream);
+            return newFile;
+        } catch (Exception e) {
+            Log.d("Tripguide", e.getMessage());
+            e.printStackTrace();
+            return file;
+        }
     }
 }
 

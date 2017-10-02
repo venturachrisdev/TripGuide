@@ -32,6 +32,7 @@ import com.blancgrupo.apps.tripguide.data.entity.api.UploadPhotoWrapper;
 import com.blancgrupo.apps.tripguide.domain.repository.ProfileRepository;
 import com.blancgrupo.apps.tripguide.presentation.di.component.DaggerActivityComponent;
 import com.blancgrupo.apps.tripguide.presentation.di.module.ActivityModule;
+import com.blancgrupo.apps.tripguide.utils.ApiUtils;
 import com.blancgrupo.apps.tripguide.utils.Constants;
 import com.bumptech.glide.Glide;
 import com.iarcuschin.simpleratingbar.SimpleRatingBar;
@@ -188,7 +189,6 @@ public class AddReviewActivity extends AppCompatActivity {
                         }
                     }
                 }
-                Toast.makeText(this, filePath, Toast.LENGTH_SHORT).show();
             }
             File file = new File(filePath);
             Glide.with(this)
@@ -215,11 +215,14 @@ public class AddReviewActivity extends AppCompatActivity {
         dialog = new ProgressDialog(this);
         if (filePath != null && filePath.length() > 1) {
             String apiToken = sharedPreferences.getString(Constants.USER_LOGGED_API_TOKEN_SP, null);
-            File file = new File(filePath);
+            String id = sharedPreferences.getString(Constants.USER_LOGGED_ID_SP, null);
+            File file = ApiUtils.resizeImage(id, new File(filePath), 75, 100);
             MultipartBody.Part image = MultipartBody.Part .createFormData("photo", file.getName(),
                     RequestBody.create(MediaType.parse("image/*"), file));
             dialog.setMessage(getString(R.string.uploading_image));
             dialog.setIndeterminate(true);
+            dialog.setCancelable(false);
+            dialog.setCanceledOnTouchOutside(false);
             dialog.show();
             disposable = profileRepository.uploadPhoto(image, apiToken)
                     .subscribeOn(Schedulers.io())
@@ -229,8 +232,6 @@ public class AddReviewActivity extends AppCompatActivity {
                         public void accept(@io.reactivex.annotations.NonNull
                                                    UploadPhotoWrapper uploadPhotoWrapper)
                                 throws Exception {
-                            Toast.makeText(AddReviewActivity.this, uploadPhotoWrapper.getPhotoUrl(),
-                                    Toast.LENGTH_SHORT).show();
                             sendReview(uploadPhotoWrapper.getPhotoUrl());
                         }
                     }, new Consumer<Throwable>() {
@@ -269,6 +270,8 @@ public class AddReviewActivity extends AppCompatActivity {
             // send review
             dialog.setMessage(getString(R.string.sending_review));
             dialog.setIndeterminate(true);
+            dialog.setCancelable(false);
+            dialog.setCanceledOnTouchOutside(false);
             dialog.show();
             disposable = profileRepository.addReview(review, apiToken)
                     .subscribeOn(Schedulers.io())
@@ -277,6 +280,8 @@ public class AddReviewActivity extends AppCompatActivity {
                         @Override
                         public void accept(@io.reactivex.annotations.NonNull ReviewResponseWrapper reviewResponseWrapper) throws Exception {
                             dialog.hide();
+                            Toast.makeText(AddReviewActivity.this, R.string.thanks_for_your_review
+                                    , Toast.LENGTH_SHORT).show();
                             finish();
                         }
                     }, new Consumer<Throwable>() {

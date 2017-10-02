@@ -1,5 +1,6 @@
 package com.blancgrupo.apps.tripguide.presentation.ui.activity;
 
+import android.app.ProgressDialog;
 import android.arch.lifecycle.LifecycleRegistry;
 import android.arch.lifecycle.LifecycleRegistryOwner;
 import android.arch.lifecycle.Observer;
@@ -17,10 +18,12 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -28,6 +31,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -40,6 +44,7 @@ import com.blancgrupo.apps.tripguide.data.entity.api.PlaceDescription;
 import com.blancgrupo.apps.tripguide.data.entity.api.PlaceDescriptionWrapper;
 import com.blancgrupo.apps.tripguide.data.entity.api.PlaceWrapper;
 import com.blancgrupo.apps.tripguide.data.entity.api.Review;
+import com.blancgrupo.apps.tripguide.domain.repository.PlaceRepository;
 import com.blancgrupo.apps.tripguide.presentation.di.component.DaggerActivityComponent;
 import com.blancgrupo.apps.tripguide.presentation.di.module.ActivityModule;
 import com.blancgrupo.apps.tripguide.presentation.ui.adapter.PhotoAdapter;
@@ -52,6 +57,7 @@ import com.blancgrupo.apps.tripguide.utils.Constants;
 import com.blancgrupo.apps.tripguide.utils.LocationUtils;
 import com.blancgrupo.apps.tripguide.utils.TextStringUtils;
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.Target;
 import com.cooltechworks.views.shimmer.ShimmerRecyclerView;
 import com.elyeproj.loaderviewlibrary.LoaderTextView;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -64,14 +70,20 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.iarcuschin.simpleratingbar.SimpleRatingBar;
 import com.rockerhieu.rvadapter.states.StatesRecyclerViewAdapter;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.concurrent.Callable;
 
 import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 public class PlaceDetailActivity extends AppCompatActivity
@@ -84,6 +96,8 @@ public class PlaceDetailActivity extends AppCompatActivity
     CollapsingToolbarLayout toolbarLayout;
     @BindView(R.id.header_image)
     ImageView headerImage;
+    @BindView(R.id.share_btn)
+    Button shareBtn;
     @BindView(R.id.address_text)
     LoaderTextView addressText;
     @BindView(R.id.distance_text)
@@ -120,10 +134,15 @@ public class PlaceDetailActivity extends AppCompatActivity
     RelativeLayout ratingLayout;
     @BindView(R.id.rating_bar)
     SimpleRatingBar ratingBar;
+    @BindView(R.id.reviews_count)
+    TextView reviewsCountText;
     @BindView(R.id.rating_toolbar)
     SimpleRatingBar ratingToolbar;
     @BindView(R.id.info_layout)
     InfoView infoView;
+    @BindView(R.id.favorite_btn)
+    Button favoriteBtn;
+
     List<Photo> myPhotos;
 
     @BindView(R.id.reviews_rv)
@@ -133,6 +152,8 @@ public class PlaceDetailActivity extends AppCompatActivity
     PlaceVMFactory placeVMFactory;
     @Inject
     SharedPreferences sharedPreferences;
+    @Inject
+    PlaceRepository placeRepository;
 
     PlaceViewModel placeViewModel;
     GoogleMap map;
@@ -266,8 +287,73 @@ public class PlaceDetailActivity extends AppCompatActivity
         ratingBar.setRating(0);
     }
 
+    File getPhotoFile(Photo photo) {
+        try {
+            return Glide.with(this)
+                    .load(ApiUtils.getPlacePhotoUrl((MyApplication) getApplication(),
+                            photo.getReference(), photo.getWidth()))
+                    .downloadOnly(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL)
+                    .get();
+        } catch(Exception e) {
+            e.printStackTrace();
+            Log.w("SHARE", "Sharing image failed");
+            return null;
+        }
+    }
+
+    void sharePlace(final Place place) {
+        final Photo photo = place.getPhoto();
+        Observable<File> saveImage = Observable.fromCallable(new Callable<File>() {
+            @Override
+            public File call() throws Exception {
+                return getPhotoFile(photo);
+            }
+        });
+
+        saveImage
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<File>() {
+                    @Override
+                    public void accept(@io.reactivex.annotations.NonNull File file) throws Exception {
+                        Uri uri = FileProvider.getUriForFile(PlaceDetailActivity.this,
+                                "com.blancgrupo.apps.tripguide.ImageFileProvider", file);
+                        shareImage(uri, place);
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(@io.reactivex.annotations.NonNull Throwable throwable) throws Exception {
+                        throwable.printStackTrace();
+                        Toast.makeText(PlaceDetailActivity.this, R.string.network_error, Toast.LENGTH_SHORT)
+                                .show();
+                    }
+                });
+    }
+
+    void shareImage(Uri uri, Place place) {
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        intent.setType("image/jpeg");
+        intent.putExtra(Intent.EXTRA_STREAM, uri);
+        intent.putExtra(Intent.EXTRA_TITLE, place.getName());
+        intent.putExtra(Intent.EXTRA_SUBJECT, place.getName());
+        intent.putExtra(Intent.EXTRA_TEXT, String.format(
+                getString(R.string.share_text),
+                place.getName(),
+                place.getCity().getName(),
+                "http://tripguide.com/place/" + place.getId())
+        );
+        Intent chooser = Intent.createChooser(intent, getString(R.string.share));
+        startActivity(chooser);
+    }
+
     void bindPlace(@NonNull final Place place) {
         toolbarLayout.setTitle(place.getName());
+        shareBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                sharePlace(place);
+            }
+        });
         if (place.getCity() != null) {
             toolbar.setSubtitle(place.getCity().getName());
         }
@@ -278,6 +364,14 @@ public class PlaceDetailActivity extends AppCompatActivity
         }
         addressText.setText(place.getAddress());
         this.place = place;
+
+
+        favoriteBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                setPlaceAsFavorite(place);
+            }
+        });
         addressLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -454,8 +548,9 @@ public class PlaceDetailActivity extends AppCompatActivity
                 Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("google.navigation:q=" + location));
                 if (intent.resolveActivity(getPackageManager()) != null) {
                     startActivity(intent);
+                } else {
+                    Toast.makeText(PlaceDetailActivity.this, R.string.please_install_google_maps, Toast.LENGTH_SHORT).show();
                 }
-                Toast.makeText(PlaceDetailActivity.this, R.string.please_install_google_maps, Toast.LENGTH_SHORT).show();
             }
         });
         if (LocationUtils.checkForPermission(this)) {
@@ -476,8 +571,9 @@ public class PlaceDetailActivity extends AppCompatActivity
                         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("google.navigation:q=" + location));
                         if (intent.resolveActivity(getPackageManager()) != null) {
                             startActivity(intent);
+                        } else {
+                            Toast.makeText(PlaceDetailActivity.this, R.string.please_install_google_maps, Toast.LENGTH_SHORT).show();
                         }
-                        Toast.makeText(PlaceDetailActivity.this, R.string.please_install_google_maps, Toast.LENGTH_SHORT).show();
                     }
                 });
             }
@@ -500,6 +596,8 @@ public class PlaceDetailActivity extends AppCompatActivity
         reviewsRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         reviewsRecyclerView.setAdapter(statesRecyclerViewAdapter1);
         if (placeReviews != null && placeReviews.size() > 0) {
+            reviewsCountText.setVisibility(View.VISIBLE);
+            reviewsCountText.setText(String.format(getString(R.string.reviews_count), placeReviews.size()));
             reviewAdapter.updateData(placeReviews);
             statesRecyclerViewAdapter1.setState(StatesRecyclerViewAdapter.STATE_NORMAL);
         } else {
@@ -507,6 +605,44 @@ public class PlaceDetailActivity extends AppCompatActivity
             statesRecyclerViewAdapter1.setState(StatesRecyclerViewAdapter.STATE_EMPTY);
         }
         updateMap(place);
+    }
+
+    private void setPlaceAsFavorite(Place place) {
+        String tokenId = sharedPreferences.getString(Constants.USER_LOGGED_API_TOKEN_SP, null);
+        if (tokenId != null) {
+            final ProgressDialog dialog = new ProgressDialog(this);
+            dialog.setIndeterminate(true);
+            dialog.setCancelable(false);
+            dialog.setCanceledOnTouchOutside(false);
+            dialog.setMessage(getString(R.string.please_wait));
+            dialog.show();
+            placeRepository.addToMyFavorites(tokenId, place)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new Consumer<String>() {
+                        @Override
+                        public void accept(@io.reactivex.annotations.NonNull String s) throws Exception {
+                            if (s.equals("added")) {
+                                Toast.makeText(PlaceDetailActivity.this, R.string.added_to_favorites,
+                                        Toast.LENGTH_LONG).show();
+                            } else {
+                                Toast.makeText(PlaceDetailActivity.this, R.string.removed_from_favorites,
+                                        Toast.LENGTH_LONG).show();
+                            }
+                            dialog.hide();
+                        }
+                    }, new Consumer<Throwable>() {
+                        @Override
+                        public void accept(@io.reactivex.annotations.NonNull Throwable throwable) throws Exception {
+                            Toast.makeText(PlaceDetailActivity.this, R.string.network_error, Toast.LENGTH_LONG)
+                                    .show();
+                            dialog.hide();
+                        }
+                    });
+        } else {
+            Toast.makeText(PlaceDetailActivity.this, R.string.you_are_not_logged_in,
+                    Toast.LENGTH_LONG).show();
+        }
     }
 
     @Override
@@ -531,6 +667,7 @@ public class PlaceDetailActivity extends AppCompatActivity
 
     void mapLocation(@NonNull GoogleMap map, @NonNull final Place place) {
         if (place.getLocation() != null) {
+            findViewById(R.id.map).setVisibility(View.VISIBLE);
             LatLng where = new LatLng(place.getLocation().getLat(), place.getLocation().getLng());
             map.addMarker(new MarkerOptions()
                     .title(place.getName())

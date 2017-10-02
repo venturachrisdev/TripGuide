@@ -87,6 +87,7 @@
 
         <FrameLayout
             android:id="@+id/map"
+            android:visibility="invisible"
             android:layout_width="match_parent"
             android:layout_height="160dp"/>
 
@@ -96,6 +97,49 @@
             android:id="@+id/info_layout"
             android:animateLayoutChanges="true"
             android:layout_height="wrap_content"/>
+
+        <RelativeLayout
+            android:id="@+id/rating_layout"
+            android:foreground="?attr/selectableItemBackgroundBorderless"
+            android:padding="20dp"
+            android:visibility="gone"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/ratext"
+                android:text="@string/rate_this_place"
+                android:textAlignment="center"
+                android:layout_centerHorizontal="true"
+                android:textSize="16sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <com.iarcuschin.simpleratingbar.SimpleRatingBar
+                android:id="@+id/rating_bar"
+                android:layout_below="@id/ratext"
+                android:isIndicator="false"
+                app:srb_numberOfStars="5"
+                app:srb_starCornerRadius="0"
+                app:srb_starBorderWidth="2"
+                app:srb_stepSize="0.5"
+                android:layout_marginTop="10dp"
+                app:srb_fillColor="@color/colorAccent"
+                app:srb_borderColor="@color/colorAccent"
+                app:srb_starSize="40dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+        </RelativeLayout>
+
+        <TextView
+            android:id="@+id/reviews_count"
+            android:visibility="gone"
+            android:layout_margin="12dp"
+            android:textAlignment="center"
+            android:layout_gravity="center_horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
 
 
         <LinearLayout
@@ -403,42 +447,6 @@
 
 
         </LinearLayout>
-
-        <RelativeLayout
-            android:id="@+id/rating_layout"
-            android:clickable="true"
-            android:foreground="?attr/selectableItemBackgroundBorderless"
-            android:focusable="true"
-            android:padding="20dp"
-            android:visibility="gone"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <TextView
-                android:id="@+id/ratext"
-                android:text="@string/rate_this_place"
-                android:textAlignment="center"
-                android:layout_centerHorizontal="true"
-                android:textSize="16sp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-
-            <com.iarcuschin.simpleratingbar.SimpleRatingBar
-                android:id="@+id/rating_bar"
-                android:layout_below="@id/ratext"
-                android:isIndicator="false"
-                app:srb_numberOfStars="5"
-                app:srb_starCornerRadius="0"
-                app:srb_starBorderWidth="2"
-                app:srb_stepSize="0.5"
-                android:layout_marginTop="10dp"
-                app:srb_fillColor="@color/colorAccent"
-                app:srb_borderColor="@color/colorAccent"
-                app:srb_starSize="40dp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-
-        </RelativeLayout>
 
 
         <TextView

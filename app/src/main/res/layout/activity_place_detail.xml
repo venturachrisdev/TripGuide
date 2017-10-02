@@ -37,7 +37,7 @@
                     android:focusable="true"
                     android:clickable="true"
                     android:foreground="?attr/selectableItemBackgroundBorderless"
-                    android:alpha="0.8"
+                    android:alpha="0.9"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent" />
 
@@ -57,6 +57,7 @@
                         app:srb_starSize="20dp"
                         app:srb_starCornerRadius="0"
                         app:srb_starBorderWidth="1"
+                        app:srb_stepSize="0.5"
                         app:srb_borderColor="@color/colorIcon"
                         android:layout_marginLeft="30dp"
                         android:clickable="false"

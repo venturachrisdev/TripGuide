@@ -1,5 +1,6 @@
 package com.blancgrupo.apps.tripguide.domain.repository;
 
+import com.blancgrupo.apps.tripguide.data.entity.api.Place;
 import com.blancgrupo.apps.tripguide.data.entity.api.PlaceDescriptionWrapper;
 import com.blancgrupo.apps.tripguide.data.entity.api.PlaceWrapper;
 import com.blancgrupo.apps.tripguide.data.entity.api.PlacesWrapper;
@@ -15,4 +16,6 @@ public interface PlaceRepository {
     Observable<PlaceWrapper> getSinglePlace(String placeId, String apiToken);
     Observable<PlaceDescriptionWrapper>
     getPlaceDescription(String placeId, String lang);
+    Observable<PlacesWrapper> getMyFavorites(String apiToken);
+    Observable<String> addToMyFavorites(String apiToken, Place place);
 }

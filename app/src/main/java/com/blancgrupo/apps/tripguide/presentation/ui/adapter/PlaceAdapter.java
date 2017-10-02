@@ -207,7 +207,6 @@ public class PlaceAdapter extends RecyclerView.Adapter<PlaceAdapter.PlaceViewHol
         public void setImage(String placePhotoUrl) {
             Glide.with(itemView.getContext())
                     .load(placePhotoUrl)
-                    .placeholder(R.mipmap.place_holder)
                     .centerCrop()
                     .crossFade()
                     .diskCacheStrategy(DiskCacheStrategy.ALL)

@@ -4,9 +4,9 @@ import com.blancgrupo.apps.tripguide.presentation.di.ActivityScope;
 import com.blancgrupo.apps.tripguide.presentation.di.module.ActivityModule;
 import com.blancgrupo.apps.tripguide.presentation.ui.activity.AddReviewActivity;
 import com.blancgrupo.apps.tripguide.presentation.ui.activity.ChooseLocationActivity;
-import com.blancgrupo.apps.tripguide.presentation.ui.activity.HomeActivity;
 import com.blancgrupo.apps.tripguide.presentation.ui.activity.CityToursActivity;
 import com.blancgrupo.apps.tripguide.presentation.ui.activity.GettingStartedActivity;
+import com.blancgrupo.apps.tripguide.presentation.ui.activity.HomeActivity;
 import com.blancgrupo.apps.tripguide.presentation.ui.activity.PlaceDetailActivity;
 import com.blancgrupo.apps.tripguide.presentation.ui.activity.SearchActivity;
 import com.blancgrupo.apps.tripguide.presentation.ui.activity.SingleTourActivity;
@@ -14,6 +14,7 @@ import com.blancgrupo.apps.tripguide.presentation.ui.activity.TourActivity;
 import com.blancgrupo.apps.tripguide.presentation.ui.fragment.AccountFragment;
 import com.blancgrupo.apps.tripguide.presentation.ui.fragment.CitiesFragment;
 import com.blancgrupo.apps.tripguide.presentation.ui.fragment.CityDetailFragment;
+import com.blancgrupo.apps.tripguide.presentation.ui.fragment.FavoritesFragment;
 import com.blancgrupo.apps.tripguide.presentation.ui.fragment.MapFragment;
 import com.blancgrupo.apps.tripguide.presentation.ui.fragment.ProfileFragment;
 import com.blancgrupo.apps.tripguide.presentation.ui.fragment.SignInFragment;
@@ -46,5 +47,6 @@ public interface ActivityComponent {
     void inject(AddReviewActivity addReviewActivity);
     void inject(AccountFragment accountFragment);
     void inject(SignInFragment signInFragment);
+    void inject(FavoritesFragment favoritesFragment);
 }
 

@@ -1,17 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#343355</color>
-    <color name="colorPrimaryDark">#161523</color>
-    <color name="colorAccent">#F43868</color>
+    /* Primary */
+    <color name="colorPrimary">#2196F3</color>
+    <color name="colorPrimaryDark">#0065b0</color>
+    <!--<color name="colorAccent">#F43868</color>-->
+    <color name="colorAccent">#03A9F4</color>
+    <color name="colorSelectableBackground">#6603A9F4</color>
+    <color name="colorIconAccent">#3B9193</color>
+
+    /* Secondary */
     <color name="colorIcon">#FFFFFF</color>
     <color name="colorDivider">#EDEDED</color>
     <color name="colorPrimaryText">#212121</color>
     <color name="colorSecondaryText">#757575</color>
     <color name="colorPrimaryLight">#B2DFDB</color>
     <color name="colorBackground">#F0F0F0</color>
-    <color name="colorIconAccent">#3B9193</color>
     <color name="colorPlaceholder">#C0C4D7</color>
-    <color name="colorSelectableBackground">#66F43868</color>
     <color name="black_overlay">#66000000</color>
     <color name="pager_bullet_active">#FFFFFF</color>
     <color name="pager_bullet_inactive">#33000000</color>

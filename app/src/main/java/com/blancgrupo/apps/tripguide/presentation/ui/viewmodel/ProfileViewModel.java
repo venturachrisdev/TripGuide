@@ -3,7 +3,6 @@ package com.blancgrupo.apps.tripguide.presentation.ui.viewmodel;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.ViewModel;
 
-import com.blancgrupo.apps.tripguide.data.ApiProfileRepository;
 import com.blancgrupo.apps.tripguide.data.entity.api.Profile;
 import com.blancgrupo.apps.tripguide.data.entity.api.ProfileWrapper;
 import com.blancgrupo.apps.tripguide.domain.repository.ProfileRepository;
@@ -29,9 +28,23 @@ public class ProfileViewModel extends ViewModel {
         return profileLiveData;
     }
 
+    public LiveData<ProfileWrapper> getLoggedProfile(String apiToken) {
+        if (profileLiveData == null) {
+            profileLiveData = new ProfileLiveData();
+        }
+        loadLoggedProfile(apiToken);
+        return profileLiveData;
+    }
+
     public void loadProfileForAccess(Profile profile) {
         if (profileLiveData != null) {
             profileLiveData.loadProfile(profileRepository.loginOrRegisterProfile(profile));
+        }
+    }
+
+    public void loadLoggedProfile(String apiToken) {
+        if (profileLiveData != null) {
+            profileLiveData.loadProfile(profileRepository.getLoggedProfile(apiToken));
         }
     }
 }

@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -72,6 +73,7 @@ public class CityDetailFragment extends Fragment
     CityVMFactory cityVMFactory;
     @Inject
     SharedPreferences sharedPreferences;
+    Observer<CityWrapper> observer;
 
 
     @BindView(R.id.header_image)
@@ -82,6 +84,8 @@ public class CityDetailFragment extends Fragment
     FeatureCardView featureCardView;
     @BindView(R.id.all_topics_rv)
     ShimmerRecyclerView recyclerView;
+    @BindView(R.id.swipeRefreshLayout)
+    SwipeRefreshLayout swipeRefreshLayout;
     StatesRecyclerViewAdapter statesRecyclerViewAdapter;
     TopicAdapter adapter;
     View errorView;
@@ -146,11 +150,12 @@ public class CityDetailFragment extends Fragment
         cityViewModel = ViewModelProviders.of(this, cityVMFactory)
                 .get(CityViewModel.class);
 
-        Observer<CityWrapper> observer = new Observer<CityWrapper>() {
+        observer = new Observer<CityWrapper>() {
             @Override
             public void onChanged(@Nullable CityWrapper cityWrapper) {
                 // STOP PROGRESS
                 recyclerView.hideShimmerAdapter();
+                swipeRefreshLayout.setRefreshing(false);
                 if (cityWrapper != null) {
                     if (cityWrapper.getCity() != null) {
                         statesRecyclerViewAdapter.setState(StatesRecyclerViewAdapter.STATE_NORMAL);
@@ -168,6 +173,14 @@ public class CityDetailFragment extends Fragment
                 }
             }
         };
+
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                cityViewModel.loadSingleCity(cityId);
+                recyclerView.showShimmerAdapter();
+            }
+        });
 
         if (cityViewModel.isSingleCityLoaded()) {
             cityViewModel.getLoadedSingleCity().observe(this, observer);

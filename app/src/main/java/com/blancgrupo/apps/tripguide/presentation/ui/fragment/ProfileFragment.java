@@ -50,10 +50,14 @@ public class ProfileFragment extends Fragment implements  ApiUtils.AuthFragment 
     @Override
     public void onStart() {
         super.onStart();
-        if (isUserSaved()) {
-            showAccountFragment();
+        if (sharedPreferences.contains(Constants.USER_LOGGED_API_TOKEN_SP)) {
+            if (accountFragment == null || !accountFragment.isAdded()) {
+                showAccountFragment();
+            }
         } else {
-            showSignInFragment();
+            if (signInFragment == null || !signInFragment.isAdded()) {
+                showSignInFragment();
+            }
         }
     }
 

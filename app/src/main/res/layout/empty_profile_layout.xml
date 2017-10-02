@@ -7,7 +7,7 @@
 
     <ImageView
         android:background="@drawable/ic_rate_review_black_24dp"
-        android:backgroundTint="@color/colorAccent"
+        android:alpha="0.2"
         android:layout_gravity="center"
         android:layout_width="150dp"
         android:layout_marginBottom="20dp"

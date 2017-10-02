@@ -122,22 +122,31 @@
     <string name="we_arrived_to">Llegamos a</string>
     <string name="profile">Perfil</string>
     <string name="add_photo">Agregar foto</string>
-    <string name="add_review">Agregar Evaluacion</string>
+    <string name="add_review">Agregar Calificacion</string>
     <string name="discard">Descartar</string>
     <string name="logout">Cerrar sesion</string>
     <string name="please_install_google_maps">Por favor, instala Google Maps</string>
-    <string name="sending_review">Enviando evaluacion…</string>
-    <string name="send_review">Enviar evaluacioon</string>
-    <string name="rate_this_place">Evaluar este lugar</string>
-    <string name="reviews">Evaluaciones</string>
-    <string name="write_your_review">Escribe un comentario (opcional)</string>
+    <string name="sending_review">Enviando calificacion…</string>
+    <string name="send_review">Enviar calificacion</string>
+    <string name="rate_this_place">Califica este lugar</string>
+    <string name="reviews">Calificaciones</string>
+    <string name="write_your_review">Escribe tu opinion (opcional)</string>
     <string name="you_are_not_logged_in">No has iniciado sesion</string>
     <string name="uploading_image">Subiendo foto…</string>
     <string name="updating_profile">Actualizando Perfil…</string>
     <string name="sign_in_aborted">Inicio de sesion cancelado</string>
-    <string name="reviews_number">%d Evaluaciones</string>
-    <string name="no_reviews_yet_be_first">Aun no hay evaluaciones, se el primero!</string>
-    <string name="no_reviews_profile">Parece que no has escrito ninguna evaluacion. Empieza ahora mismo.</string>
+    <string name="reviews_number">%d Calificaciones</string>
+    <string name="no_reviews_yet_be_first">Aun no hay calificaciones, se el primero!</string>
+    <string name="no_reviews_profile">Parece que no has publicado ninguna calificacion. Empieza ahora mismo.</string>
     <string name="dont_discard">No descartar</string>
+    <string name="adding_to_favorites">Agregando a tus favoritos…</string>
+    <string name="error_displaying_profile">Error cargando tu perfil</string>
+    <string name="removed_from_favorites">Eliminado de tus favoritos</string>
+    <string name="reviews_count">%d Calificaciones</string>
+    <string name="scout">Scout</string>
+    <string name="share_text" formatted="false">Echale un vistazo a %s (%s) en tripguide: %s</string>
+    <string name="thanks_for_your_review">Gracias por tu opinion</string>
+    <string name="traveler">Traveler</string>
+    <string name="visitor">Visitor</string>
 
 </resources>

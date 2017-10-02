@@ -1,9 +1,12 @@
 package com.blancgrupo.apps.tripguide.presentation.ui.adapter;
 
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
@@ -79,7 +82,7 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewView
                     ((ReviewProfileViewHolder) holder).setPlaceName(review.getPlace().getName());
                 }
                 ((ReviewProfileViewHolder) holder).setOnReviewPlaceClickListener(
-                        profileListener, review.getPlace());
+                        profileListener, review.getPlace(), review);
                 break;
         }
     }
@@ -189,9 +192,11 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewView
 
     }
 
-    public class ReviewProfileViewHolder extends ReviewViewHolder {
+    public class ReviewProfileViewHolder extends ReviewViewHolder implements PopupMenu.OnMenuItemClickListener {
         @BindView(R.id.review_place_name)
         TextView placeName;
+        @BindView(R.id.options_btn)
+        ImageButton optionsBtn;
 
         public ReviewProfileViewHolder(View itemView) {
             super(itemView);
@@ -203,13 +208,36 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewView
         }
 
         public void setOnReviewPlaceClickListener(final ReviewProfileListener listener,
-                                                  final Review.ReviewPlace reviewPlace) {
+                                                  final Review.ReviewPlace reviewPlace,
+                                                  final Review review) {
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     listener.onReviewProfileClick(reviewPlace);
                 }
             });
+            optionsBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    popupMenu(view);
+                }
+            });
+        }
+
+        private void popupMenu(View view) {
+            PopupMenu menu = new PopupMenu(this.itemView.getContext(), view);
+            menu.setOnMenuItemClickListener(this);
+            menu.inflate(R.menu.favorites);
+            menu.setGravity(0);
+            menu.show();
+        }
+
+        @Override
+        public boolean onMenuItemClick(MenuItem item) {
+//            switch (item.getItemId()) {
+//                default:
+//            }
+            return false;
         }
     }
 

@@ -3,6 +3,7 @@ package com.blancgrupo.apps.tripguide.data.service;
 import com.blancgrupo.apps.tripguide.data.entity.api.CitiesWrapper;
 import com.blancgrupo.apps.tripguide.data.entity.api.CityWrapper;
 import com.blancgrupo.apps.tripguide.data.entity.api.ParentTourWrapper;
+import com.blancgrupo.apps.tripguide.data.entity.api.Place;
 import com.blancgrupo.apps.tripguide.data.entity.api.PlaceDescriptionWrapper;
 import com.blancgrupo.apps.tripguide.data.entity.api.PlaceWrapper;
 import com.blancgrupo.apps.tripguide.data.entity.api.PlacesWrapper;
@@ -64,6 +65,15 @@ public interface ApiPlaceService {
 
     @POST("profiles/access?json")
     Observable<ProfileWrapper> loginOrRegisterProfile(@Body Profile profile);
+
+    @GET("profiles/me?json")
+    Observable<ProfileWrapper> getLoggedProfile(@Header("x-access-token") String apiToken);
+
+    @GET("profiles/me/favorites?json")
+    Observable<PlacesWrapper> getMyFavorites(@Header("x-access-token") String apiToken);
+
+    @POST("profiles/me/favorites/add")
+    Observable<String> addToMyFavorites(@Header("x-access-token") String apiToken, @Body Place place);
 
     @Multipart
     @POST("photo/upload?json")

@@ -15,6 +15,7 @@ import okhttp3.MultipartBody;
 
 public interface ProfileRepository {
     Observable<ProfileWrapper> getSingleProfile(String profileId);
+    Observable<ProfileWrapper> getLoggedProfile(String apiToken);
     Observable<ProfileWrapper> loginOrRegisterProfile(Profile profile);
     Observable<UploadPhotoWrapper> uploadPhoto(MultipartBody.Part image, String apiToken);
     Observable<ReviewResponseWrapper> addReview(Review review, String apiToken);

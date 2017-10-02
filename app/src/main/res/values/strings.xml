@@ -144,7 +144,6 @@
     <string name="you_are_not_logged_in">You are not logged in.</string>
     <string name="discard">Discard</string>
     <string name="dont_discard">Don\'t Discard</string>
-    <string name="santo_domingo_republica_dominicana" translatable="false">Santo Domingo, Republica Dominicana</string>
     <string name="reviews">Reviews</string>
     <string name="rate_this_place">Rate this place</string>
     <string name="send_review">Send Review</string>
@@ -152,5 +151,15 @@
     <string name="add_photo">Add Photo</string>
     <string name="no_reviews_yet_be_first">There is no reviews yet, be the first!</string>
     <string name="write_your_review">Write your review (optional)</string>
+    <string name="adding_to_favorites">Adding to favorites…</string>
+    <string name="error_displaying_profile">Error displaying profile</string>
+    <string name="removed_from_favorites">Removed from favorites</string>
+    <string name="thanks_for_your_review">Thanks for your review</string>
+    <string name="reviews_count">%d Reviews</string>
+    <string name="xp_count" formatted="false" translatable="false">%d XP</string>
+    <string name="traveler">Traveler</string>
+    <string name="visitor">Visitor</string>
+    <string name="scout">Scout</string>
+    <string name="share_text" formatted="false">Check out %s (%s) at tripguide: %s.</string>
 
 </resources>

@@ -19,6 +19,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -48,7 +49,6 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.cooltechworks.views.shimmer.ShimmerRecyclerView;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
-import com.google.android.gms.common.api.Status;
 import com.rockerhieu.rvadapter.states.StatesRecyclerViewAdapter;
 
 import java.io.File;
@@ -63,6 +63,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
+import me.zhanghai.android.materialprogressbar.MaterialProgressBar;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -84,6 +85,14 @@ public class AccountFragment extends LifecycleFragment {
     CircleImageView profileImage;
     @BindView(R.id.review_number)
     TextView reviewNumber;
+    @BindView(R.id.review_number2)
+    TextView reviewNumber2;
+    @BindView(R.id.xp_progress)
+    MaterialProgressBar XP_Progress;
+    @BindView(R.id.review_title)
+    TextView reviewTitleText;
+    @BindView(R.id.swipeRefreshLayout)
+    SwipeRefreshLayout swipeRefreshLayout;
 
     StatesRecyclerViewAdapter statesRecyclerViewAdapter;
     ReviewAdapter.ReviewProfileListener profileListener;
@@ -143,13 +152,21 @@ public class AccountFragment extends LifecycleFragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(
                 getContext(), LinearLayoutManager.VERTICAL, false));
         recyclerView.setAdapter(statesRecyclerViewAdapter);
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                recoverSession();
+            }
+        });
         return v;
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        recoverSession();
+        if (profileName.getText() == null || profileName.getText().length() <= 0) {
+            recoverSession();
+        }
     }
 
     @Override
@@ -169,20 +186,24 @@ public class AccountFragment extends LifecycleFragment {
     }
 
     public void initializeProfileLayout(Profile profile, String token) {
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString(Constants.USER_LOGGED_ID_SP, profile.get_id());
-        editor.putString(Constants.USER_LOGGED_SP, profile.getTokenId());
-        editor.putString(Constants.USER_LOGGED_TYPE_SP, profile.getType());
-        editor.putString(Constants.USER_LOGGED_API_TOKEN_SP, token);
-        editor.apply();
+        if (profile != null && token != null) {
+            swipeRefreshLayout.setRefreshing(false);
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putString(Constants.USER_LOGGED_ID_SP, profile.get_id());
+            editor.putString(Constants.USER_LOGGED_SP, profile.getTokenId());
+            editor.putString(Constants.USER_LOGGED_TYPE_SP, profile.getType());
+            editor.putString(Constants.USER_LOGGED_API_TOKEN_SP, token);
+            editor.apply();
 
-        bindProfile(profile);
+            bindProfile(profile);
 
-        List<Review> profileReviews = profile.getReviews();
-        if (profileReviews !=  null && profileReviews.size() > 0) {
-            reviewAdapter.updateData(profile.getReviews());
-        } else {
-            statesRecyclerViewAdapter.setState(StatesRecyclerViewAdapter.STATE_EMPTY);
+            List<Review> profileReviews = profile.getReviews();
+            if (profileReviews !=  null && profileReviews.size() > 0) {
+                reviewAdapter.updateData(profile.getReviews());
+                statesRecyclerViewAdapter.setState(StatesRecyclerViewAdapter.STATE_NORMAL);
+            } else {
+                statesRecyclerViewAdapter.setState(StatesRecyclerViewAdapter.STATE_EMPTY);
+            }
         }
     }
 
@@ -190,16 +211,14 @@ public class AccountFragment extends LifecycleFragment {
     public void recoverSession() {
         if (sharedPreferences.contains(Constants.USER_LOGGED_API_TOKEN_SP) &&
                 sharedPreferences.contains(Constants.USER_LOGGED_SP)) {
-            Profile profile = new Profile();
-            profile.setType(sharedPreferences.getString(Constants.USER_LOGGED_TYPE_SP, "email"));
-            profile.setTokenId(sharedPreferences.getString(Constants.USER_LOGGED_SP, null));
-            profileViewModel.signInOrRegister(profile).observe(this, new Observer<ProfileWrapper>() {
+            final String apiToken = sharedPreferences.getString(Constants.USER_LOGGED_API_TOKEN_SP, null);
+            profileViewModel.getLoggedProfile(apiToken).observe(this, new Observer<ProfileWrapper>() {
                 @Override
                 public void onChanged(@Nullable ProfileWrapper profileWrapper) {
                     if (profileWrapper != null) {
-                        if (profileWrapper.getProfile() != null && profileWrapper.getStatus().equals("OK")) {
+                        if (profileWrapper.getProfile() != null) {
                             initializeProfileLayout(profileWrapper.getProfile(),
-                                    profileWrapper.getToken());
+                                    apiToken);
                         }
                     } else {
                         Toast.makeText(getContext(), R.string.network_error, Toast.LENGTH_LONG)
@@ -278,9 +297,12 @@ public class AccountFragment extends LifecycleFragment {
     private void photoIntent() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (ActivityCompat.checkSelfPermission(getActivity(),
-                    Manifest.permission.READ_EXTERNAL_STORAGE) != PERMISSION_GRANTED) {
+                    Manifest.permission.READ_EXTERNAL_STORAGE) != PERMISSION_GRANTED
+                    || ActivityCompat.checkSelfPermission(getActivity(),
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE) != PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(getActivity(), new String[] {
                         Manifest.permission.READ_EXTERNAL_STORAGE,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
                 }, 765);
                 return;
             }
@@ -294,7 +316,7 @@ public class AccountFragment extends LifecycleFragment {
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == 765 && grantResults[0] == PERMISSION_GRANTED) {
+        if (requestCode == 765 && grantResults[0] == PERMISSION_GRANTED && grantResults[1] == PERMISSION_GRANTED) {
             photoIntent();
         }
     }
@@ -303,11 +325,19 @@ public class AccountFragment extends LifecycleFragment {
         dialog = new ProgressDialog(getContext());
         if (filePath != null && filePath.length() > 1) {
             String apiToken = sharedPreferences.getString(Constants.USER_LOGGED_API_TOKEN_SP, null);
-            File file = new File(filePath);
+            String id = sharedPreferences.getString(Constants.USER_LOGGED_ID_SP, null);
+            File file = ApiUtils.resizeImage(id, new File(filePath), 50, 50);
+            Glide.with(getContext())
+                    .load(file)
+                    .centerCrop()
+                    .crossFade()
+                    .into(profileImage);
             MultipartBody.Part image = MultipartBody.Part .createFormData("photo", file.getName(),
                     RequestBody.create(MediaType.parse("image/*"), file));
             dialog.setMessage(getString(R.string.uploading_image));
             dialog.setIndeterminate(true);
+            dialog.setCancelable(false);
+            dialog.setCanceledOnTouchOutside(false);
             dialog.show();
             disposable = profileRepository.uploadPhoto(image, apiToken)
                     .subscribeOn(Schedulers.io())
@@ -319,12 +349,16 @@ public class AccountFragment extends LifecycleFragment {
                                 throws Exception {
                             dialog.hide();
                             dialog.cancel();
+                            Glide.with(getContext())
+                                    .load(Constants.API_UPLOAD_URL + uploadPhotoWrapper.getPhotoUrl())
+                                    .centerCrop()
+                                    .crossFade()
+                                    .into(profileImage);
                             updateProfile(uploadPhotoWrapper.getPhotoUrl());
                         }
                     }, new Consumer<Throwable>() {
                         @Override
                         public void accept(@io.reactivex.annotations.NonNull Throwable throwable) throws Exception {
-                            Toast.makeText(getContext(), throwable.getMessage(), Toast.LENGTH_SHORT).show();
                             dialog.hide();
                         }
                     });
@@ -342,6 +376,9 @@ public class AccountFragment extends LifecycleFragment {
         profile.setTokenId(tokenId);
 
         dialog.setMessage(getString(R.string.updating_profile));
+        dialog.setIndeterminate(true);
+        dialog.setCancelable(false);
+        dialog.setCanceledOnTouchOutside(false);
         dialog.show();
         disposable = profileRepository.changeProfilePhoto(profile, apiToken)
                 .subscribeOn(Schedulers.io())
@@ -354,7 +391,6 @@ public class AccountFragment extends LifecycleFragment {
                 }, new Consumer<Throwable>() {
                     @Override
                     public void accept(@io.reactivex.annotations.NonNull Throwable throwable) throws Exception {
-                        Toast.makeText(getContext(), throwable.getMessage(), Toast.LENGTH_SHORT).show();
                         dialog.hide();
                     }
                 });
@@ -362,22 +398,44 @@ public class AccountFragment extends LifecycleFragment {
 
     private void bindProfile(Profile profile) {
         profileName.setText(profile.getName());
-        reviewNumber.setText(String.format(getString(R.string.reviews_number), profile.getReviews().size()));
         profileEmail.setText(profile.getEmail());
         if (profile.getPhotoUrl() != null && profile.getPhotoUrl().length() > 0) {
             Glide.with(getContext())
                     .load(Constants.API_UPLOAD_URL + profile.getPhotoUrl())
                     .centerCrop()
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .crossFade()
                     .placeholder(R.mipmap.profile_placeholder)
                     .into(profileImage);
         }
+        int progress = calculateXP_progress(profile.getExperience());
+        XP_Progress.setProgress(progress);
         profileImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 photoIntent();
             }
         });
+    }
+
+    public int calculateXP_progress(int experience) {
+        float progress;
+        reviewNumber.setText(String.format(getString(R.string.xp_count), experience));
+        if (experience < Constants.XP_FIRST_LEVEL_TOP) {
+            float rat = (Float.valueOf(experience) / Float.valueOf(Constants.XP_FIRST_LEVEL_TOP));
+            reviewNumber2.setText(String.format("/ " + getString(R.string.xp_count), Constants.XP_FIRST_LEVEL_TOP));
+            reviewTitleText.setText(R.string.visitor);
+            progress = 100 * rat;
+        } else if (experience < Constants.XP_SECOND_LEVEL_TOP) {
+            reviewNumber2.setText(String.format("/ " + getString(R.string.xp_count), Constants.XP_SECOND_LEVEL_TOP));
+            reviewTitleText.setText(R.string.traveler);
+            progress = 100 * (Float.valueOf(experience)/ Float.valueOf(Constants.XP_SECOND_LEVEL_TOP));
+        } else {
+            reviewNumber2.setText(String.format("/ " + getString(R.string.xp_count), Constants.XP_THIRD_LEVEL_TOP));
+            reviewTitleText.setText(R.string.scout);
+            progress = 100 * (Float.valueOf(experience) / Float.valueOf(Constants.XP_THIRD_LEVEL_TOP));
+        }
+        return (int) progress;
     }
 
     @Override

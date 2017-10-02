@@ -26,6 +26,9 @@ public class ApiProfileRepository implements ProfileRepository {
     public Observable<ProfileWrapper> getSingleProfile(String profileId) {
         return apiPlaceService.getSingleProfile(profileId);
     }
+    public Observable<ProfileWrapper> getLoggedProfile(String apiToken) {
+        return apiPlaceService.getLoggedProfile(apiToken);
+    }
 
     @Override
     public Observable<ProfileWrapper> loginOrRegisterProfile(Profile profile) {
@@ -45,4 +48,5 @@ public class ApiProfileRepository implements ProfileRepository {
     public Observable<String> changeProfilePhoto(Profile profile, String apiToken) {
         return apiPlaceService.changeProfilePhoto(profile, apiToken);
     }
+
 }

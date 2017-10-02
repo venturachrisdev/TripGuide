@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.NavigationView;
@@ -17,7 +16,9 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.ContextMenu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 
 import com.blancgrupo.apps.tripguide.R;
@@ -199,6 +200,28 @@ public class HomeActivity extends AppCompatActivity
         startActivity(i);
     }
 
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        if (v.getId() == R.id.options_btn) {
+            MenuItem remove =  menu.add(0, v.getId(), 0, "Remove");
+            remove.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+                @Override
+                public boolean onMenuItemClick(MenuItem menuItem) {
+                    Toast.makeText(HomeActivity.this, "Removing ", Toast.LENGTH_SHORT).show();
+                    return false;
+                }
+            });
+        }
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        if (item.getTitle().equals("Remove")) {
+            Toast.makeText(this, "Removed!!", Toast.LENGTH_SHORT).show();
+        }
+        return super.onContextItemSelected(item);
+    }
 
     class PagerAdapter extends FragmentStatePagerAdapter {
         String cityId;
