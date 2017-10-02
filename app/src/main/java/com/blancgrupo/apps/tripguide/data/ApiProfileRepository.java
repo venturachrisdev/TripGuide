@@ -45,6 +45,11 @@ public class ApiProfileRepository implements ProfileRepository {
     }
 
     @Override
+    public Observable<String> removeReview(Review review, String apiToken) {
+        return apiPlaceService.removeReview(review, apiToken);
+    }
+
+    @Override
     public Observable<String> changeProfilePhoto(Profile profile, String apiToken) {
         return apiPlaceService.changeProfilePhoto(profile, apiToken);
     }

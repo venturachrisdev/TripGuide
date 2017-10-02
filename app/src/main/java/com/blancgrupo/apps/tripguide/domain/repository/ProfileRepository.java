@@ -19,5 +19,8 @@ public interface ProfileRepository {
     Observable<ProfileWrapper> loginOrRegisterProfile(Profile profile);
     Observable<UploadPhotoWrapper> uploadPhoto(MultipartBody.Part image, String apiToken);
     Observable<ReviewResponseWrapper> addReview(Review review, String apiToken);
+
+    Observable<String> removeReview(Review review, String apiToken);
+
     Observable<String> changeProfilePhoto(Profile profile, String apiToken);
 }

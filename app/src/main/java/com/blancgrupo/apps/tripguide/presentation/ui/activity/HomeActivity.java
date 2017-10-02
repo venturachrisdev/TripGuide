@@ -1,5 +1,6 @@
 package com.blancgrupo.apps.tripguide.presentation.ui.activity;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -293,8 +294,6 @@ public class HomeActivity extends AppCompatActivity
             case R.id.nav_location:
                 Intent intent = new Intent(this, ChooseLocationActivity.class);
                 startActivityForResult(intent, Constants.CHOOSE_LOCATION_RC);
-                break;
-            case R.id.nav_favorite:
                 break;
             case R.id.nav_share:
                 break;

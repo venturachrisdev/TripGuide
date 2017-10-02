@@ -161,5 +161,7 @@
     <string name="visitor">Visitor</string>
     <string name="scout">Scout</string>
     <string name="share_text" formatted="false">Check out %s (%s) at tripguide: %s.</string>
+    <string name="remove_from_favorites">Remove from favorites</string>
+    <string name="delete">Delete</string>
 
 </resources>

@@ -58,7 +58,7 @@
                 android:text="@string/add_to_favorite"
                 android:textSize="12sp"
                 android:layout_marginBottom="5dp"
-                android:drawableTop="@drawable/ic_favorite_accent_24dp"
+                android:drawableTop="@drawable/ic_favorite_border_black_24dp"
                 android:textColor="@color/colorAccent"
                 android:focusable="true"
                 android:clickable="true"

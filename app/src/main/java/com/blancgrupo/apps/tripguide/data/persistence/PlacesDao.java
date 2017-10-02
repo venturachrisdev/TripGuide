@@ -1,5 +1,6 @@
 package com.blancgrupo.apps.tripguide.data.persistence;
 
+import android.arch.lifecycle.LiveData;
 import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Delete;
 import android.arch.persistence.room.Insert;
@@ -20,10 +21,10 @@ import io.reactivex.Flowable;
 public interface PlacesDao {
 
     @Query("SELECT * FROM places ORDER BY createdAt DESC")
-    Flowable<List<PlaceModel>> getPlaces();
+    LiveData<List<PlaceModel>> getPlaces();
 
     @Query("SELECT * FROM places WHERE placeId = :placeId LIMIT 1")
-    Flowable<PlaceModel> getPlaceById(String placeId);
+    LiveData<PlaceModel> getPlaceById(String placeId);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertPlace(PlaceModel place);

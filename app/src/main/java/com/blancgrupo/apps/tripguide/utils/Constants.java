@@ -45,9 +45,9 @@ public class Constants {
     public static String EXTRA_PROGRESS = createExtra("PROGRESS");
 
 
-    public static final int XP_FIRST_LEVEL_TOP = 20;
-    public static final int XP_SECOND_LEVEL_TOP = 50;
-    public static final int XP_THIRD_LEVEL_TOP = 100;
+    public static final int XP_FIRST_LEVEL_TOP = 50;
+    public static final int XP_SECOND_LEVEL_TOP = 100;
+    public static final int XP_THIRD_LEVEL_TOP = 500;
 
 
     public static String createExtra(String name) {

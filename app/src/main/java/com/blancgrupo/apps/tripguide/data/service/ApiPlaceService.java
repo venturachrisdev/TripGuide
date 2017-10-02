@@ -84,4 +84,7 @@ public interface ApiPlaceService {
 
     @POST("reviews/add?json")
     Observable<ReviewResponseWrapper> addReview(@Body Review review, @Header("x-access-token") String apiToken);
+
+    @POST("reviews/remove?json")
+    Observable<String> removeReview(@Body Review review, @Header("x-access-token") String apiToken);
 }

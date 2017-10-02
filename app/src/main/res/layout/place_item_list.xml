@@ -6,6 +6,7 @@
     android:clickable="true"
     android:id="@+id/place_item_layout"
     android:focusable="true"
+    android:layout_marginBottom="10dp"
     android:foreground="?attr/selectableItemBackground"
     android:layout_height="80dp">
 

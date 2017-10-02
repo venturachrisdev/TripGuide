@@ -41,10 +41,12 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewView
     public static final int REVIEW_PLACE_TYPE = 1200;
     public static final int REVIEW_PROFILE_TYPE = 1201;
     ReviewProfileListener profileListener;
+    ReviewMenuListener reviewMenuListener;
 
-    public ReviewAdapter(int type, ReviewProfileListener listener) {
+    public ReviewAdapter(int type, ReviewProfileListener listener, ReviewMenuListener menuListener) {
         this.type = type;
         this.profileListener = listener;
+        this.reviewMenuListener = menuListener;
     }
 
     @Override
@@ -227,21 +229,31 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewView
         private void popupMenu(View view) {
             PopupMenu menu = new PopupMenu(this.itemView.getContext(), view);
             menu.setOnMenuItemClickListener(this);
-            menu.inflate(R.menu.favorites);
+            menu.inflate(R.menu.my_profile_review);
             menu.setGravity(0);
             menu.show();
         }
 
         @Override
         public boolean onMenuItemClick(MenuItem item) {
-//            switch (item.getItemId()) {
-//                default:
-//            }
+            ReviewAdapter.this.handleReviewItem(item, getAdapterPosition());
             return false;
         }
     }
 
+    private void handleReviewItem(MenuItem item, int adapterPosition) {
+        if (reviews != null && adapterPosition < reviews.size()) {
+            Review review = reviews.get(adapterPosition);
+            reviewMenuListener.onReviewMenuItemClick(item, review);
+        }
+
+    }
+
     public interface ReviewProfileListener {
         void onReviewProfileClick(Review.ReviewPlace reviewPlace);
+    }
+
+    public interface ReviewMenuListener {
+        void onReviewMenuItemClick(MenuItem item, Review review);
     }
 }

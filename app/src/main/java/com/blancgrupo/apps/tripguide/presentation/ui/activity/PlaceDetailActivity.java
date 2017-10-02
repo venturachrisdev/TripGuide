@@ -18,6 +18,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -309,13 +310,18 @@ public class PlaceDetailActivity extends AppCompatActivity
                 return getPhotoFile(photo);
             }
         });
-
+        final ProgressDialog dialog = new ProgressDialog(this);
+        dialog.setIndeterminate(true);
+        dialog.setTitle(R.string.please_wait);
+        dialog.show();
         saveImage
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Consumer<File>() {
                     @Override
                     public void accept(@io.reactivex.annotations.NonNull File file) throws Exception {
+                        dialog.hide();
+                        dialog.cancel();
                         Uri uri = FileProvider.getUriForFile(PlaceDetailActivity.this,
                                 "com.blancgrupo.apps.tripguide.ImageFileProvider", file);
                         shareImage(uri, place);
@@ -324,6 +330,8 @@ public class PlaceDetailActivity extends AppCompatActivity
                     @Override
                     public void accept(@io.reactivex.annotations.NonNull Throwable throwable) throws Exception {
                         throwable.printStackTrace();
+                        dialog.hide();
+                        dialog.cancel();
                         Toast.makeText(PlaceDetailActivity.this, R.string.network_error, Toast.LENGTH_SHORT)
                                 .show();
                     }
@@ -365,7 +373,17 @@ public class PlaceDetailActivity extends AppCompatActivity
         addressText.setText(place.getAddress());
         this.place = place;
 
-
+        if (place.isFavorite()) {
+            favoriteBtn.setText(R.string.remove_from_favorites);
+            favoriteBtn.setCompoundDrawablesWithIntrinsicBounds(null, ContextCompat.getDrawable(
+                    this, R.drawable.ic_favorite_accent_24dp
+            ), null, null);
+        } else {
+            favoriteBtn.setText(R.string.add_to_favorite);
+            favoriteBtn.setCompoundDrawablesWithIntrinsicBounds(null, ContextCompat.getDrawable(
+                    this, R.drawable.ic_favorite_border_black_24dp
+            ), null, null);
+        }
         favoriteBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -589,7 +607,7 @@ public class PlaceDetailActivity extends AppCompatActivity
         List<Review> placeReviews = place.getReviews();
         View emptyView1 = getLayoutInflater()
                 .inflate(R.layout.empty_reviews_layout, reviewsRecyclerView, false);
-        ReviewAdapter reviewAdapter = new ReviewAdapter(ReviewAdapter.REVIEW_PLACE_TYPE, null);
+        ReviewAdapter reviewAdapter = new ReviewAdapter(ReviewAdapter.REVIEW_PLACE_TYPE, null, null);
         StatesRecyclerViewAdapter statesRecyclerViewAdapter1 = new StatesRecyclerViewAdapter(
                 reviewAdapter, null, emptyView1, null);
         //reviewsRecyclerView.setHasFixedSize(true);
@@ -625,9 +643,17 @@ public class PlaceDetailActivity extends AppCompatActivity
                             if (s.equals("added")) {
                                 Toast.makeText(PlaceDetailActivity.this, R.string.added_to_favorites,
                                         Toast.LENGTH_LONG).show();
+                                favoriteBtn.setText(R.string.remove_from_favorites);
+                                favoriteBtn.setCompoundDrawablesWithIntrinsicBounds(null, ContextCompat.getDrawable(
+                                        PlaceDetailActivity.this, R.drawable.ic_favorite_accent_24dp
+                                ), null, null);
                             } else {
                                 Toast.makeText(PlaceDetailActivity.this, R.string.removed_from_favorites,
                                         Toast.LENGTH_LONG).show();
+                                favoriteBtn.setText(R.string.add_to_favorite);
+                                favoriteBtn.setCompoundDrawablesWithIntrinsicBounds(null, ContextCompat.getDrawable(
+                                        PlaceDetailActivity.this, R.drawable.ic_favorite_border_black_24dp
+                                ), null, null);
                             }
                             dialog.hide();
                         }

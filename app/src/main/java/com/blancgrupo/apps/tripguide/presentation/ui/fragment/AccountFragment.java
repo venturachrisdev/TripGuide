@@ -74,7 +74,7 @@ import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class AccountFragment extends LifecycleFragment {
+public class AccountFragment extends LifecycleFragment implements ReviewAdapter.ReviewMenuListener {
     @BindView(R.id.profile_rv)
     ShimmerRecyclerView recyclerView;
     @BindView(R.id.user_profile_name)
@@ -139,7 +139,7 @@ public class AccountFragment extends LifecycleFragment {
                 .inject(this);
         profileViewModel = ViewModelProviders.of(this, profileVMFactory)
                 .get(ProfileViewModel.class);
-        reviewAdapter = new ReviewAdapter(ReviewAdapter.REVIEW_PROFILE_TYPE, profileListener);
+        reviewAdapter = new ReviewAdapter(ReviewAdapter.REVIEW_PROFILE_TYPE, profileListener, this);
         View emptyView = getLayoutInflater().inflate(R.layout.empty_profile_layout,
                 recyclerView, false);
         statesRecyclerViewAdapter = new StatesRecyclerViewAdapter(
@@ -493,4 +493,38 @@ public class AccountFragment extends LifecycleFragment {
     }
 
 
+    @Override
+    public void onReviewMenuItemClick(MenuItem item, Review review) {
+        switch (item.getItemId()) {
+            case R.id.action_delete:
+                deleteReview(review);
+                break;
+        }
+    }
+
+    private void deleteReview(Review review) {
+        final ProgressDialog dialog = new ProgressDialog(getContext());
+        dialog.setIndeterminate(true);
+        dialog.setMessage(getString(R.string.please_wait));
+        final String apiToken = sharedPreferences.getString(Constants.USER_LOGGED_API_TOKEN_SP, null);
+        disposable =  profileRepository.removeReview(review, apiToken)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<String>() {
+                    @Override
+                    public void accept(@io.reactivex.annotations.NonNull String s) throws Exception {
+                        dialog.hide();
+                        dialog.cancel();
+                        Toast.makeText(getContext(), s, Toast.LENGTH_SHORT).show();
+                        profileViewModel.loadLoggedProfile(apiToken);
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(@io.reactivex.annotations.NonNull Throwable throwable) throws Exception {
+                        dialog.hide();
+                        dialog.cancel();
+                        Toast.makeText(getContext(), throwable.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
 }

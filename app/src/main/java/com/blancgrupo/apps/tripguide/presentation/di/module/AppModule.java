@@ -4,6 +4,8 @@ import android.app.Application;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
+import com.blancgrupo.apps.tripguide.data.persistence.PlacesDatabase;
+
 import javax.inject.Singleton;
 
 import dagger.Module;
@@ -30,5 +32,11 @@ public class AppModule {
     @Singleton
     SharedPreferences providesSharedPreferences(Application app) {
         return PreferenceManager.getDefaultSharedPreferences(app);
+    }
+
+    @Provides
+    @Singleton
+    PlacesDatabase providesPlaceDatabase(Application app) {
+        return PlacesDatabase.getInstance(app);
     }
 }
