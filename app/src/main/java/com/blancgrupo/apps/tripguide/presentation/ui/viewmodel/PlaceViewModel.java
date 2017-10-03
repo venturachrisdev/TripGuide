@@ -6,6 +6,7 @@ import android.arch.lifecycle.ViewModel;
 import com.blancgrupo.apps.tripguide.data.entity.api.PlaceDescriptionWrapper;
 import com.blancgrupo.apps.tripguide.data.entity.api.PlaceWrapper;
 import com.blancgrupo.apps.tripguide.data.entity.api.PlacesWrapper;
+import com.blancgrupo.apps.tripguide.domain.model.PlaceWithReviews;
 import com.blancgrupo.apps.tripguide.domain.repository.PlaceRepository;
 import com.blancgrupo.apps.tripguide.presentation.ui.viewmodel.livedata.PlaceDescriptionLiveData;
 import com.blancgrupo.apps.tripguide.presentation.ui.viewmodel.livedata.PlaceLiveData;
@@ -29,7 +30,7 @@ public class PlaceViewModel extends ViewModel {
         this.placeRepository = placeRepository;
     }
 
-    public LiveData<PlaceWrapper> getSinglePlace(String placeId, String apiToken) {
+    public LiveData<PlaceWithReviews> getSinglePlace(String placeId, String apiToken) {
         if (singlePlaceLiveData == null) {
             singlePlaceLiveData = new PlaceLiveData();
             loadSinglePlace(placeId, apiToken);
@@ -86,7 +87,7 @@ public class PlaceViewModel extends ViewModel {
         }
     }
 
-    public LiveData<PlaceWrapper> getLoadedSinglePlace() {
+    public LiveData<PlaceWithReviews> getLoadedSinglePlace() {
         return getSinglePlace(this.placeId, this.apiToken);
     }
 

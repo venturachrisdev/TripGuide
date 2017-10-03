@@ -36,6 +36,13 @@ import com.blancgrupo.apps.tripguide.data.entity.api.Profile;
 import com.blancgrupo.apps.tripguide.data.entity.api.ProfileWrapper;
 import com.blancgrupo.apps.tripguide.data.entity.api.Review;
 import com.blancgrupo.apps.tripguide.data.entity.api.UploadPhotoWrapper;
+import com.blancgrupo.apps.tripguide.data.persistence.PlacesDatabase;
+import com.blancgrupo.apps.tripguide.data.persistence.repository.ProfileDBRepository;
+import com.blancgrupo.apps.tripguide.data.persistence.repository.ReviewDBRepository;
+import com.blancgrupo.apps.tripguide.domain.model.ProfileModel;
+import com.blancgrupo.apps.tripguide.domain.model.ProfileWithReviews;
+import com.blancgrupo.apps.tripguide.domain.model.ReviewModel;
+import com.blancgrupo.apps.tripguide.domain.model.mapper.ProfileModelMapper;
 import com.blancgrupo.apps.tripguide.domain.repository.ProfileRepository;
 import com.blancgrupo.apps.tripguide.presentation.di.component.DaggerActivityComponent;
 import com.blancgrupo.apps.tripguide.presentation.di.module.ActivityModule;
@@ -105,6 +112,10 @@ public class AccountFragment extends LifecycleFragment implements ReviewAdapter.
     ProfileVMFactory profileVMFactory;
     @Inject
     ProfileRepository profileRepository;
+    @Inject
+    ProfileDBRepository profileDBRepository;
+    @Inject
+    ReviewDBRepository reviewDBRepository;
 
     ProfileViewModel profileViewModel;
     Disposable disposable;
@@ -185,7 +196,9 @@ public class AccountFragment extends LifecycleFragment implements ReviewAdapter.
         return super.onOptionsItemSelected(item);
     }
 
-    public void initializeProfileLayout(Profile profile, String token) {
+    public void initializeProfileLayout(ProfileWithReviews profileWithReviews, String token) {
+        ProfileModel profile = profileWithReviews.getProfile();
+        List<ReviewModel> reviews = profileWithReviews.getReviews();
         if (profile != null && token != null) {
             swipeRefreshLayout.setRefreshing(false);
             SharedPreferences.Editor editor = sharedPreferences.edit();
@@ -194,12 +207,10 @@ public class AccountFragment extends LifecycleFragment implements ReviewAdapter.
             editor.putString(Constants.USER_LOGGED_TYPE_SP, profile.getType());
             editor.putString(Constants.USER_LOGGED_API_TOKEN_SP, token);
             editor.apply();
-
             bindProfile(profile);
 
-            List<Review> profileReviews = profile.getReviews();
-            if (profileReviews !=  null && profileReviews.size() > 0) {
-                reviewAdapter.updateData(profile.getReviews());
+            if (reviews !=  null && reviews.size() > 0) {
+                reviewAdapter.updateData(reviews);
                 statesRecyclerViewAdapter.setState(StatesRecyclerViewAdapter.STATE_NORMAL);
             } else {
                 statesRecyclerViewAdapter.setState(StatesRecyclerViewAdapter.STATE_EMPTY);
@@ -211,28 +222,36 @@ public class AccountFragment extends LifecycleFragment implements ReviewAdapter.
     public void recoverSession() {
         if (sharedPreferences.contains(Constants.USER_LOGGED_API_TOKEN_SP) &&
                 sharedPreferences.contains(Constants.USER_LOGGED_SP)) {
-            final String apiToken = sharedPreferences.getString(Constants.USER_LOGGED_API_TOKEN_SP, null);
-            profileViewModel.getLoggedProfile(apiToken).observe(this, new Observer<ProfileWrapper>() {
-                @Override
-                public void onChanged(@Nullable ProfileWrapper profileWrapper) {
-                    if (profileWrapper != null) {
-                        if (profileWrapper.getProfile() != null) {
-                            initializeProfileLayout(profileWrapper.getProfile(),
-                                    apiToken);
-                        }
-                    } else {
-                        Toast.makeText(getContext(), R.string.network_error, Toast.LENGTH_LONG)
-                                .show();
-                    }
-                }
-            });
+            getProfileFromDB();
         }
+    }
+
+    private void fetchProfileFromApi(final String apiToken) {
+        profileViewModel.getLoggedProfile(apiToken).observe(this, new Observer<ProfileWrapper>() {
+            @Override
+            public void onChanged(@Nullable ProfileWrapper profileWrapper) {
+                if (profileWrapper != null) {
+                    if (profileWrapper.getProfile() != null) {
+                        ProfileWithReviews profileWR = ProfileModelMapper
+                                .transform(profileWrapper.getProfile());
+                        initializeProfileLayout(profileWR,
+                                apiToken);
+                        saveProfileToDB(profileWR);
+                    }
+                } else {
+                    Toast.makeText(getContext(), R.string.network_error, Toast.LENGTH_LONG)
+                            .show();
+                }
+            }
+        });
     }
 
 
     @Override
     public void onStop() {
         super.onStop();
+        profileDBRepository.onStop();
+        reviewDBRepository.onStop();
         if (disposable != null && !disposable.isDisposed()) {
             disposable.dispose();
         }
@@ -396,7 +415,7 @@ public class AccountFragment extends LifecycleFragment implements ReviewAdapter.
                 });
     }
 
-    private void bindProfile(Profile profile) {
+    private void bindProfile(ProfileModel profile) {
         profileName.setText(profile.getName());
         profileEmail.setText(profile.getEmail());
         if (profile.getPhotoUrl() != null && profile.getPhotoUrl().length() > 0) {
@@ -467,8 +486,11 @@ public class AccountFragment extends LifecycleFragment implements ReviewAdapter.
                 public void onChanged(@Nullable ProfileWrapper profileWrapper) {
                     if (profileWrapper != null) {
                         if (profileWrapper.getProfile() != null && profileWrapper.getStatus().equals("OK")) {
-                            initializeProfileLayout(profileWrapper.getProfile(),
+                            ProfileWithReviews profileWR = ProfileModelMapper.
+                                    transform(profileWrapper.getProfile());
+                            initializeProfileLayout(profileWR,
                                     profileWrapper.getToken());
+                            saveProfileToDB(profileWR);
                         } else {
                             Toast.makeText(getContext(), profileWrapper.getStatus(), Toast.LENGTH_SHORT).show();
                         }
@@ -483,8 +505,40 @@ public class AccountFragment extends LifecycleFragment implements ReviewAdapter.
         }
     }
 
+    private void getProfileFromDB() {
+        final String apiToken = sharedPreferences.getString(Constants.USER_LOGGED_API_TOKEN_SP, null);
+        profileDBRepository.getProfileByToken(apiToken).observe(this, new Observer<ProfileWithReviews>() {
+            @Override
+            public void onChanged(@Nullable ProfileWithReviews profileWithReviews) {
+                if (profileWithReviews != null && profileWithReviews.getProfile() != null &&
+                        profileWithReviews.getProfile().getTokenId() != null) {
+                    // saved in DB
+                    initializeProfileLayout(profileWithReviews, profileWithReviews
+                            .getProfile().getTokenId());
+                } else {
+                    // fetch from API
+                    fetchProfileFromApi(apiToken);
+                }
+            }
+        });
+    }
+
+    private void saveProfileToDB(ProfileWithReviews profileWR) {
+        profileDBRepository.insertProfile(profileWR.getProfile());
+        reviewDBRepository.insertReview(profileWR.getReviews());
+    }
+
+    private void logoutFromDB() {
+        profileDBRepository.logoutProfile();
+    }
+
+    private void deleteReviewFromDB(ReviewModel review) {
+        reviewDBRepository.deleteReview(review);
+    }
+
     public void logout() {
         SharedPreferences.Editor editor = sharedPreferences.edit();
+        logoutFromDB();
         editor.remove(Constants.USER_LOGGED_SP);
         editor.remove(Constants.USER_LOGGED_ID_SP);
         editor.remove(Constants.USER_LOGGED_TYPE_SP);
@@ -494,7 +548,7 @@ public class AccountFragment extends LifecycleFragment implements ReviewAdapter.
 
 
     @Override
-    public void onReviewMenuItemClick(MenuItem item, Review review) {
+    public void onReviewMenuItemClick(MenuItem item, ReviewModel review) {
         switch (item.getItemId()) {
             case R.id.action_delete:
                 deleteReview(review);
@@ -502,12 +556,16 @@ public class AccountFragment extends LifecycleFragment implements ReviewAdapter.
         }
     }
 
-    private void deleteReview(Review review) {
+    private void deleteReview(ReviewModel review) {
         final ProgressDialog dialog = new ProgressDialog(getContext());
         dialog.setIndeterminate(true);
         dialog.setMessage(getString(R.string.please_wait));
+
         final String apiToken = sharedPreferences.getString(Constants.USER_LOGGED_API_TOKEN_SP, null);
-        disposable =  profileRepository.removeReview(review, apiToken)
+        deleteReviewFromDB(review);
+        Review dummyReview = new Review();
+        dummyReview.set_id(review.get_id());
+        disposable =  profileRepository.removeReview(dummyReview, apiToken)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Consumer<String>() {

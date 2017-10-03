@@ -15,6 +15,7 @@ import com.blancgrupo.apps.tripguide.R;
 import com.blancgrupo.apps.tripguide.data.entity.api.Place;
 import com.blancgrupo.apps.tripguide.data.entity.api.PlaceCover;
 import com.blancgrupo.apps.tripguide.data.entity.api.Topic;
+import com.blancgrupo.apps.tripguide.domain.model.mapper.PlaceModelMapper;
 import com.blancgrupo.apps.tripguide.utils.Constants;
 import com.blancgrupo.apps.tripguide.utils.TextStringUtils;
 import com.cooltechworks.views.shimmer.ShimmerRecyclerView;
@@ -99,7 +100,7 @@ public class TopicAdapter extends RecyclerView.Adapter<TopicAdapter.TopicViewHol
             }
             PlaceAdapter adapter = new PlaceAdapter(placesListener, itemType, TopicAdapter.this.app);
             topicRecyclerView.setAdapter(adapter);
-            adapter.updateData(topic.getPlaces());
+            adapter.updateData(PlaceModelMapper.transformAllCover(topic.getPlaces()));
         }
 
         public void setTopicListener(final TopicListener listener, final String topicTitle) {

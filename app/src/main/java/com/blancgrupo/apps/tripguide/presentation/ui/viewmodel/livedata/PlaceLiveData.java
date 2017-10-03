@@ -4,34 +4,43 @@ import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
 
 import com.blancgrupo.apps.tripguide.data.entity.api.PlaceWrapper;
+import com.blancgrupo.apps.tripguide.domain.model.PlaceWithReviews;
+import com.blancgrupo.apps.tripguide.domain.model.mapper.PlaceModelMapper;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 
 /**
  * Created by root on 8/28/17.
  */
 
-public class PlaceLiveData extends LiveData<PlaceWrapper> {
+public class PlaceLiveData extends LiveData<PlaceWithReviews> {
     Disposable disposable;
 
     public void loadSinglePlace(Observable<PlaceWrapper> observable) {
         disposable = observable
                 .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Consumer<PlaceWrapper>() {
+                .map(new Function<PlaceWrapper, PlaceWithReviews>() {
                     @Override
-                    public void accept(@NonNull PlaceWrapper placeWrapper) throws Exception {
-                        setValue(placeWrapper);
+                    public PlaceWithReviews apply(@NonNull PlaceWrapper placeWrapper) throws Exception {
+                        return PlaceModelMapper.transform(placeWrapper.getPlace());
+                    }
+                })
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<PlaceWithReviews>() {
+                    @Override
+                    public void accept(@NonNull PlaceWithReviews placeWithReviews) throws Exception {
+                        setValue(placeWithReviews);
                     }
                 }, new Consumer<Throwable>() {
                     @Override
                     public void accept(@NonNull Throwable throwable) throws Exception {
-                        setValue(new PlaceWrapper(null, throwable.getMessage()));
+                        setValue(null);
                     }
                 });
     }

@@ -2,6 +2,7 @@ package com.blancgrupo.apps.tripguide.utils;
 
 
 import com.blancgrupo.apps.tripguide.data.entity.api.PlaceCover;
+import com.blancgrupo.apps.tripguide.domain.model.PlaceModel;
 
 import java.util.List;
 
@@ -40,6 +41,6 @@ public class TextStringUtils {
     }
 
     public interface PlaceItemActivityListener {
-        void onPlaceClick(PlaceCover place);
+        void onPlaceClick(PlaceModel place);
     }
 }

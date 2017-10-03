@@ -31,6 +31,7 @@ import com.blancgrupo.apps.tripguide.data.entity.api.CityWrapper;
 import com.blancgrupo.apps.tripguide.data.entity.api.Photo;
 import com.blancgrupo.apps.tripguide.data.entity.api.PlaceCover;
 import com.blancgrupo.apps.tripguide.data.entity.api.Topic;
+import com.blancgrupo.apps.tripguide.domain.model.PlaceModel;
 import com.blancgrupo.apps.tripguide.presentation.di.component.DaggerActivityComponent;
 import com.blancgrupo.apps.tripguide.presentation.di.module.ActivityModule;
 import com.blancgrupo.apps.tripguide.presentation.ui.activity.ChooseLocationActivity;
@@ -250,15 +251,15 @@ public class CityDetailFragment extends Fragment
     }
 
     @Override
-    public void onPlaceClick(PlaceCover place) {
+    public void onPlaceClick(PlaceModel place) {
         if (!place.getType().equals("tour")) {
             Intent intent = new Intent(getActivity(), PlaceDetailActivity.class);
-            intent.putExtra(Constants.EXTRA_PLACE_ID, place.getId());
+            intent.putExtra(Constants.EXTRA_PLACE_ID, place.get_id());
             startActivity(intent);
         } else {
             // A Tour
             Intent intent = new Intent(getActivity(), TourActivity.class);
-            intent.putExtra(Constants.EXTRA_PLACE_TOUR_ID, place.getId());
+            intent.putExtra(Constants.EXTRA_PLACE_TOUR_ID, place.get_id());
             startActivity(intent);
         }
 

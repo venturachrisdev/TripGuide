@@ -24,22 +24,28 @@ public interface PlacesDao {
     @Query("SELECT * FROM places ORDER BY createdAt DESC")
     LiveData<List<PlaceWithReviews>> getPlaces();
 
-    @Query("SELECT * FROM places WHERE type = :placeType")
-    LiveData<List<PlaceWithReviews>> getPlacesByType(String placeType);
+    @Query("SELECT * FROM places WHERE type = :placeType AND cityId = :cityId")
+    LiveData<List<PlaceWithReviews>> getPlacesByType(String placeType, String cityId);
 
     @Query("SELECT * FROM places WHERE _id = :placeId LIMIT 1")
     LiveData<PlaceWithReviews> getPlaceById(String placeId);
 
+    @Query("SELECT * FROM places WHERE isFavorite = 1")
+    LiveData<List<PlaceModel>> getPlacesFavorite();
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void insertPlace(PlaceModel place);
+    Long insertPlace(PlaceModel place);
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    List<Long> insertPlace(List<PlaceModel> places);
 
     @Delete
-    void deletePlace(PlaceModel place);
+    int deletePlace(PlaceModel place);
 
     @Query("DELETE FROM places")
-    void deleteAllPlaces();
+    int deleteAllPlaces();
 
     @Update
-    void updatePlace(PlaceModel place);
+    int updatePlace(PlaceModel place);
 }
 

@@ -14,6 +14,7 @@ import com.blancgrupo.apps.tripguide.R;
 import com.blancgrupo.apps.tripguide.data.entity.api.Location;
 import com.blancgrupo.apps.tripguide.data.entity.api.Photo;
 import com.blancgrupo.apps.tripguide.data.entity.api.PlaceCover;
+import com.blancgrupo.apps.tripguide.domain.model.PlaceModel;
 import com.blancgrupo.apps.tripguide.utils.ApiUtils;
 import com.blancgrupo.apps.tripguide.utils.LocationUtils;
 import com.blancgrupo.apps.tripguide.utils.TextStringUtils;
@@ -31,7 +32,7 @@ import butterknife.ButterKnife;
  */
 
 public class PlaceAdapter extends RecyclerView.Adapter<PlaceAdapter.PlaceViewHolder> {
-    private List<PlaceCover> places;
+    private List<PlaceModel> places;
     private int adapterType;
     public static final int PLACE_VERTICAL_ADAPTER      = 100;
     public static final int PLACE_HORIZONTAL_ADAPTER    = 101;
@@ -40,7 +41,7 @@ public class PlaceAdapter extends RecyclerView.Adapter<PlaceAdapter.PlaceViewHol
     PlaceAdapterListener listener;
 
     public interface PlaceAdapterListener {
-        void onPlaceClick(PlaceCover place);
+        void onPlaceClick(PlaceModel place);
     }
 
 
@@ -70,23 +71,21 @@ public class PlaceAdapter extends RecyclerView.Adapter<PlaceAdapter.PlaceViewHol
 
     @Override
     public void onBindViewHolder(PlaceViewHolder holder, int position) {
-        PlaceCover place = places.get(position);
+        PlaceModel place = places.get(position);
         holder.setOnClickListener(listener, place);
         holder.setName(place.getName());
         holder.setLocation(place.getAddress());
-        Photo photo = place.getPhoto();
-        if (photo != null && photo.getReference() != null) {
-            int width = adapterType == PLACE_VERTICAL_ADAPTER ? 200 : 700;
-            holder.setImage(ApiUtils.getPlacePhotoUrl(app, photo.getReference(), width));
-        }
+        String photo = place.getPhotoUrl();
+        holder.setImage(photo + app.getApiKey());
+        Location location = new Location(place.getLat(), place.getLng());
 
         switch (holder.getViewHolderType()) {
             case PlaceViewHolder.PLACE_LIST:
-                ((VerticalPlaceViewHolder) holder).setDistance(app, place.getLocation());
+                ((VerticalPlaceViewHolder) holder).setDistance(app, location);
                 ((VerticalPlaceViewHolder) holder).setType(TextStringUtils.formatTitle(place.getType()));
                 break;
             case PlaceViewHolder.PLACE_GRID:
-                ((HorizontalPlaceViewHolder) holder).setDistance(app, place.getLocation());
+                ((HorizontalPlaceViewHolder) holder).setDistance(app, location);
                 ((HorizontalPlaceViewHolder) holder).setRating(place.getRating());
                 break;
             case PlaceViewHolder.PLACE_TOUR:
@@ -104,7 +103,7 @@ public class PlaceAdapter extends RecyclerView.Adapter<PlaceAdapter.PlaceViewHol
     }
 
 
-    public void updateData(List<PlaceCover> newplaces) {
+    public void updateData(List<PlaceModel> newplaces) {
         places = newplaces;
         notifyDataSetChanged();
     }
@@ -127,7 +126,7 @@ public class PlaceAdapter extends RecyclerView.Adapter<PlaceAdapter.PlaceViewHol
         }
 
 
-        public void setOnClickListener(final PlaceAdapterListener listener, final PlaceCover place) {
+        public void setOnClickListener(final PlaceAdapterListener listener, final PlaceModel place) {
             itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {

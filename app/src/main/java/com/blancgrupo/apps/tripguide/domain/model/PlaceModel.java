@@ -4,6 +4,8 @@ import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.PrimaryKey;
 import android.arch.persistence.room.Relation;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 
 import java.util.List;
@@ -13,7 +15,7 @@ import java.util.List;
  */
 
 @Entity(tableName = "places")
-public class PlaceModel {
+public class PlaceModel implements Parcelable {
     @PrimaryKey
     @NonNull
     private String _id;
@@ -39,6 +41,41 @@ public class PlaceModel {
 
     public PlaceModel() {
     }
+
+    protected PlaceModel(Parcel in) {
+        _id = in.readString();
+        googleId = in.readString();
+        name = in.readString();
+        description = in.readString();
+        address = in.readString();
+        lat = in.readDouble();
+        lng = in.readDouble();
+        phoneNumber = in.readString();
+        type = in.readString();
+        photoUrl = in.readString();
+        city = in.readString();
+        website = in.readString();
+        openNow = in.readByte() != 0;
+        weekdays = in.readString();
+        distance = in.readLong();
+        rating = in.readDouble();
+        createdAt = in.readString();
+        isFavorite = in.readByte() != 0;
+        userHasReviewed = in.readByte() != 0;
+        cityId = in.readString();
+    }
+
+    public static final Creator<PlaceModel> CREATOR = new Creator<PlaceModel>() {
+        @Override
+        public PlaceModel createFromParcel(Parcel in) {
+            return new PlaceModel(in);
+        }
+
+        @Override
+        public PlaceModel[] newArray(int size) {
+            return new PlaceModel[size];
+        }
+    };
 
     public String getCityId() {
         return cityId;
@@ -198,5 +235,34 @@ public class PlaceModel {
 
     public void setCreatedAt(String createdAt) {
         this.createdAt = createdAt;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeString(_id);
+        parcel.writeString(googleId);
+        parcel.writeString(name);
+        parcel.writeString(description);
+        parcel.writeString(address);
+        parcel.writeDouble(lat);
+        parcel.writeDouble(lng);
+        parcel.writeString(phoneNumber);
+        parcel.writeString(type);
+        parcel.writeString(photoUrl);
+        parcel.writeString(city);
+        parcel.writeString(website);
+        parcel.writeByte((byte) (openNow ? 1 : 0));
+        parcel.writeString(weekdays);
+        parcel.writeLong(distance);
+        parcel.writeDouble(rating);
+        parcel.writeString(createdAt);
+        parcel.writeByte((byte) (isFavorite ? 1 : 0));
+        parcel.writeByte((byte) (userHasReviewed ? 1 : 0));
+        parcel.writeString(cityId);
     }
 }

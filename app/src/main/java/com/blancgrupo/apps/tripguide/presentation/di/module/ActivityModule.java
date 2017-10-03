@@ -5,6 +5,10 @@ import com.blancgrupo.apps.tripguide.data.ApiPlaceRepository;
 import com.blancgrupo.apps.tripguide.data.ApiProfileRepository;
 import com.blancgrupo.apps.tripguide.data.ApiTourRepository;
 import com.blancgrupo.apps.tripguide.data.GooglePlaceRepository;
+import com.blancgrupo.apps.tripguide.data.persistence.PlacesDatabase;
+import com.blancgrupo.apps.tripguide.data.persistence.repository.PlaceDBRepository;
+import com.blancgrupo.apps.tripguide.data.persistence.repository.ProfileDBRepository;
+import com.blancgrupo.apps.tripguide.data.persistence.repository.ReviewDBRepository;
 import com.blancgrupo.apps.tripguide.data.service.ApiPlaceService;
 import com.blancgrupo.apps.tripguide.data.service.GooglePlaceService;
 import com.blancgrupo.apps.tripguide.domain.repository.CityRepository;
@@ -102,6 +106,23 @@ public class ActivityModule {
         return new TourVMFactory(tourRepository);
     }
 
+    @Provides
+    @ActivityScope
+    ProfileDBRepository providesProfileDBRepository(PlacesDatabase placesDatabase) {
+        return new ProfileDBRepository(placesDatabase);
+    }
+
+    @Provides
+    @ActivityScope
+    PlaceDBRepository providesPlacesDBRepository(PlacesDatabase placesDatabase) {
+        return new PlaceDBRepository(placesDatabase);
+    }
+
+    @Provides
+    @ActivityScope
+    ReviewDBRepository providesReviewsDBRepository(PlacesDatabase placesDatabase) {
+        return new ReviewDBRepository(placesDatabase);
+    }
 
 
 }

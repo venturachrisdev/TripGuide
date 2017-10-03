@@ -23,6 +23,8 @@ import com.blancgrupo.apps.tripguide.MyApplication;
 import com.blancgrupo.apps.tripguide.R;
 import com.blancgrupo.apps.tripguide.data.entity.api.PlaceCover;
 import com.blancgrupo.apps.tripguide.data.entity.api.PlacesCoverWrapper;
+import com.blancgrupo.apps.tripguide.domain.model.PlaceModel;
+import com.blancgrupo.apps.tripguide.domain.model.mapper.PlaceModelMapper;
 import com.blancgrupo.apps.tripguide.presentation.di.component.DaggerActivityComponent;
 import com.blancgrupo.apps.tripguide.presentation.di.module.ActivityModule;
 import com.blancgrupo.apps.tripguide.presentation.ui.adapter.PlaceAdapter;
@@ -100,7 +102,7 @@ public class SearchActivity extends AppCompatActivity implements PlaceAdapter.Pl
                 if (placesCoverWrapper != null && placesCoverWrapper.getPlaces() != null) {
                     if (placesCoverWrapper.getPlaces().size() > 0) {
                         statesRecyclerViewAdapter.setState(StatesRecyclerViewAdapter.STATE_NORMAL);
-                        adapter.updateData(placesCoverWrapper.getPlaces());
+                        adapter.updateData(PlaceModelMapper.transformAllCover(placesCoverWrapper.getPlaces()));
                     } else {
                         statesRecyclerViewAdapter.setState(StatesRecyclerViewAdapter.STATE_EMPTY);
                     }
@@ -211,15 +213,15 @@ public class SearchActivity extends AppCompatActivity implements PlaceAdapter.Pl
     }
 
     @Override
-    public void onPlaceClick(PlaceCover place) {
+    public void onPlaceClick(PlaceModel place) {
         if (place.getType().equals("locality") || place.getType().equals("country")) {
             Intent intent = new Intent(SearchActivity.this, HomeActivity.class);
             intent.putExtra(Constants.EXTRA_CITY_ID, place.getGoogleId());
             startActivity(intent);
         } else {
             Intent intent = new Intent(SearchActivity.this, PlaceDetailActivity.class);
-            if (place.getId() != null) {
-                intent.putExtra(Constants.EXTRA_PLACE_ID, place.getId());
+            if (place.get_id() != null) {
+                intent.putExtra(Constants.EXTRA_PLACE_ID, place.get_id());
             } else {
                 intent.putExtra(Constants.EXTRA_PLACE_GOOGLE_ID, place.getGoogleId());
             }

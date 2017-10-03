@@ -34,6 +34,13 @@ public class ApiUtils {
                 + "&key=" + app.getApiKey();
     }
 
+    public static String getPlacePhotoUrlWithoutKey(String reference, int maxwidth) {
+        return Constants.PHOTO_PLACE_API_URL
+                + "?maxwidth=" + maxwidth
+                + "&photoreference=" + reference
+                + "&key=";
+    }
+
     public static BitmapDescriptor drawMarkerByType(Context context,  String type) {
         int mipmap;
         switch (type) {

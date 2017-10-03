@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import com.blancgrupo.apps.tripguide.R;
 import com.blancgrupo.apps.tripguide.data.entity.api.Review;
+import com.blancgrupo.apps.tripguide.domain.model.ReviewModel;
 import com.blancgrupo.apps.tripguide.utils.Constants;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -36,7 +37,7 @@ import static com.blancgrupo.apps.tripguide.utils.Constants.API_UPLOAD_URL;
  */
 
 public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewViewHolder> {
-    List<Review> reviews;
+    List<ReviewModel> reviews;
     int type;
     public static final int REVIEW_PLACE_TYPE = 1200;
     public static final int REVIEW_PROFILE_TYPE = 1201;
@@ -65,28 +66,28 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewView
 
     @Override
     public void onBindViewHolder(ReviewViewHolder holder, int position) {
-        Review review = reviews.get(position);
+        ReviewModel review = reviews.get(position);
         holder.setDate(review.getCreatedAt());
         holder.setMessage(review.getMessage());
         holder.setRating(review.getRating());
         holder.setPhoto(review.getPhoto());
-        switch (holder.getType()) {
-            case REVIEW_PLACE_TYPE:
-                if (review.getProfile() != null) {
-                    if (review.getProfile() != null) {
-                        ((ReviewPlaceViewHolder) holder).setName(review.getProfile().getName());
-                        ((ReviewPlaceViewHolder) holder).setProfilePhoto(review.getProfile().getPhotoUrl());
-                    }
-                }
-                break;
-            case REVIEW_PROFILE_TYPE:
-                if (review.getPlace() != null) {
-                    ((ReviewProfileViewHolder) holder).setPlaceName(review.getPlace().getName());
-                }
-                ((ReviewProfileViewHolder) holder).setOnReviewPlaceClickListener(
-                        profileListener, review.getPlace(), review);
-                break;
-        }
+//        switch (holder.getType()) {
+//            case REVIEW_PLACE_TYPE:
+//                if (review.getProfile() != null) {
+//                    if (review.getProfile() != null) {
+//                        ((ReviewPlaceViewHolder) holder).setName(review.getProfile().getName());
+//                        ((ReviewPlaceViewHolder) holder).setProfilePhoto(review.getProfile().getPhotoUrl());
+//                    }
+//                }
+//                break;
+//            case REVIEW_PROFILE_TYPE:
+//                if (review.getPlace() != null) {
+//                    ((ReviewProfileViewHolder) holder).setPlaceName(review.getPlace().getName());
+//                }
+//                ((ReviewProfileViewHolder) holder).setOnReviewPlaceClickListener(
+//                        profileListener, review.getPlace(), review);
+//                break;
+//        }
     }
 
     @Override
@@ -97,7 +98,7 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewView
         return 0;
     }
 
-    public void updateData(List<Review> reviews) {
+    public void updateData(List<ReviewModel> reviews) {
         this.reviews = reviews;
         notifyDataSetChanged();
     }
@@ -243,7 +244,7 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewView
 
     private void handleReviewItem(MenuItem item, int adapterPosition) {
         if (reviews != null && adapterPosition < reviews.size()) {
-            Review review = reviews.get(adapterPosition);
+            ReviewModel review = reviews.get(adapterPosition);
             reviewMenuListener.onReviewMenuItemClick(item, review);
         }
 
@@ -254,6 +255,6 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewView
     }
 
     public interface ReviewMenuListener {
-        void onReviewMenuItemClick(MenuItem item, Review review);
+        void onReviewMenuItemClick(MenuItem item, ReviewModel review);
     }
 }

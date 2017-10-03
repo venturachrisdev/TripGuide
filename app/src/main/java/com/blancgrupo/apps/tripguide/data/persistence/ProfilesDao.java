@@ -25,18 +25,21 @@ public interface ProfilesDao {
     @Query("SELECT * from profiles WHERE tokenId = :apiToken")
     LiveData<ProfileWithReviews> getProfileByToken(String apiToken);
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void insertProfile(ProfileModel profile);
+    @Query("UPDATE profiles SET tokenId = NULL WHERE tokenId IS NOT NULL")
+    int logoutProfile();
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void insertProfiles(List<ProfileModel> profiles);
+    Long insertProfile(ProfileModel profile);
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    List<Long> insertProfiles(List<ProfileModel> profiles);
 
     @Delete
-    void deleteProfile(ProfileModel profile);
+    int deleteProfile(ProfileModel profile);
 
     @Update
-    void updateProfile(ProfileModel profile);
+    int updateProfile(ProfileModel profile);
 
     @Query("DELETE FROM profiles")
-    void deleteAllProfiles();
+    int deleteAllProfiles();
 }

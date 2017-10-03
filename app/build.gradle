@@ -60,6 +60,7 @@ dependencies {
     /* Architecture components */
     compile "android.arch.lifecycle:runtime:$archComponentsVersion"
     compile "android.arch.lifecycle:extensions:$archComponentsVersion"
+    compile "android.arch.lifecycle:reactivestreams:$archComponentsVersion"
     compile "android.arch.persistence.room:rxjava2:$archComponentsVersion"
     compile "android.arch.persistence.room:runtime:$archComponentsVersion"
 
@@ -105,4 +106,5 @@ dependencies {
     compile 'com.google.android.gms:play-services-maps:9.0.0'
     compile 'com.iarcuschin:simpleratingbar:0.1.5'
     testCompile 'junit:junit:4.12'
+    debugCompile 'com.amitshekhar.android:debug-db:1.0.1'
 }

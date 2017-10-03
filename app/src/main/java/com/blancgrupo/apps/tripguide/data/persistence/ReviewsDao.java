@@ -24,18 +24,21 @@ public interface ReviewsDao {
     @Query("SELECT * FROM reviews WHERE placeId =  :placeId")
     LiveData<List<ReviewModel>> getReviewsByPlace(String placeId);
 
-    @Query("SELECT * FROM reviews WHERE _id =  :reviewId")
-    LiveData<List<ReviewModel>> getReview(String reviewId);
+    @Query("SELECT * FROM reviews WHERE _id =  :reviewId LIMIT 1")
+    LiveData<ReviewModel> getReview(String reviewId);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void insertReview(ReviewModel review);
+    Long insertReview(ReviewModel review);
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    List<Long> insertReview(List<ReviewModel> reviews);
 
     @Delete
-    void deleteReview(ReviewModel review);
+    int deleteReview(ReviewModel review);
 
     @Update
-    void updateReview(ReviewModel review);
+    int updateReview(ReviewModel review);
 
     @Query("DELETE FROM reviews")
-    void deleteAllReviews();
+    int deleteAllReviews();
 }

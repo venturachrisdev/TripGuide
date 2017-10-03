@@ -23,7 +23,11 @@ import com.blancgrupo.apps.tripguide.R;
 import com.blancgrupo.apps.tripguide.data.entity.api.Place;
 import com.blancgrupo.apps.tripguide.data.entity.api.PlaceCover;
 import com.blancgrupo.apps.tripguide.data.entity.api.PlacesWrapper;
+import com.blancgrupo.apps.tripguide.data.persistence.repository.PlaceDBRepository;
 import com.blancgrupo.apps.tripguide.domain.mapper.ApiPlaceMapper;
+import com.blancgrupo.apps.tripguide.domain.model.PlaceModel;
+import com.blancgrupo.apps.tripguide.domain.model.PlaceWithReviews;
+import com.blancgrupo.apps.tripguide.domain.model.mapper.PlaceModelMapper;
 import com.blancgrupo.apps.tripguide.presentation.di.component.DaggerActivityComponent;
 import com.blancgrupo.apps.tripguide.presentation.di.module.ActivityModule;
 import com.blancgrupo.apps.tripguide.presentation.ui.activity.PlaceDetailActivity;
@@ -60,6 +64,9 @@ public class FavoritesFragment extends LifecycleFragment
     @Inject
     SharedPreferences sharedPreferences;
 
+    @Inject
+    PlaceDBRepository placeDBRepository;
+
     public FavoritesFragment() {
         // Required empty public constructor
     }
@@ -88,7 +95,8 @@ public class FavoritesFragment extends LifecycleFragment
         recyclerView.showShimmerAdapter();
         placeViewModel = ViewModelProviders.of(this, placeVMFactory)
                 .get(PlaceViewModel.class);
-        String tokenId = sharedPreferences.getString(Constants.USER_LOGGED_API_TOKEN_SP, null);
+        final String tokenId = sharedPreferences.getString(Constants.USER_LOGGED_API_TOKEN_SP, null);
+
         final Observer<PlacesWrapper> observer = new Observer<PlacesWrapper>() {
             @Override
             public void onChanged(@Nullable PlacesWrapper placesWrapper) {
@@ -97,7 +105,9 @@ public class FavoritesFragment extends LifecycleFragment
                 if (placesWrapper != null) {
                     List<Place> places = placesWrapper.getPlaces();
                     if (places != null && places.size() > 0) {
-                        adapter.updateData(ApiPlaceMapper.PlaceToCoverTransform(places));
+                        List<PlaceModel> placeModels = PlaceModelMapper.transformAll(places);
+                        placeDBRepository.insertPlace(placeModels);
+                        adapter.updateData(placeModels);
                         statesRecyclerViewAdapter.setState(StatesRecyclerViewAdapter.STATE_NORMAL);
                     } else {
                         statesRecyclerViewAdapter.setState(StatesRecyclerViewAdapter.STATE_EMPTY);
@@ -107,7 +117,18 @@ public class FavoritesFragment extends LifecycleFragment
                 }
             }
         };
-        placeViewModel.getMyFavorites(tokenId).observe(this, observer);
+
+        placeDBRepository.getPlacesFavorite().observe(this, new Observer<List<PlaceModel>>() {
+            @Override
+            public void onChanged(@Nullable List<PlaceModel> placeModels) {
+                if (placeModels != null && placeModels.size() > 0) {
+                    adapter.updateData(placeModels);
+                    statesRecyclerViewAdapter.setState(StatesRecyclerViewAdapter.STATE_NORMAL);
+                } else {
+                    placeViewModel.getMyFavorites(tokenId).observe(FavoritesFragment.this, observer);
+                }
+            }
+        });
 
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -121,9 +142,9 @@ public class FavoritesFragment extends LifecycleFragment
     }
 
     @Override
-    public void onPlaceClick(PlaceCover place) {
+    public void onPlaceClick(PlaceModel place) {
         Intent intent = new Intent(getActivity(), PlaceDetailActivity.class);
-        intent.putExtra(Constants.EXTRA_PLACE_ID, place.getId());
+        intent.putExtra(Constants.EXTRA_PLACE_ID, place.get_id());
         startActivity(intent);
     }
 
@@ -131,5 +152,11 @@ public class FavoritesFragment extends LifecycleFragment
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.favorites, menu);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        placeDBRepository.onStop();
     }
 }

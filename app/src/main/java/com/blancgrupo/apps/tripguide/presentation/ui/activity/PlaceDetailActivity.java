@@ -35,16 +35,18 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.blancgrupo.apps.tripguide.MyApplication;
 import com.blancgrupo.apps.tripguide.R;
-import com.blancgrupo.apps.tripguide.data.entity.api.OpeningHours;
 import com.blancgrupo.apps.tripguide.data.entity.api.Photo;
 import com.blancgrupo.apps.tripguide.data.entity.api.Place;
 import com.blancgrupo.apps.tripguide.data.entity.api.PlaceDescription;
 import com.blancgrupo.apps.tripguide.data.entity.api.PlaceDescriptionWrapper;
-import com.blancgrupo.apps.tripguide.data.entity.api.PlaceWrapper;
-import com.blancgrupo.apps.tripguide.data.entity.api.Review;
+import com.blancgrupo.apps.tripguide.data.persistence.PlacesDatabase;
+import com.blancgrupo.apps.tripguide.data.persistence.repository.PlaceDBRepository;
+import com.blancgrupo.apps.tripguide.data.persistence.repository.ReviewDBRepository;
+import com.blancgrupo.apps.tripguide.domain.model.PlaceModel;
+import com.blancgrupo.apps.tripguide.domain.model.PlaceWithReviews;
+import com.blancgrupo.apps.tripguide.domain.model.ReviewModel;
 import com.blancgrupo.apps.tripguide.domain.repository.PlaceRepository;
 import com.blancgrupo.apps.tripguide.presentation.di.component.DaggerActivityComponent;
 import com.blancgrupo.apps.tripguide.presentation.di.module.ActivityModule;
@@ -73,7 +75,6 @@ import com.rockerhieu.rvadapter.states.StatesRecyclerViewAdapter;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 import java.util.concurrent.Callable;
 
@@ -156,9 +157,15 @@ public class PlaceDetailActivity extends AppCompatActivity
     @Inject
     PlaceRepository placeRepository;
 
+
+    @Inject
+    PlaceDBRepository placeDBRepository;
+    @Inject
+    ReviewDBRepository reviewDBRepository;
+
     PlaceViewModel placeViewModel;
     GoogleMap map;
-    Place place;
+    PlaceModel place;
 
     @Override
     protected void attachBaseContext(Context newBase) {
@@ -184,7 +191,7 @@ public class PlaceDetailActivity extends AppCompatActivity
 
         Intent intent = getIntent();
         Bundle data = intent.getExtras();
-        String placeId;
+        final String placeId;
         if (!data.containsKey(Constants.EXTRA_PLACE_ID)) {
             if (!data.containsKey(Constants.EXTRA_PLACE_GOOGLE_ID)) {
                 Toast.makeText(this, R.string.network_error, Toast.LENGTH_LONG)
@@ -195,27 +202,54 @@ public class PlaceDetailActivity extends AppCompatActivity
         } else {
             placeId = data.getString(Constants.EXTRA_PLACE_ID);
         }
+
+        placeViewModel = ViewModelProviders.of(this, placeVMFactory)
+                .get(PlaceViewModel.class);
+        getPlaceFromDB(placeId);
+    }
+
+    private void getPlaceFromDB(final String placeId) {
+        placeDBRepository.getPlaceById(placeId).observe(this, new Observer<PlaceWithReviews>() {
+            @Override
+            public void onChanged(@Nullable PlaceWithReviews placeWithReviews) {
+                if (placeWithReviews != null && placeWithReviews.getPlace() != null) {
+                    // is in database
+                    bindPlace(placeWithReviews);
+                } else {
+                    // fetch from API
+                    fetchPlaceFromAPI(placeId);
+                }
+            }
+        });
+    }
+
+    private void savePlaceToDB(PlaceWithReviews placeWithReviews) {
+        placeDBRepository.insertPlace(placeWithReviews.getPlace());
+        reviewDBRepository.insertReview(placeWithReviews.getReviews());
+    }
+
+    private void updatePlaceToDB(PlaceModel place) {
+        placeDBRepository.updatePlace(place);
+    }
+
+
+    private void fetchPlaceFromAPI(String placeId) {
         String apiToken = sharedPreferences
                 .getString(Constants.USER_LOGGED_API_TOKEN_SP, null);
 
-        Observer<PlaceWrapper> observer = new Observer<PlaceWrapper>() {
+        Observer<PlaceWithReviews> observer = new Observer<PlaceWithReviews>() {
             @Override
-            public void onChanged(@Nullable PlaceWrapper placeWrapper) {
+            public void onChanged(@Nullable PlaceWithReviews place) {
                 // STOP PROGRESS
-                if (placeWrapper != null) {
-                    if (placeWrapper.getPlace() != null) {
-                        bindPlace(placeWrapper.getPlace());
-                    } else {
-                        displayError(placeWrapper.getStatus());
-                    }
+                if (place != null && place.getPlace() != null) {
+                    savePlaceToDB(place);
+                    bindPlace(place);
                 } else {
                     displayError("NULL_RESPONSE");
                 }
             }
         };
 
-        placeViewModel = ViewModelProviders.of(this, placeVMFactory)
-                .get(PlaceViewModel.class);
         if (placeViewModel.isPlaceLoaded()) {
             placeViewModel.getLoadedSinglePlace().observe(this, observer);
         } else {
@@ -238,7 +272,6 @@ public class PlaceDetailActivity extends AppCompatActivity
                 }
             });
         }
-
     }
 
     @Override
@@ -288,11 +321,10 @@ public class PlaceDetailActivity extends AppCompatActivity
         ratingBar.setRating(0);
     }
 
-    File getPhotoFile(Photo photo) {
+    File getPhotoFile(String photo) {
         try {
             return Glide.with(this)
-                    .load(ApiUtils.getPlacePhotoUrl((MyApplication) getApplication(),
-                            photo.getReference(), photo.getWidth()))
+                    .load(photo + ((MyApplication) getApplication()).getApiKey())
                     .downloadOnly(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL)
                     .get();
         } catch(Exception e) {
@@ -302,8 +334,8 @@ public class PlaceDetailActivity extends AppCompatActivity
         }
     }
 
-    void sharePlace(final Place place) {
-        final Photo photo = place.getPhoto();
+    void sharePlace(final PlaceModel place) {
+        final String photo = place.getPhotoUrl();
         Observable<File> saveImage = Observable.fromCallable(new Callable<File>() {
             @Override
             public File call() throws Exception {
@@ -338,7 +370,7 @@ public class PlaceDetailActivity extends AppCompatActivity
                 });
     }
 
-    void shareImage(Uri uri, Place place) {
+    void shareImage(Uri uri, PlaceModel place) {
         Intent intent = new Intent(Intent.ACTION_SEND);
         intent.setType("image/jpeg");
         intent.putExtra(Intent.EXTRA_STREAM, uri);
@@ -347,14 +379,16 @@ public class PlaceDetailActivity extends AppCompatActivity
         intent.putExtra(Intent.EXTRA_TEXT, String.format(
                 getString(R.string.share_text),
                 place.getName(),
-                place.getCity().getName(),
-                "http://tripguide.com/place/" + place.getId())
+                place.getCity(),
+                "http://tripguide.com/place/" + place.get_id())
         );
         Intent chooser = Intent.createChooser(intent, getString(R.string.share));
         startActivity(chooser);
     }
 
-    void bindPlace(@NonNull final Place place) {
+    void bindPlace(@NonNull final PlaceWithReviews placeWithReviews) {
+        final PlaceModel place = placeWithReviews.getPlace();
+        List<ReviewModel> reviews = placeWithReviews.getReviews();
         toolbarLayout.setTitle(place.getName());
         shareBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -363,7 +397,7 @@ public class PlaceDetailActivity extends AppCompatActivity
             }
         });
         if (place.getCity() != null) {
-            toolbar.setSubtitle(place.getCity().getName());
+            toolbar.setSubtitle(place.getCity());
         }
         String description = place.getDescription();
         if (description != null && description.length() != 0) {
@@ -393,8 +427,8 @@ public class PlaceDetailActivity extends AppCompatActivity
         addressLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Uri gmmIntentUri = Uri.parse(String.format("geo:%s,%s", place.getLocation().getLat(),
-                        place.getLocation().getLng()));
+                Uri gmmIntentUri = Uri.parse(String.format("geo:%s,%s", place.getLat(),
+                        place.getLng()));
                 Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
                 mapIntent.setPackage("com.google.android.apps.maps");
                 if (mapIntent.resolveActivity(getPackageManager()) != null) {
@@ -448,7 +482,7 @@ public class PlaceDetailActivity extends AppCompatActivity
             public void onRatingChanged(SimpleRatingBar simpleRatingBar, float rating, boolean fromUser) {
                 if (fromUser) {
                     Intent intent = new Intent(PlaceDetailActivity.this, AddReviewActivity.class);
-                    intent.putExtra(Constants.EXTRA_PLACE_ID, place.getId());
+                    intent.putExtra(Constants.EXTRA_PLACE_ID, place.get_id());
                     intent.putExtra(Constants.EXTRA_PROGRESS, simpleRatingBar.getRating());
                     intent.putExtra(Constants.EXTRA_PLACE_NAME, place.getName());
                     startActivityForResult(intent, 999);
@@ -457,58 +491,48 @@ public class PlaceDetailActivity extends AppCompatActivity
         });
         ratingToolbar.setEnabled(false);
         ratingToolbar.setActivated(false);
-        if (place.getRating() != null) {
-            ratingToolbar.setRating(place.getRating().floatValue());
-        }
+        ratingToolbar.setRating((float) place.getRating());
 
-        categoryText.setText(TextStringUtils.formatTitle(place.getTypes().get(0)));
-        OpeningHours opening = place.getOpeningHours();
-        if (opening != null) {
-            final List<String> weekend = opening.getWeekdays();
-            Calendar calendar = Calendar.getInstance();
-            int day = calendar.get(Calendar.DAY_OF_WEEK);
-            if (weekend != null && weekend.size() > 0) {
-                calendarLayout.setVisibility(View.VISIBLE);
-                calendarLayout.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        new MaterialDialog.Builder(PlaceDetailActivity.this)
-                                .content(TextStringUtils.arrayToString(weekend))
-                                .show();
-                    }
-                });
-                switch (day) {
-                    case Calendar.MONDAY:
-                        calendarText.setText(weekend.get(0));
-                        break;
-                    case Calendar.TUESDAY:
-                        calendarText.setText(weekend.get(1));
-                        break;
-                    case Calendar.WEDNESDAY:
-                        calendarText.setText(weekend.get(2));
-                        break;
-                    case Calendar.THURSDAY:
-                        calendarText.setText(weekend.get(3));
-                        break;
-                    case Calendar.FRIDAY:
-                        calendarText.setText(weekend.get(4));
-                        break;
-                    case Calendar.SATURDAY:
-                        calendarText.setText(weekend.get(5));
-                        break;
-                    case Calendar.SUNDAY:
-                        calendarText.setText(weekend.get(6));
-                        break;
-
-                }
-            }
-        }
-        Photo photo = place.getPhoto();
-        if (photo != null && photo.getReference() != null) {
-            String url = ApiUtils.getPlacePhotoUrl((MyApplication) getApplication(),
-                    photo.getReference(), photo.getWidth());
+        categoryText.setText(TextStringUtils.formatTitle(place.getType()));
+//            if (weekend != null && weekend.size() > 0) {
+//                calendarLayout.setVisibility(View.VISIBLE);
+//                calendarLayout.setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View view) {
+//                        new MaterialDialog.Builder(PlaceDetailActivity.this)
+//                                .content(TextStringUtils.arrayToString(weekend))
+//                                .show();
+//                    }
+//                });
+//                switch (day) {
+//                    case Calendar.MONDAY:
+//                        calendarText.setText(weekend.get(0));
+//                        break;
+//                    case Calendar.TUESDAY:
+//                        calendarText.setText(weekend.get(1));
+//                        break;
+//                    case Calendar.WEDNESDAY:
+//                        calendarText.setText(weekend.get(2));
+//                        break;
+//                    case Calendar.THURSDAY:
+//                        calendarText.setText(weekend.get(3));
+//                        break;
+//                    case Calendar.FRIDAY:
+//                        calendarText.setText(weekend.get(4));
+//                        break;
+//                    case Calendar.SATURDAY:
+//                        calendarText.setText(weekend.get(5));
+//                        break;
+//                    case Calendar.SUNDAY:
+//                        calendarText.setText(weekend.get(6));
+//                        break;
+//
+//                }
+//            }
+//        }
+            String url = place.getPhotoUrl() + ((MyApplication) getApplication()).getApiKey();
             final List<Photo> photos = new ArrayList<>();
-            photos.add(photo);
+//            photos.add(photo);
             Glide.with(this)
                     .load(url)
                     .centerCrop()
@@ -525,16 +549,15 @@ public class PlaceDetailActivity extends AppCompatActivity
 
                 }
             });
-        }
-        List<Photo> photos = place.getPhotos();
-        if (photos != null && photos.size() > 0) {
-            myPhotos = photos;
-            photosLayout.setVisibility(View.VISIBLE);
-            PhotoAdapter adapter = new PhotoAdapter(getApplication(), this, photos);
-            photosRecyclerView.setHasFixedSize(true);
-            photosRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
-            photosRecyclerView.setAdapter(adapter);
-        }
+//        List<Photo> photos = place.getPhotos();
+//        if (photos != null && photos.size() > 0) {
+//            myPhotos = photos;
+//            photosLayout.setVisibility(View.VISIBLE);
+//            PhotoAdapter adapter = new PhotoAdapter(getApplication(), this, photos);
+//            photosRecyclerView.setHasFixedSize(true);
+//            photosRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+//            photosRecyclerView.setAdapter(adapter);
+//        }
         if (place.getWebsite() != null) {
             websiteLayout.setVisibility(View.VISIBLE);
             websiteLayout.setOnClickListener(new View.OnClickListener() {
@@ -561,8 +584,8 @@ public class PlaceDetailActivity extends AppCompatActivity
         navigateBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String location = String.format("%s,%s", place.getLocation().getLat(),
-                        place.getLocation().getLng());
+                String location = String.format("%s,%s", place.getLat(),
+                        place.getLng());
                 Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("google.navigation:q=" + location));
                 if (intent.resolveActivity(getPackageManager()) != null) {
                     startActivity(intent);
@@ -575,8 +598,8 @@ public class PlaceDetailActivity extends AppCompatActivity
             String distance = LocationUtils.measureDistance(
                     getApplicationContext(),
                     LocationUtils.getCurrentLocation(this),
-                    place.getLocation().getLat(),
-                    place.getLocation().getLng()
+                    place.getLat(),
+                    place.getLng()
             );
             if (distance != null && distance.length() > 0) {
                 distanceLayout.setVisibility(View.VISIBLE);
@@ -584,8 +607,8 @@ public class PlaceDetailActivity extends AppCompatActivity
                 distanceLayout.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        String location = String.format("%s,%s", place.getLocation().getLat(),
-                                place.getLocation().getLng());
+                        String location = String.format("%s,%s", place.getLat(),
+                                place.getLng());
                         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("google.navigation:q=" + location));
                         if (intent.resolveActivity(getPackageManager()) != null) {
                             startActivity(intent);
@@ -597,14 +620,12 @@ public class PlaceDetailActivity extends AppCompatActivity
             }
         }
 
-        if (place.getId() == null || place.getV() == null ||
-                place.getCreatedAt() == null || place.isUserHasReviewed()) {
+        if (place.get_id() == null || place.getCreatedAt() == null || place.isUserHasReviewed()) {
             ratingLayout.setVisibility(View.GONE);
             ratingBar.setVisibility(View.GONE);
         }
 
         // Reviews
-        List<Review> placeReviews = place.getReviews();
         View emptyView1 = getLayoutInflater()
                 .inflate(R.layout.empty_reviews_layout, reviewsRecyclerView, false);
         ReviewAdapter reviewAdapter = new ReviewAdapter(ReviewAdapter.REVIEW_PLACE_TYPE, null, null);
@@ -613,10 +634,10 @@ public class PlaceDetailActivity extends AppCompatActivity
         //reviewsRecyclerView.setHasFixedSize(true);
         reviewsRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         reviewsRecyclerView.setAdapter(statesRecyclerViewAdapter1);
-        if (placeReviews != null && placeReviews.size() > 0) {
+        if (reviews != null && reviews.size() > 0) {
             reviewsCountText.setVisibility(View.VISIBLE);
-            reviewsCountText.setText(String.format(getString(R.string.reviews_count), placeReviews.size()));
-            reviewAdapter.updateData(placeReviews);
+            reviewsCountText.setText(String.format(getString(R.string.reviews_count), reviews.size()));
+            reviewAdapter.updateData(reviews);
             statesRecyclerViewAdapter1.setState(StatesRecyclerViewAdapter.STATE_NORMAL);
         } else {
             reviewsRecyclerView.hideShimmerAdapter();
@@ -625,7 +646,7 @@ public class PlaceDetailActivity extends AppCompatActivity
         updateMap(place);
     }
 
-    private void setPlaceAsFavorite(Place place) {
+    private void setPlaceAsFavorite(PlaceModel place) {
         String tokenId = sharedPreferences.getString(Constants.USER_LOGGED_API_TOKEN_SP, null);
         if (tokenId != null) {
             final ProgressDialog dialog = new ProgressDialog(this);
@@ -634,7 +655,11 @@ public class PlaceDetailActivity extends AppCompatActivity
             dialog.setCanceledOnTouchOutside(false);
             dialog.setMessage(getString(R.string.please_wait));
             dialog.show();
-            placeRepository.addToMyFavorites(tokenId, place)
+            place.setFavorite(place.isFavorite());
+            updatePlaceToDB(place);
+            Place dummyPlace = new Place();
+            dummyPlace.setId(place.get_id());
+            placeRepository.addToMyFavorites(tokenId, dummyPlace)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(new Consumer<String>() {
@@ -671,6 +696,7 @@ public class PlaceDetailActivity extends AppCompatActivity
         }
     }
 
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -678,12 +704,12 @@ public class PlaceDetailActivity extends AppCompatActivity
             if (place != null) {
                 String apiToken = sharedPreferences
                         .getString(Constants.USER_LOGGED_API_TOKEN_SP, null);
-                placeViewModel.loadSinglePlace(place.getId(), apiToken);
+                placeViewModel.loadSinglePlace(place.get_id(), apiToken);
             }
         }
     }
 
-    void openMap(@NonNull Place place) {
+    void openMap(@NonNull PlaceModel place) {
         Intent intent = new Intent(PlaceDetailActivity.this, MapActivity.class);
         intent.putExtra(Constants.EXTRA_PLACE_FOR_MAP, place);
         startActivity(intent);
@@ -691,15 +717,15 @@ public class PlaceDetailActivity extends AppCompatActivity
 
 
 
-    void mapLocation(@NonNull GoogleMap map, @NonNull final Place place) {
-        if (place.getLocation() != null) {
+    void mapLocation(@NonNull GoogleMap map, @NonNull final PlaceModel place) {
+        if (place.getLat() != 0.0 && place.getLng() != 0.0) {
             findViewById(R.id.map).setVisibility(View.VISIBLE);
-            LatLng where = new LatLng(place.getLocation().getLat(), place.getLocation().getLng());
+            LatLng where = new LatLng(place.getLat(), place.getLng());
             map.addMarker(new MarkerOptions()
                     .title(place.getName())
                     .snippet(place.getAddress())
                     .position(where)
-                    .icon(ApiUtils.drawMarkerByType(getApplicationContext() , place.getTypes().get(0)))
+                    .icon(ApiUtils.drawMarkerByType(getApplicationContext() , place.getType()))
             );
             map.moveCamera(CameraUpdateFactory.newLatLngZoom(where, 18f));
             map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
@@ -718,7 +744,7 @@ public class PlaceDetailActivity extends AppCompatActivity
         }
     }
 
-    private void updateMap(@NonNull final Place place) {
+    private void updateMap(@NonNull final PlaceModel place) {
         if (map != null) {
             mapLocation(map, place);
         } else {
@@ -731,6 +757,13 @@ public class PlaceDetailActivity extends AppCompatActivity
                 }
             }, 100);
         }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        placeDBRepository.onStop();
+        reviewDBRepository.onStop();
     }
 
     @Override
