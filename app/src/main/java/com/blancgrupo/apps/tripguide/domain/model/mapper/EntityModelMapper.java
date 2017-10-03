@@ -24,7 +24,7 @@ public class EntityModelMapper {
     /* From PlaceDetail to Model */
     public static PlaceModel transform(@NonNull PlaceDetail placeDetail) {
         PlaceModel model = new PlaceModel();
-        model.setPlaceId(placeDetail.getPlaceId());
+        model.set_id(placeDetail.getPlaceId());
         model.setName(placeDetail.getName());
         model.setAddress(placeDetail.getFormattedAddress() != null
                 ? placeDetail.getFormattedAddress() : placeDetail.getVicinity());
@@ -75,7 +75,7 @@ public class EntityModelMapper {
     /* From PlaceSearch (less features) to Model */
     public static PlaceModel transform(@NonNull PlaceSearch placeSearch) {
         PlaceModel model = new PlaceModel();
-        model.setPlaceId(placeSearch.getPlaceId());
+        model.set_id(placeSearch.getPlaceId());
         model.setName(placeSearch.getName());
         model.setAddress(placeSearch.getFormattedAddress());
         Location location = placeSearch.getGeometry().getLocation();

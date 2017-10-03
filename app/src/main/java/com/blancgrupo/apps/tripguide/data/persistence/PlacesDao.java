@@ -9,6 +9,7 @@ import android.arch.persistence.room.Query;
 import android.arch.persistence.room.Update;
 
 import com.blancgrupo.apps.tripguide.domain.model.PlaceModel;
+import com.blancgrupo.apps.tripguide.domain.model.PlaceWithReviews;
 
 import java.util.List;
 
@@ -21,10 +22,13 @@ import io.reactivex.Flowable;
 public interface PlacesDao {
 
     @Query("SELECT * FROM places ORDER BY createdAt DESC")
-    LiveData<List<PlaceModel>> getPlaces();
+    LiveData<List<PlaceWithReviews>> getPlaces();
 
-    @Query("SELECT * FROM places WHERE placeId = :placeId LIMIT 1")
-    LiveData<PlaceModel> getPlaceById(String placeId);
+    @Query("SELECT * FROM places WHERE type = :placeType")
+    LiveData<List<PlaceWithReviews>> getPlacesByType(String placeType);
+
+    @Query("SELECT * FROM places WHERE _id = :placeId LIMIT 1")
+    LiveData<PlaceWithReviews> getPlaceById(String placeId);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertPlace(PlaceModel place);

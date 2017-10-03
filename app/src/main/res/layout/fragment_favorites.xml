@@ -6,24 +6,31 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <LinearLayout
+    <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:orientation="vertical"
+        android:id="@+id/nestedscrollview"
         android:layout_height="match_parent">
 
-
-        <com.cooltechworks.views.shimmer.ShimmerRecyclerView
-            xmlns:app="http://schemas.android.com/apk/res-auto"
-            android:id="@+id/favorites_rv"
-            android:layout_marginTop="75dp"
-            android:nestedScrollingEnabled="false"
-            android:layout_height="match_parent"
+        <LinearLayout
             android:layout_width="match_parent"
-            app:shimmer_demo_child_count="5"
-            app:shimmer_demo_layout="@layout/shimmer_place_item"
-            app:shimmer_demo_layout_manager_type="linear_vertical"
-            />
+            android:orientation="vertical"
+            android:layout_height="match_parent">
 
-    </LinearLayout>
+
+            <com.cooltechworks.views.shimmer.ShimmerRecyclerView
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/favorites_rv"
+                android:layout_marginTop="75dp"
+                android:nestedScrollingEnabled="false"
+                android:layout_height="match_parent"
+                android:layout_width="match_parent"
+                app:shimmer_demo_child_count="5"
+                app:shimmer_demo_layout="@layout/shimmer_place_item"
+                app:shimmer_demo_layout_manager_type="linear_vertical"
+                />
+
+        </LinearLayout>
+
+    </android.support.v4.widget.NestedScrollView>
 
     </android.support.v4.widget.SwipeRefreshLayout>

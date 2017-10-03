@@ -1,9 +1,10 @@
 package com.blancgrupo.apps.tripguide.domain.model;
 
-import android.arch.persistence.room.Embedded;
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.PrimaryKey;
+import android.arch.persistence.room.Relation;
+import android.support.annotation.NonNull;
 
 import java.util.List;
 
@@ -14,9 +15,11 @@ import java.util.List;
 @Entity(tableName = "places")
 public class PlaceModel {
     @PrimaryKey
-    private String placeId;
+    @NonNull
+    private String _id;
     private String googleId;
     private String name;
+    private String description;
     private String address;
     private double lat;
     private double lng;
@@ -28,36 +31,61 @@ public class PlaceModel {
     private boolean openNow;
     private String weekdays;
     private long distance;
+    private double rating;
     private String createdAt;
+    private boolean isFavorite;
+    private boolean userHasReviewed;
+    String cityId;
 
-    @Ignore
     public PlaceModel() {
     }
 
-    public PlaceModel(String placeId, String googleId, String name, String address, double lat, double lng, String phoneNumber, String type, String photoUrl, String city, String website, boolean openNow, String weekdays, long distance, String createdAt) {
-        this.placeId = placeId;
-        this.googleId = googleId;
-        this.name = name;
-        this.address = address;
-        this.lat = lat;
-        this.lng = lng;
-        this.phoneNumber = phoneNumber;
-        this.type = type;
-        this.photoUrl = photoUrl;
-        this.city = city;
-        this.website = website;
-        this.openNow = openNow;
-        this.weekdays = weekdays;
-        this.distance = distance;
-        this.createdAt = createdAt;
+    public String getCityId() {
+        return cityId;
     }
 
-    public String getPlaceId() {
-        return placeId;
+    public void setCityId(String cityId) {
+        this.cityId = cityId;
     }
 
-    public void setPlaceId(String placeId) {
-        this.placeId = placeId;
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public double getRating() {
+        return rating;
+    }
+
+    public void setRating(double rating) {
+        this.rating = rating;
+    }
+
+    public boolean isFavorite() {
+        return isFavorite;
+    }
+
+    public void setFavorite(boolean favorite) {
+        isFavorite = favorite;
+    }
+
+    public boolean isUserHasReviewed() {
+        return userHasReviewed;
+    }
+
+    public void setUserHasReviewed(boolean userHasReviewed) {
+        this.userHasReviewed = userHasReviewed;
+    }
+
+    public String get_id() {
+        return _id;
+    }
+
+    public void set_id(String _id) {
+        this._id = _id;
     }
 
     public String getGoogleId() {
