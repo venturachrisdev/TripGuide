@@ -160,7 +160,7 @@
     <string name="traveler">Traveler</string>
     <string name="visitor">Visitor</string>
     <string name="scout">Scout</string>
-    <string name="share_text" formatted="false">Check out %s (%s) at %s: %s.</string>
+    <string name="share_text" formatted="false">Check out %s (%s) at %s: %s</string>
     <string name="remove_from_favorites">Remove from favorites</string>
     <string name="delete">Delete</string>
     <string name="share_app">Share App</string>

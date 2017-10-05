@@ -61,20 +61,20 @@
         <activity
             android:name=".presentation.ui.activity.SplashScreenActivity"
             android:label="@string/app_name"
+            android:exported="true"
             android:theme="@style/AppTheme.SplashScreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
             <intent-filter>
                 <data
-                    android:host="tripguidemobile.com"
-                    android:pathPrefix="/place"
-                    android:scheme="https" />
+                    android:host="tripguide.com"
+                    android:pathPrefix="/"
+                    android:scheme="https"/>
+                <data android:scheme="http"/>
 
                 <action android:name="android.intent.action.VIEW" />
-
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
             </intent-filter>

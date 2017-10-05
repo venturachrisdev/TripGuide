@@ -397,7 +397,7 @@ public class PlaceDetailActivity extends AppCompatActivity
                 place.getName(),
                 place.getCity(),
                 getString(R.string.app_name),
-                "http://tripguide.com/place/" + place.get_id())
+                "http://" + getString(R.string.app_name) + ".com/place/" + place.get_id())
         );
         Intent chooser = Intent.createChooser(intent, getString(R.string.share));
         startActivity(chooser);
@@ -406,6 +406,7 @@ public class PlaceDetailActivity extends AppCompatActivity
     void bindPlace(@NonNull final PlaceWithReviews placeWithReviews) {
         final PlaceModel place = placeWithReviews.getPlace();
         List<PhotoModel> photos = placeWithReviews.getPhotos();
+        List<ReviewModel> reviews = placeWithReviews.getReviews();
         toolbarLayout.setTitle(place.getName());
         shareBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -648,21 +649,15 @@ public class PlaceDetailActivity extends AppCompatActivity
         //reviewsRecyclerView.setHasFixedSize(true);
         reviewsRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         reviewsRecyclerView.setAdapter(statesRecyclerViewAdapter1);
-        reviewDBRepository.getReviewsByPlace(place.get_id())
-                .observe(this, new Observer<List<ReviewModel>>() {
-                    @Override
-                    public void onChanged(@Nullable List<ReviewModel> reviews) {
-                        if (reviews != null && reviews.size() > 0) {
-                            reviewsCountText.setVisibility(View.VISIBLE);
-                            reviewsCountText.setText(String.format(getString(R.string.reviews_count), reviews.size()));
-                            reviewAdapter.updateData(reviews);
-                            statesRecyclerViewAdapter1.setState(StatesRecyclerViewAdapter.STATE_NORMAL);
-                        } else {
-                            reviewsRecyclerView.hideShimmerAdapter();
-                            statesRecyclerViewAdapter1.setState(StatesRecyclerViewAdapter.STATE_EMPTY);
-                        }
-                    }
-                });
+        if (reviews != null && reviews.size() > 0) {
+            reviewsCountText.setVisibility(View.VISIBLE);
+            reviewsCountText.setText(String.format(getString(R.string.reviews_count), reviews.size()));
+            reviewAdapter.updateData(reviews);
+            statesRecyclerViewAdapter1.setState(StatesRecyclerViewAdapter.STATE_NORMAL);
+        } else {
+            reviewsRecyclerView.hideShimmerAdapter();
+            statesRecyclerViewAdapter1.setState(StatesRecyclerViewAdapter.STATE_EMPTY);
+        }
         updateMap(place);
     }
 
@@ -725,6 +720,8 @@ public class PlaceDetailActivity extends AppCompatActivity
         if (requestCode == 999) {
             if (place != null) {
                 fetchPlaceFromAPI(place.get_id());
+            } else {
+                Toast.makeText(this, "ID NULL", Toast.LENGTH_SHORT).show();
             }
         }
     }

@@ -95,7 +95,9 @@ public class PlaceModelMapper {
         entity.setCreatedAt(place.getCreatedAt());
         entity.setFavorite(place.isFavorite());
         entity.setName(place.getName());
-        entity.setRating(place.getRating());
+        if (place.getRating() != null) {
+            entity.setRating(place.getRating());
+        }
         entity.setUserHasReviewed(place.isUserHasReviewed());
         entity.setWebsite(place.getWebsite());
         if (place.getOpeningHours() != null) {

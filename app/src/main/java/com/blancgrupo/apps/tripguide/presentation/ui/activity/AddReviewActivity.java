@@ -294,6 +294,7 @@ public class AddReviewActivity extends AppCompatActivity {
                             dialog.hide();
                             Toast.makeText(AddReviewActivity.this, R.string.thanks_for_your_review
                                     , Toast.LENGTH_SHORT).show();
+                            setResult(RESULT_OK);
                             finish();
                         }
                     }, new Consumer<Throwable>() {

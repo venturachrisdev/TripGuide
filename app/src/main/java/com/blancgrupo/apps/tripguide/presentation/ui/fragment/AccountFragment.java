@@ -49,6 +49,7 @@ import com.blancgrupo.apps.tripguide.presentation.ui.adapter.ReviewAdapter;
 import com.blancgrupo.apps.tripguide.presentation.ui.viewmodel.ProfileVMFactory;
 import com.blancgrupo.apps.tripguide.presentation.ui.viewmodel.ProfileViewModel;
 import com.blancgrupo.apps.tripguide.utils.ApiUtils;
+import com.blancgrupo.apps.tripguide.utils.ConnectivityUtils;
 import com.blancgrupo.apps.tripguide.utils.Constants;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -221,7 +222,11 @@ public class AccountFragment extends LifecycleFragment implements ReviewAdapter.
     public void recoverSession() {
         if (sharedPreferences.contains(Constants.USER_LOGGED_API_TOKEN_SP) &&
                 sharedPreferences.contains(Constants.USER_LOGGED_SP)) {
-            getProfileFromDB();
+            if (ConnectivityUtils.isConnected(getContext())) {
+                fetchProfileFromApi(sharedPreferences.getString(Constants.USER_LOGGED_API_TOKEN_SP, null));
+            } else {
+                getProfileFromDB();
+            }
         }
     }
 
@@ -598,8 +603,8 @@ public class AccountFragment extends LifecycleFragment implements ReviewAdapter.
                             Intent intent = new Intent(Intent.ACTION_SEND);
                             intent.setType("text/plain");
                             String title = String.format(getString(R.string.find_me_at_app), getString(R.string.app_name));
-                            String text = title + ": " + profile.getName()  + " -> " + Constants.API_URL
-                                    + "web/profiles/" + profile.get_id();
+                            String text = title + ": " + profile.getName()  + " -> "
+                                    + "http://" + getString(R.string.app_name) + ".com/profile/" + profile.get_id();
                             intent.putExtra(Intent.EXTRA_SUBJECT, title);
                             intent.putExtra(Intent.EXTRA_TEXT, text);
                             Intent chooser = Intent.createChooser(intent, getContext().getString(R.string.share_profile));

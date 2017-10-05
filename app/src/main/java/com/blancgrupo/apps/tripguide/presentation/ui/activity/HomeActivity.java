@@ -3,6 +3,7 @@ package com.blancgrupo.apps.tripguide.presentation.ui.activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -39,6 +40,8 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
+
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -147,6 +150,22 @@ public class HomeActivity extends AppCompatActivity
 
             }
         });
+
+        Intent original = getIntent();
+        Intent intent = new Intent(this, PlaceDetailActivity.class);
+        if (original.getAction() != null && original.getAction().equals(Intent.ACTION_VIEW)) {
+            intent.setAction(original.getAction());
+            Uri path = original.getData();
+            if (path != null) {
+                List<String> params = path.getPathSegments();
+                if (params.get(0).equals("place")) {
+                    String placeId = params.get(1);
+                    intent.putExtra(Constants.EXTRA_PLACE_ID, placeId);
+                    startActivity(intent);
+                    this.setIntent(new Intent(Intent.ACTION_DEFAULT));
+                }
+            }
+        }
     }
 
     @Override

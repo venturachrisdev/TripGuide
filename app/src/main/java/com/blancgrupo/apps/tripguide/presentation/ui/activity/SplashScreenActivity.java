@@ -9,7 +9,13 @@ public class SplashScreenActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        startActivity(new Intent(this, GettingStartedActivity.class));
+        Intent intent = new Intent(this, GettingStartedActivity.class);
+        Intent original = getIntent();
+        if (original.getAction() != null && original.getAction().equals(Intent.ACTION_VIEW)) {
+            intent.setAction(original.getAction());
+            intent.setData(original.getData());
+        }
+        startActivity(intent);
         finish();
     }
 }

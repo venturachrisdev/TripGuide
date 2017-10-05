@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
+import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -15,7 +16,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -238,8 +238,13 @@ public class GettingStartedActivity extends AppCompatActivity
 //    }
 //
     void startCityActivityAndFinish() {
-        startActivity(new Intent(GettingStartedActivity.this,
-                HomeActivity.class));
+        Intent intent = new Intent(this, HomeActivity.class);
+        Intent original = getIntent();
+        if (original.getAction() != null && original.getAction().equals(Intent.ACTION_VIEW)) {
+            intent.setAction(original.getAction());
+            intent.setData(original.getData());
+        }
+        startActivity(intent);
         finish();
     }
 //

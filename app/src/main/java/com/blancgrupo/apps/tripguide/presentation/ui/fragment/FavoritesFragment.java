@@ -97,6 +97,24 @@ public class FavoritesFragment extends LifecycleFragment
         placeViewModel = ViewModelProviders.of(this, placeVMFactory)
                 .get(PlaceViewModel.class);
 
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                if (!ConnectivityUtils.isConnected(getContext())) {
+                    swipeRefreshLayout.setRefreshing(false);
+                } else {
+                    String tokenId = sharedPreferences.getString(Constants.USER_LOGGED_API_TOKEN_SP, null);
+                    placeViewModel.getMyFavorites(tokenId).observe(FavoritesFragment.this, observer);
+                }
+            }
+        });
+
+        return v;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
         observer = new Observer<PlacesWrapper>() {
             @Override
             public void onChanged(@Nullable PlacesWrapper placesWrapper) {
@@ -112,9 +130,9 @@ public class FavoritesFragment extends LifecycleFragment
                                 placeDBRepository.insertPlaceFavorites(placeModels).observe(FavoritesFragment.this, new Observer<List<Long>>() {
                                     @Override
                                     public void onChanged(@Nullable List<Long> longs) {
-                                        adapter.updateData(placeModels);
                                     }
                                 });
+                                adapter.updateData(placeModels);
                             }
 
                         });
@@ -126,27 +144,11 @@ public class FavoritesFragment extends LifecycleFragment
                 }
             }
         };
-
-        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                getFavoritesFromDatabase();
-                if (ConnectivityUtils.isConnected(getContext())) {
-                    String tokenId = sharedPreferences.getString(Constants.USER_LOGGED_API_TOKEN_SP, null);
-                    placeViewModel.getMyFavorites(tokenId).observe(FavoritesFragment.this, observer);
-                } else {
-                    getFavoritesFromDatabase();
-                    swipeRefreshLayout.setRefreshing(false);
-                }
-            }
-        });
-
-        return v;
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
+    public void onResume() {
+        super.onResume();
 
         if (ConnectivityUtils.isConnected(getContext())) {
             String tokenId = sharedPreferences.getString(Constants.USER_LOGGED_API_TOKEN_SP, null);
@@ -193,7 +195,6 @@ public class FavoritesFragment extends LifecycleFragment
     }
 
     void fetchFromAPI() {
-        adapter.updateData(null);
         String userId = sharedPreferences.getString(Constants.USER_LOGGED_ID_SP, null);
         placeViewModel.getMyFavorites(userId).observe(FavoritesFragment.this, observer);
     }
