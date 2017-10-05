@@ -144,9 +144,16 @@
     <string name="removed_from_favorites">Eliminado de tus favoritos</string>
     <string name="reviews_count">%d Calificaciones</string>
     <string name="scout">Scout</string>
-    <string name="share_text" formatted="false">Echale un vistazo a %s (%s) en tripguide: %s</string>
+    <string name="share_text" formatted="false">Echale un vistazo a %s (%s) en %s: %s</string>
     <string name="thanks_for_your_review">Gracias por tu opinion</string>
     <string name="traveler">Traveler</string>
     <string name="visitor">Visitor</string>
+    <string name="delete">Eliminar</string>
+    <string name="download">Descargar</string>
+    <string name="share_app">Compartir App</string>
+    <string name="remove_from_favorites">Eliminar de mis favoritos</string>
+    <string name="download_app" formatted="false">Descarga %s desde Play store y comparte tus historias y fotos de viajes: %s</string>
+    <string name="share_profile">Compartir perfil</string>
+    <string name="find_me_at_app">Encuentrame en %s</string>
 
 </resources>

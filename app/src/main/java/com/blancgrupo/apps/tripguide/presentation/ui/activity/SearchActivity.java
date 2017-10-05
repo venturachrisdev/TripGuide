@@ -18,7 +18,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Toast;
 
 import com.blancgrupo.apps.tripguide.MyApplication;
 import com.blancgrupo.apps.tripguide.R;
@@ -104,7 +103,6 @@ public class SearchActivity extends AppCompatActivity implements PlaceAdapter.Pl
                     if (placesCoverWrapper.getPlaces().size() > 0) {
                         statesRecyclerViewAdapter.setState(StatesRecyclerViewAdapter.STATE_NORMAL);
                         List<PlaceModel> models = PlaceModelMapper.transformAllCover(placesCoverWrapper.getPlaces());
-                        Toast.makeText(SearchActivity.this, "Got it: " + models.size(), Toast.LENGTH_SHORT).show();
                         adapter.updateData(models);
                     } else {
                         statesRecyclerViewAdapter.setState(StatesRecyclerViewAdapter.STATE_EMPTY);
@@ -169,28 +167,30 @@ public class SearchActivity extends AppCompatActivity implements PlaceAdapter.Pl
                         } else {
                             recyclerView.showShimmerAdapter();
                             statesRecyclerViewAdapter.setState(StatesRecyclerViewAdapter.STATE_NORMAL);
-                            searchViewModel.searchPlacesByType(query, "").observe(SearchActivity.this, new android.arch.lifecycle.Observer<PlacesCoverWrapper>() {
-                                @Override
-                                public void onChanged(@Nullable PlacesCoverWrapper placesCoverWrapper) {
-                                    recyclerView.hideShimmerAdapter();
-                                    if (placesCoverWrapper != null && placesCoverWrapper.getPlaces() != null) {
-                                        if (placesCoverWrapper.getPlaces().size() > 0) {
-                                            statesRecyclerViewAdapter.setState(StatesRecyclerViewAdapter.STATE_NORMAL);
-                                            List<PlaceModel> models = PlaceModelMapper.transformAllCover(placesCoverWrapper.getPlaces());
-                                            Toast.makeText(SearchActivity.this, "Got it: " + models.size(), Toast.LENGTH_SHORT).show();
-                                            adapter.updateData(models);
+                            if (observer == null) {
+                                observer = new android.arch.lifecycle.Observer<PlacesCoverWrapper>() {
+                                    @Override
+                                    public void onChanged(@Nullable PlacesCoverWrapper placesCoverWrapper) {
+                                        recyclerView.hideShimmerAdapter();
+                                        if (placesCoverWrapper != null && placesCoverWrapper.getPlaces() != null) {
+                                            if (placesCoverWrapper.getPlaces().size() > 0) {
+                                                statesRecyclerViewAdapter.setState(StatesRecyclerViewAdapter.STATE_NORMAL);
+                                                List<PlaceModel> models = PlaceModelMapper.transformAllCover(placesCoverWrapper.getPlaces());
+                                                adapter.updateData(models);
+                                            } else {
+                                                statesRecyclerViewAdapter.setState(StatesRecyclerViewAdapter.STATE_EMPTY);
+                                            }
                                         } else {
-                                            statesRecyclerViewAdapter.setState(StatesRecyclerViewAdapter.STATE_EMPTY);
-                                        }
-                                    } else {
-                                        if (!ConnectivityUtils.isConnected(getApplicationContext())) {
-                                            statesRecyclerViewAdapter.setState(StatesRecyclerViewAdapter.STATE_ERROR);
-                                        } else {
-                                            statesRecyclerViewAdapter.setState(StatesRecyclerViewAdapter.STATE_EMPTY);
+                                            if (!ConnectivityUtils.isConnected(getApplicationContext())) {
+                                                statesRecyclerViewAdapter.setState(StatesRecyclerViewAdapter.STATE_ERROR);
+                                            } else {
+                                                statesRecyclerViewAdapter.setState(StatesRecyclerViewAdapter.STATE_EMPTY);
+                                            }
                                         }
                                     }
-                                }
-                            });
+                                };
+                            }
+                            searchViewModel.searchPlacesByType(query, "").observe(SearchActivity.this, observer);
                         }
                     }
 

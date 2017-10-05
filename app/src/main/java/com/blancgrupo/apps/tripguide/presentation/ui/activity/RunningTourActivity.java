@@ -1,20 +1,12 @@
 package com.blancgrupo.apps.tripguide.presentation.ui.activity;
 
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentStatePagerAdapter;
-import android.support.v4.content.LocalBroadcastManager;
-import android.support.v4.view.ViewGroupCompat;
-import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.MenuItem;
 import android.widget.FrameLayout;
 import android.widget.Toast;
@@ -24,12 +16,8 @@ import com.blancgrupo.apps.tripguide.data.entity.api.PlaceTypesCover;
 import com.blancgrupo.apps.tripguide.data.entity.api.Tour;
 import com.blancgrupo.apps.tripguide.presentation.ui.fragment.RunningPlaceFragment;
 import com.blancgrupo.apps.tripguide.presentation.ui.receiver.MyReceiver;
-import com.blancgrupo.apps.tripguide.presentation.ui.service.LocationService;
 import com.blancgrupo.apps.tripguide.utils.ApiUtils;
 import com.blancgrupo.apps.tripguide.utils.Constants;
-import com.blancgrupo.apps.tripguide.utils.LocationUtils;
-
-import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -101,22 +89,22 @@ public class RunningTourActivity extends AppCompatActivity
 
     void setContentFragment(Tour tour, int position, double  currentDistance, int currentProgress, double startDistance) {
         PlaceTypesCover cover = tour.getPlaces().get(position);
-        Intent backgroundIntent = new Intent(getApplicationContext(), LocationService.class);
-        backgroundIntent.setAction("android.intent.action.RUN");
-        backgroundIntent.putExtra(Constants.EXTRA_PLACE_ID, cover);
-        if (startDistance == 0) {
-            this.startDistance = startDistance =
-                    LocationUtils.measureDoubleDistance(this, LocationUtils.getCurrentLocation(this),
-                    cover.getLocation().getLat(), cover.getLocation().getLng());
-
-        }
-        backgroundIntent.putExtra(Constants.EXTRA_START_POSITION, startDistance);
-        backgroundIntent.putExtra(Constants.EXTRA_CURRENT_POSITION, currentDistance);
-        backgroundIntent.putExtra(Constants.EXTRA_CURRENT_IMAGE_POSITION, position);
-        backgroundIntent.putExtra(Constants.EXTRA_SINGLE_TOUR_ID, tourId);
-        backgroundIntent.putExtra(Constants.EXTRA_PROGRESS, currentProgress);
-        Toast.makeText(this, "Started service", Toast.LENGTH_SHORT).show();
-        startService(backgroundIntent);
+//        Intent backgroundIntent = new Intent(getApplicationContext(), LocationService.class);
+//        backgroundIntent.setAction("android.intent.action.RUN");
+//        backgroundIntent.putExtra(Constants.EXTRA_PLACE_ID, cover);
+//        if (startDistance == 0) {
+//            this.startDistance = startDistance =
+//                    LocationUtils.measureDoubleDistance(this, LocationUtils.getCurrentLocation(this),
+//                    cover.getLocation().getLat(), cover.getLocation().getLng());
+//
+//        }
+//        backgroundIntent.putExtra(Constants.EXTRA_START_POSITION, startDistance);
+//        backgroundIntent.putExtra(Constants.EXTRA_CURRENT_POSITION, currentDistance);
+//        backgroundIntent.putExtra(Constants.EXTRA_CURRENT_IMAGE_POSITION, position);
+//        backgroundIntent.putExtra(Constants.EXTRA_SINGLE_TOUR_ID, tourId);
+//        backgroundIntent.putExtra(Constants.EXTRA_PROGRESS, currentProgress);
+//        Toast.makeText(this, "Started service", Toast.LENGTH_SHORT).show();
+//        startService(backgroundIntent);
         PlaceTypesCover place = tour.getPlaces().get(position);
         fragment = new RunningPlaceFragment();
         Bundle args = new Bundle();
@@ -137,7 +125,7 @@ public class RunningTourActivity extends AppCompatActivity
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        stopService(new Intent(this, LocationService.class));
+//        stopService(new Intent(this, LocationService.class));
     }
 
     @Override

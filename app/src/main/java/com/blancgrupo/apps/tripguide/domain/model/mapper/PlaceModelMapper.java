@@ -88,17 +88,23 @@ public class PlaceModelMapper {
         entity.setGoogleId(place.getGoogleId());
         entity.setAddress(place.getAddress());
         entity.setType(place.getTypes().get(0));
-        entity.setCity(place.getCity().getName());
-        entity.setCityId(place.getCity().getId());
+        if (place.getCity() != null) {
+            entity.setCity(place.getCity().getName());
+            entity.setCityId(place.getCity().getId());
+        }
         entity.setCreatedAt(place.getCreatedAt());
         entity.setFavorite(place.isFavorite());
         entity.setName(place.getName());
         entity.setRating(place.getRating());
         entity.setUserHasReviewed(place.isUserHasReviewed());
         entity.setWebsite(place.getWebsite());
-        entity.setWeekdays(place.getOpeningHours().getWeekdays().toString());
-        entity.setLat(place.getLocation().getLat());
-        entity.setLng(place.getLocation().getLng());
+        if (place.getOpeningHours() != null) {
+            entity.setWeekdays(place.getOpeningHours().getWeekdays().toString());
+        }
+        if (place.getLocation() != null) {
+            entity.setLat(place.getLocation().getLat());
+            entity.setLng(place.getLocation().getLng());
+        }
         entity.setPhotoUrl(ApiUtils.getPlacePhotoUrlWithoutKey(
                 place.getPhoto().getReference(),
                 place.getPhoto().getWidth()

@@ -193,18 +193,18 @@ public class PlaceDetailActivity extends AppCompatActivity
 
         Intent intent = getIntent();
         Bundle data = intent.getExtras();
-        final String placeId;
-        if (!data.containsKey(Constants.EXTRA_PLACE_ID)) {
-            if (!data.containsKey(Constants.EXTRA_PLACE_GOOGLE_ID)) {
+        String placeId = "";
+        if (!data.containsKey(Constants.EXTRA_PLACE_ID) || data.getString(Constants.EXTRA_PLACE_ID, null) == null) {
+            if (!data.containsKey(Constants.EXTRA_PLACE_GOOGLE_ID) || data.getString(Constants.EXTRA_PLACE_GOOGLE_ID, null) == null) {
                 Toast.makeText(this, R.string.network_error, Toast.LENGTH_LONG)
                         .show();
                 finish();
+            } else {
+                placeId = data.getString(Constants.EXTRA_PLACE_GOOGLE_ID);
             }
-            placeId = data.getString(Constants.EXTRA_PLACE_GOOGLE_ID);
         } else {
             placeId = data.getString(Constants.EXTRA_PLACE_ID);
         }
-
         placeViewModel = ViewModelProviders.of(this, placeVMFactory)
                 .get(PlaceViewModel.class);
         if (ConnectivityUtils.isConnected(this)) {
@@ -261,7 +261,7 @@ public class PlaceDetailActivity extends AppCompatActivity
                     savePlaceToDB(place);
                     bindPlace(place);
                 } else {
-                    displayError("NULL_RESPONSE");
+                    displayError();
                 }
             }
         };
@@ -296,7 +296,7 @@ public class PlaceDetailActivity extends AppCompatActivity
         return super.onCreateOptionsMenu(menu);
     }
 
-    private void displayError(String status) {
+    private void displayError() {
         Toast.makeText(this, R.string.network_error, Toast.LENGTH_LONG).show();
         finish();
     }
@@ -396,6 +396,7 @@ public class PlaceDetailActivity extends AppCompatActivity
                 getString(R.string.share_text),
                 place.getName(),
                 place.getCity(),
+                getString(R.string.app_name),
                 "http://tripguide.com/place/" + place.get_id())
         );
         Intent chooser = Intent.createChooser(intent, getString(R.string.share));
@@ -404,7 +405,6 @@ public class PlaceDetailActivity extends AppCompatActivity
 
     void bindPlace(@NonNull final PlaceWithReviews placeWithReviews) {
         final PlaceModel place = placeWithReviews.getPlace();
-        final List<ReviewModel> reviews = placeWithReviews.getReviews();
         List<PhotoModel> photos = placeWithReviews.getPhotos();
         toolbarLayout.setTitle(place.getName());
         shareBtn.setOnClickListener(new View.OnClickListener() {

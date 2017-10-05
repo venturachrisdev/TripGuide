@@ -7,6 +7,7 @@ import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -98,6 +99,15 @@ public class ProfileFragment extends Fragment implements  ApiUtils.AuthFragment 
     public void handleSignOut(Status status) {
         accountFragment.logout();
         showSignInFragment();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.action_share_profile) {
+            if (accountFragment != null)
+                accountFragment.shareProfile();
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override

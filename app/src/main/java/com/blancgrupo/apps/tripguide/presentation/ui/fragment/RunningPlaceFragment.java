@@ -1,19 +1,14 @@
 package com.blancgrupo.apps.tripguide.presentation.ui.fragment;
 
 
-import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
-import android.location.Location;
-import android.location.LocationListener;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.NotificationCompat;
-import android.text.style.IconMarginSpan;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -24,7 +19,6 @@ import android.widget.Toast;
 import com.blancgrupo.apps.tripguide.MyApplication;
 import com.blancgrupo.apps.tripguide.R;
 import com.blancgrupo.apps.tripguide.data.entity.api.PlaceTypesCover;
-import com.blancgrupo.apps.tripguide.presentation.ui.service.LocationService;
 import com.blancgrupo.apps.tripguide.utils.ApiUtils;
 import com.blancgrupo.apps.tripguide.utils.Constants;
 import com.blancgrupo.apps.tripguide.utils.LocationUtils;
@@ -36,7 +30,8 @@ import java.util.Locale;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
-import io.reactivex.CompletableOnSubscribe;
+
+import static android.app.Activity.RESULT_OK;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -56,12 +51,15 @@ public class RunningPlaceFragment extends Fragment {
     CircleImageView placePhoto;
     @BindView(R.id.current_page)
     TextView currentPosition;
+    @BindView(R.id.btn_navigate)
+    Button btnNavigate;
     int position = 0;
     PlaceTypesCover cover;
     double realDistance = 0;
     int progress;
     double startDistance = 0;
     ApiUtils.RunningPlaceListener listener;
+    private int requestCode = 898;
 
     public RunningPlaceFragment() {
         // Required empty public constructor
@@ -115,12 +113,37 @@ public class RunningPlaceFragment extends Fragment {
         });
         placeName.setText(place.getName());
         placeLocation.setText(TextStringUtils.shortText(place.getAddress(), 50));
+        btnNavigate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String location = String.format("%s,%s", place.getLocation().getLat(),
+                        place.getLocation().getLng());
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("google.navigation:q=" + location));
+                if (intent.resolveActivity(getContext().getPackageManager()) != null) {
+                    startActivityForResult(intent, requestCode);
+                } else {
+                    Toast.makeText(getContext(), R.string.please_install_google_maps, Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
         Glide.with(getContext())
                 .load(ApiUtils.getPlacePhotoUrl((MyApplication) getActivity().getApplication(),
                         place.getPhoto().getReference(), place.getPhoto().getWidth()))
                 .centerCrop()
                 .crossFade()
                 .into(placePhoto);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == this.requestCode) {
+            if (resultCode == RESULT_OK) {
+                Toast.makeText(getContext(), "Go with next place", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(getContext(), "Not completed", Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 
     @Override

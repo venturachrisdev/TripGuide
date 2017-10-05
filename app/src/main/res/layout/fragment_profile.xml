@@ -39,7 +39,7 @@
                     android:layout_width="85dp"
                     android:layout_height="85dp"
                     android:layout_marginBottom="14dp"
-                    app:srcCompat="@mipmap/profile_placeholder"
+                    app:srcCompat="@mipmap/profile"
                     android:layout_alignParentTop="true"
                     android:layout_centerHorizontal="true" />
 

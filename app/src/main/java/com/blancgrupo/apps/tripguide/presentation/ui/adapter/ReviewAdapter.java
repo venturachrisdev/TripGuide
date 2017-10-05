@@ -183,7 +183,7 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewView
                         .diskCacheStrategy(DiskCacheStrategy.RESULT)
                         .centerCrop()
                         .crossFade()
-                        .placeholder(R.mipmap.profile_placeholder)
+                        .placeholder(R.mipmap.profile)
                         .into(profilePhoto);
             }
         }

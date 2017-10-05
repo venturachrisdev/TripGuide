@@ -21,6 +21,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
+import com.blancgrupo.apps.tripguide.MyApplication;
 import com.blancgrupo.apps.tripguide.R;
 import com.blancgrupo.apps.tripguide.presentation.ui.adapter.ReviewAdapter;
 import com.blancgrupo.apps.tripguide.presentation.ui.custom.NoSwipePager;
@@ -294,10 +295,23 @@ public class HomeActivity extends AppCompatActivity
                 startActivityForResult(intent, Constants.CHOOSE_LOCATION_RC);
                 break;
             case R.id.nav_share:
+                shareAppLink();
                 break;
         }
         drawerLayout.closeDrawer(GravityCompat.START);
         return false;
+    }
+
+    private void shareAppLink() {
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        intent.setType("text/plain");
+        String title = getString(R.string.download) + " " + getString(R.string.app_name);
+        String googlePlayUrl = String.format("https://play.google.com/store/apps/details?id=%s", MyApplication.packageName);
+        String text = String.format(getString(R.string.download_app), getString(R.string.app_name), googlePlayUrl);
+        intent.putExtra(Intent.EXTRA_SUBJECT, title);
+        intent.putExtra(Intent.EXTRA_TEXT, text);
+        Intent chooser = Intent.createChooser(intent, getString(R.string.share_app));
+        startActivity(chooser);
     }
 
 

@@ -160,8 +160,13 @@
     <string name="traveler">Traveler</string>
     <string name="visitor">Visitor</string>
     <string name="scout">Scout</string>
-    <string name="share_text" formatted="false">Check out %s (%s) at tripguide: %s.</string>
+    <string name="share_text" formatted="false">Check out %s (%s) at %s: %s.</string>
     <string name="remove_from_favorites">Remove from favorites</string>
     <string name="delete">Delete</string>
+    <string name="share_app">Share App</string>
+    <string name="download_app" formatted="false">Download %s from Play store and share your travelling stories and photos: %s</string>
+    <string name="download">Download</string>
+    <string name="share_profile">Share profile</string>
+    <string name="find_me_at_app">Find me at %s</string>
 
 </resources>

@@ -423,7 +423,7 @@ public class AccountFragment extends LifecycleFragment implements ReviewAdapter.
                     .centerCrop()
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .crossFade()
-                    .placeholder(R.mipmap.profile_placeholder)
+                    .placeholder(R.mipmap.profile)
                     .into(profileImage);
         }
         int progress = calculateXP_progress(profile.getExperience());
@@ -583,6 +583,29 @@ public class AccountFragment extends LifecycleFragment implements ReviewAdapter.
                         dialog.hide();
                         dialog.cancel();
                         Toast.makeText(getContext(), throwable.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+    public void shareProfile() {
+        String id = sharedPreferences.getString(Constants.USER_LOGGED_ID_SP, null);
+        profileDBRepository.getProfile(id)
+                .observe(this, new Observer<ProfileWithReviews>() {
+                    @Override
+                    public void onChanged(@Nullable ProfileWithReviews profileWithReviews) {
+                        if (profileWithReviews != null && profileWithReviews.getProfile() != null) {
+                            ProfileModel profile = profileWithReviews.getProfile();
+                            Intent intent = new Intent(Intent.ACTION_SEND);
+                            intent.setType("text/plain");
+                            String title = String.format(getString(R.string.find_me_at_app), getString(R.string.app_name));
+                            String text = title + ": " + profile.getName()  + " -> " + Constants.API_URL
+                                    + "web/profiles/" + profile.get_id();
+                            intent.putExtra(Intent.EXTRA_SUBJECT, title);
+                            intent.putExtra(Intent.EXTRA_TEXT, text);
+                            Intent chooser = Intent.createChooser(intent, getContext().getString(R.string.share_profile));
+                            startActivity(chooser);
+
+                        }
                     }
                 });
     }

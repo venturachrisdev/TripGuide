@@ -1,7 +1,6 @@
 package com.blancgrupo.apps.tripguide.presentation.ui.viewmodel.livedata;
 
 import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.Observer;
 
 import com.blancgrupo.apps.tripguide.data.entity.api.PlaceWrapper;
 import com.blancgrupo.apps.tripguide.domain.model.PlaceWithReviews;
@@ -40,6 +39,7 @@ public class PlaceLiveData extends LiveData<PlaceWithReviews> {
                 }, new Consumer<Throwable>() {
                     @Override
                     public void accept(@NonNull Throwable throwable) throws Exception {
+                        throwable.printStackTrace();
                         setValue(null);
                     }
                 });
