@@ -15,18 +15,16 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.blancgrupo.apps.tripguide.MyApplication;
 import com.blancgrupo.apps.tripguide.R;
 import com.blancgrupo.apps.tripguide.data.entity.api.Place;
-import com.blancgrupo.apps.tripguide.data.entity.api.PlaceCover;
 import com.blancgrupo.apps.tripguide.data.entity.api.PlacesWrapper;
 import com.blancgrupo.apps.tripguide.data.persistence.repository.PlaceDBRepository;
-import com.blancgrupo.apps.tripguide.domain.mapper.ApiPlaceMapper;
 import com.blancgrupo.apps.tripguide.domain.model.PlaceModel;
-import com.blancgrupo.apps.tripguide.domain.model.PlaceWithReviews;
 import com.blancgrupo.apps.tripguide.domain.model.mapper.PlaceModelMapper;
 import com.blancgrupo.apps.tripguide.presentation.di.component.DaggerActivityComponent;
 import com.blancgrupo.apps.tripguide.presentation.di.module.ActivityModule;
@@ -34,6 +32,7 @@ import com.blancgrupo.apps.tripguide.presentation.ui.activity.PlaceDetailActivit
 import com.blancgrupo.apps.tripguide.presentation.ui.adapter.PlaceAdapter;
 import com.blancgrupo.apps.tripguide.presentation.ui.viewmodel.PlaceVMFactory;
 import com.blancgrupo.apps.tripguide.presentation.ui.viewmodel.PlaceViewModel;
+import com.blancgrupo.apps.tripguide.utils.ConnectivityUtils;
 import com.blancgrupo.apps.tripguide.utils.Constants;
 import com.cooltechworks.views.shimmer.ShimmerRecyclerView;
 import com.rockerhieu.rvadapter.states.StatesRecyclerViewAdapter;
@@ -67,6 +66,8 @@ public class FavoritesFragment extends LifecycleFragment
     @Inject
     PlaceDBRepository placeDBRepository;
 
+    Observer<PlacesWrapper> observer;
+
     public FavoritesFragment() {
         // Required empty public constructor
     }
@@ -95,9 +96,8 @@ public class FavoritesFragment extends LifecycleFragment
         recyclerView.showShimmerAdapter();
         placeViewModel = ViewModelProviders.of(this, placeVMFactory)
                 .get(PlaceViewModel.class);
-        final String tokenId = sharedPreferences.getString(Constants.USER_LOGGED_API_TOKEN_SP, null);
 
-        final Observer<PlacesWrapper> observer = new Observer<PlacesWrapper>() {
+        observer = new Observer<PlacesWrapper>() {
             @Override
             public void onChanged(@Nullable PlacesWrapper placesWrapper) {
                 recyclerView.hideShimmerAdapter();
@@ -105,10 +105,19 @@ public class FavoritesFragment extends LifecycleFragment
                 if (placesWrapper != null) {
                     List<Place> places = placesWrapper.getPlaces();
                     if (places != null && places.size() > 0) {
-                        List<PlaceModel> placeModels = PlaceModelMapper.transformAll(places);
-                        placeDBRepository.insertPlace(placeModels);
-                        adapter.updateData(placeModels);
-                        statesRecyclerViewAdapter.setState(StatesRecyclerViewAdapter.STATE_NORMAL);
+                        final List<PlaceModel> placeModels = PlaceModelMapper.transformAll(places);
+                        placeDBRepository.emptyFavorites().observe(FavoritesFragment.this, new Observer<Integer>() {
+                            @Override
+                            public void onChanged(@Nullable Integer longs) {
+                                placeDBRepository.insertPlaceFavorites(placeModels).observe(FavoritesFragment.this, new Observer<List<Long>>() {
+                                    @Override
+                                    public void onChanged(@Nullable List<Long> longs) {
+                                        adapter.updateData(placeModels);
+                                    }
+                                });
+                            }
+
+                        });
                     } else {
                         statesRecyclerViewAdapter.setState(StatesRecyclerViewAdapter.STATE_EMPTY);
                     }
@@ -118,27 +127,75 @@ public class FavoritesFragment extends LifecycleFragment
             }
         };
 
-        placeDBRepository.getPlacesFavorite().observe(this, new Observer<List<PlaceModel>>() {
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
-            public void onChanged(@Nullable List<PlaceModel> placeModels) {
-                if (placeModels != null && placeModels.size() > 0) {
-                    adapter.updateData(placeModels);
-                    statesRecyclerViewAdapter.setState(StatesRecyclerViewAdapter.STATE_NORMAL);
-                } else {
+            public void onRefresh() {
+                getFavoritesFromDatabase();
+                if (ConnectivityUtils.isConnected(getContext())) {
+                    String tokenId = sharedPreferences.getString(Constants.USER_LOGGED_API_TOKEN_SP, null);
                     placeViewModel.getMyFavorites(tokenId).observe(FavoritesFragment.this, observer);
+                } else {
+                    getFavoritesFromDatabase();
+                    swipeRefreshLayout.setRefreshing(false);
                 }
             }
         });
 
-        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+        return v;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        if (ConnectivityUtils.isConnected(getContext())) {
+            String tokenId = sharedPreferences.getString(Constants.USER_LOGGED_API_TOKEN_SP, null);
+            placeViewModel.getMyFavorites(tokenId).observe(FavoritesFragment.this, observer);
+        } else {
+            getFavoritesFromDatabase();
+            swipeRefreshLayout.setRefreshing(false);
+        }
+    }
+
+    void getFavoritesFromDatabase() {
+        swipeRefreshLayout.setRefreshing(false);
+        placeDBRepository.getPlacesFavorite().observe(this, new Observer<List<PlaceModel>>() {
             @Override
-            public void onRefresh() {
-                String tokenId = sharedPreferences.getString(Constants.USER_LOGGED_API_TOKEN_SP, null);
-                placeViewModel.getMyFavorites(tokenId).observe(FavoritesFragment.this, observer);
+            public void onChanged(@Nullable List<PlaceModel> placeModels) {
+                if (placeModels != null) {
+                    recyclerView.hideShimmerAdapter();
+                    adapter.updateData(placeModels);
+                    statesRecyclerViewAdapter.setState(StatesRecyclerViewAdapter.STATE_NORMAL);
+                } else {
+                    fetchFromAPI();
+                }
             }
         });
+    }
 
-        return v;
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_delete_all:
+                deleteAllFavorites();
+                break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void deleteAllFavorites() {
+        placeDBRepository.emptyFavorites().observe(this, new Observer<Integer>() {
+            @Override
+            public void onChanged(@Nullable Integer integer) {
+                getFavoritesFromDatabase();
+            }
+        });
+    }
+
+    void fetchFromAPI() {
+        adapter.updateData(null);
+        String userId = sharedPreferences.getString(Constants.USER_LOGGED_ID_SP, null);
+        placeViewModel.getMyFavorites(userId).observe(FavoritesFragment.this, observer);
     }
 
     @Override

@@ -2,9 +2,9 @@ package com.blancgrupo.apps.tripguide.data.persistence.repository;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
+import android.util.Log;
 
 import com.blancgrupo.apps.tripguide.data.persistence.PlacesDatabase;
-import com.blancgrupo.apps.tripguide.data.persistence.ProfilesDao;
 import com.blancgrupo.apps.tripguide.domain.model.ProfileModel;
 import com.blancgrupo.apps.tripguide.domain.model.ProfileWithReviews;
 
@@ -23,7 +23,7 @@ import io.reactivex.schedulers.Schedulers;
  * Created by venturachrisdev on 10/3/17.
  */
 
-public class ProfileDBRepository implements ProfilesDao {
+public class ProfileDBRepository {
     PlacesDatabase database;
     CompositeDisposable disposable;
 
@@ -33,50 +33,53 @@ public class ProfileDBRepository implements ProfilesDao {
     }
 
 
-    @Override
     public LiveData<ProfileWithReviews> getProfile(final String profileId) {
         final MutableLiveData<ProfileWithReviews> livedata = new MutableLiveData<>();
         disposable.add(
-                Observable.fromCallable(new Callable<LiveData<ProfileWithReviews>>() {
-                    @Override
-                    public LiveData<ProfileWithReviews> call() throws Exception {
-                        return database.profilesDao().getProfile(profileId);
-                    }
-                }).subscribeOn(Schedulers.io())
+                database.profilesDao().getProfile(profileId)
+                        .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(new Consumer<LiveData<ProfileWithReviews>>() {
+                        .subscribe(new Consumer<ProfileWithReviews>() {
                             @Override
-                            public void accept(@NonNull LiveData<ProfileWithReviews> profile) throws Exception {
-                                livedata.setValue(profile.getValue());
+                            public void accept(@NonNull ProfileWithReviews profile) throws Exception {
+                                Log.d("PlaceDatabase", "getProfile returned");
+                                livedata.setValue(profile);
+                            }
+                        }, new Consumer<Throwable>() {
+                            @Override
+                            public void accept(@NonNull Throwable throwable) throws Exception {
+                                Log.d("PlaceDatabase", "getProfile returned null");
+                                livedata.setValue(null);
                             }
                         })
         );
         return livedata;
     }
 
-    @Override
     public LiveData<ProfileWithReviews> getProfileByToken(final String apiToken) {
         final MutableLiveData<ProfileWithReviews> livedata = new MutableLiveData<>();
         disposable.add(
-                Observable.fromCallable(new Callable<LiveData<ProfileWithReviews>>() {
-                    @Override
-                    public LiveData<ProfileWithReviews> call() throws Exception {
-                        return database.profilesDao().getProfileByToken(apiToken);
-                    }
-                }).subscribeOn(Schedulers.io())
+                database.profilesDao().getProfileByToken(apiToken)
+                        .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(new Consumer<LiveData<ProfileWithReviews>>() {
+                        .subscribe(new Consumer<ProfileWithReviews>() {
                             @Override
-                            public void accept(@NonNull LiveData<ProfileWithReviews> profile) throws Exception {
-                                livedata.setValue(profile.getValue());
+                            public void accept(@NonNull ProfileWithReviews profile) throws Exception {
+                                Log.d("PlaceDatabase", "getProfileByToken returned");
+                                livedata.setValue(profile);
+                            }
+                        }, new Consumer<Throwable>() {
+                            @Override
+                            public void accept(@NonNull Throwable throwable) throws Exception {
+                                Log.d("PlaceDatabase", "getProfileByToken returned null");
+                                livedata.setValue(null);
                             }
                         })
         );
         return livedata;
     }
 
-    @Override
-    public int logoutProfile() {
+    public void logoutProfile() {
         disposable.add(
                 Observable.fromCallable(new Callable<Integer>() {
                     @Override
@@ -88,15 +91,13 @@ public class ProfileDBRepository implements ProfilesDao {
                         .subscribe(new Consumer<Integer>() {
                             @Override
                             public void accept(@NonNull Integer aVoid) throws Exception {
-
+                                Log.d("PlaceDatabase", "logoutProfile returned");
                             }
                         })
         );
-        return 0;
     }
 
-    @Override
-    public Long insertProfile(final ProfileModel profile) {
+    public void insertProfile(final ProfileModel profile) {
         disposable.add(
                 Observable.fromCallable(new Callable<Long>() {
                     @Override
@@ -112,11 +113,9 @@ public class ProfileDBRepository implements ProfilesDao {
                     }
                 })
         );
-        return null;
     }
 
-    @Override
-    public List<Long> insertProfiles(final List<ProfileModel> profiles) {
+    public void insertProfiles(final List<ProfileModel> profiles) {
         disposable.add(
                 Observable.fromCallable(new Callable<List<Long>>() {
                     @Override
@@ -128,15 +127,13 @@ public class ProfileDBRepository implements ProfilesDao {
                         .subscribe(new Consumer<List<Long>>() {
                             @Override
                             public void accept(@NonNull List<Long> aVoid) throws Exception {
-
+                                Log.d("PlaceDatabase", "insertProfiles returned");
                             }
                         })
         );
-        return null;
     }
 
-    @Override
-    public int deleteProfile(final ProfileModel profile) {
+    public void deleteProfile(final ProfileModel profile) {
         disposable.add(
                 Observable.fromCallable(new Callable<Integer>() {
                     @Override
@@ -148,15 +145,13 @@ public class ProfileDBRepository implements ProfilesDao {
                         .subscribe(new Consumer<Integer>() {
                             @Override
                             public void accept(@NonNull Integer aVoid) throws Exception {
-
+                                Log.d("PlaceDatabase", "deleteProfile returned");
                             }
                         })
         );
-        return 0;
     }
 
-    @Override
-    public int updateProfile(final ProfileModel profile) {
+    public void updateProfile(final ProfileModel profile) {
         disposable.add(
                 Observable.fromCallable(new Callable<Integer>() {
                     @Override
@@ -168,15 +163,13 @@ public class ProfileDBRepository implements ProfilesDao {
                         .subscribe(new Consumer<Integer>() {
                             @Override
                             public void accept(@NonNull Integer aVoid) throws Exception {
-
+                                Log.d("PlaceDatabase", "updateProfile returned");
                             }
                         })
         );
-        return 0;
     }
 
-    @Override
-    public int deleteAllProfiles() {
+    public void deleteAllProfiles() {
         disposable.add(
                 Observable.fromCallable(new Callable<Integer>() {
                     @Override
@@ -188,11 +181,10 @@ public class ProfileDBRepository implements ProfilesDao {
                         .subscribe(new Consumer<Integer>() {
                             @Override
                             public void accept(@NonNull Integer aVoid) throws Exception {
-
+                                Log.d("PlaceDatabase", "deleteProfiles returned");
                             }
                         })
         );
-        return 0;
     }
 
     public void onStop() {

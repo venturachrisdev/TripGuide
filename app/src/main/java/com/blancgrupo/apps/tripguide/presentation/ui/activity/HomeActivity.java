@@ -1,6 +1,5 @@
 package com.blancgrupo.apps.tripguide.presentation.ui.activity;
 
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -23,7 +22,6 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.blancgrupo.apps.tripguide.R;
-import com.blancgrupo.apps.tripguide.data.entity.api.Review;
 import com.blancgrupo.apps.tripguide.presentation.ui.adapter.ReviewAdapter;
 import com.blancgrupo.apps.tripguide.presentation.ui.custom.NoSwipePager;
 import com.blancgrupo.apps.tripguide.presentation.ui.fragment.CityDetailFragment;
@@ -195,9 +193,9 @@ public class HomeActivity extends AppCompatActivity
 //    }
 
     @Override
-    public void onReviewProfileClick(Review.ReviewPlace reviewPlace) {
+    public void onReviewProfileClick(String placeId) {
         Intent i = new Intent(this, PlaceDetailActivity.class);
-        i.putExtra(Constants.EXTRA_PLACE_ID, reviewPlace.get_id());
+        i.putExtra(Constants.EXTRA_PLACE_ID, placeId);
         startActivity(i);
     }
 

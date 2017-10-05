@@ -5,6 +5,7 @@ import android.arch.persistence.room.Room;
 import android.arch.persistence.room.RoomDatabase;
 import android.content.Context;
 
+import com.blancgrupo.apps.tripguide.domain.model.PhotoModel;
 import com.blancgrupo.apps.tripguide.domain.model.PlaceModel;
 import com.blancgrupo.apps.tripguide.domain.model.ProfileModel;
 import com.blancgrupo.apps.tripguide.domain.model.ReviewModel;
@@ -14,13 +15,14 @@ import com.blancgrupo.apps.tripguide.domain.model.ReviewModel;
  */
 
 @Database(exportSchema = false, entities = {
-        PlaceModel.class, ProfileModel.class, ReviewModel.class
+        PlaceModel.class, ProfileModel.class, ReviewModel.class, PhotoModel.class
     }, version = 1)
 public abstract class PlacesDatabase  extends RoomDatabase {
     private static PlacesDatabase INSTANCE;
     public abstract PlacesDao placesDao();
     public abstract ProfilesDao profilesDao();
     public abstract ReviewsDao reviewsDao();
+    public abstract PhotoDao photoDao();
 
     public static PlacesDatabase getInstance(Context context) {
         if (INSTANCE == null) {

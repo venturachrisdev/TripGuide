@@ -1,6 +1,7 @@
 package com.blancgrupo.apps.tripguide.presentation.ui.viewmodel.livedata;
 
 import android.arch.lifecycle.LiveData;
+import android.util.Log;
 
 import com.blancgrupo.apps.tripguide.data.entity.api.PlacesCoverWrapper;
 
@@ -25,11 +26,14 @@ public class PlacesCoverLiveData extends LiveData<PlacesCoverWrapper> {
                 .subscribe(new Consumer<PlacesCoverWrapper>() {
                     @Override
                     public void accept(@NonNull PlacesCoverWrapper placesCoverWrapper) throws Exception {
+                        Log.d("GOOGLEAPI", "It arrived!");
                         setValue(placesCoverWrapper);
                     }
                 }, new Consumer<Throwable>() {
                     @Override
                     public void accept(@NonNull Throwable throwable) throws Exception {
+                        Log.d("GOOGLEAPI", "It arrived!");
+                        throwable.printStackTrace();
                         setValue(new PlacesCoverWrapper(null, throwable.getMessage()));
                     }
                 });

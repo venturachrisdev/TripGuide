@@ -47,9 +47,13 @@ public class GooglePlaceMapper {
         place.setName(placeDetail.getName());
         place.setAddress(placeDetail.getFormattedAddress());
         place.setGoogleId(placeDetail.getPlaceId());
-        place.setLocation(new Location(placeDetail.getGeometry().getLocation().getLat(),
-                placeDetail.getGeometry().getLocation().getLng()));
-        place.setType(placeDetail.getTypes().get(0));
+        if (placeDetail.getGeometry().getLocation() != null) {
+            place.setLocation(new Location(placeDetail.getGeometry().getLocation().getLat(),
+                    placeDetail.getGeometry().getLocation().getLng()));
+        }
+        if (placeDetail.getTypes() != null && placeDetail.getTypes().size() > 0) {
+            place.setType(placeDetail.getTypes().get(0));
+        }
         if (placeDetail.getPhotos() != null && placeDetail.getPhotos().size() > 0) {
             place.setPhoto(new Photo(placeDetail.getPhotos().get(0).getPhotoReference(),
                     placeDetail.getPhotos().get(0).getWidth()));

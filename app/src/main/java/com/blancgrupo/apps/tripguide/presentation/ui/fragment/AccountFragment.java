@@ -36,7 +36,6 @@ import com.blancgrupo.apps.tripguide.data.entity.api.Profile;
 import com.blancgrupo.apps.tripguide.data.entity.api.ProfileWrapper;
 import com.blancgrupo.apps.tripguide.data.entity.api.Review;
 import com.blancgrupo.apps.tripguide.data.entity.api.UploadPhotoWrapper;
-import com.blancgrupo.apps.tripguide.data.persistence.PlacesDatabase;
 import com.blancgrupo.apps.tripguide.data.persistence.repository.ProfileDBRepository;
 import com.blancgrupo.apps.tripguide.data.persistence.repository.ReviewDBRepository;
 import com.blancgrupo.apps.tripguide.domain.model.ProfileModel;
@@ -418,7 +417,7 @@ public class AccountFragment extends LifecycleFragment implements ReviewAdapter.
     private void bindProfile(ProfileModel profile) {
         profileName.setText(profile.getName());
         profileEmail.setText(profile.getEmail());
-        if (profile.getPhotoUrl() != null && profile.getPhotoUrl().length() > 0) {
+        if (profile.getPhotoUrl() != null) {
             Glide.with(getContext())
                     .load(Constants.API_UPLOAD_URL + profile.getPhotoUrl())
                     .centerCrop()
@@ -507,14 +506,13 @@ public class AccountFragment extends LifecycleFragment implements ReviewAdapter.
 
     private void getProfileFromDB() {
         final String apiToken = sharedPreferences.getString(Constants.USER_LOGGED_API_TOKEN_SP, null);
-        profileDBRepository.getProfileByToken(apiToken).observe(this, new Observer<ProfileWithReviews>() {
+        String userId = sharedPreferences.getString(Constants.USER_LOGGED_ID_SP, null);
+        profileDBRepository.getProfile(userId).observe(this, new Observer<ProfileWithReviews>() {
             @Override
             public void onChanged(@Nullable ProfileWithReviews profileWithReviews) {
-                if (profileWithReviews != null && profileWithReviews.getProfile() != null &&
-                        profileWithReviews.getProfile().getTokenId() != null) {
+                if (apiToken != null && profileWithReviews != null && profileWithReviews.getProfile() != null) {
                     // saved in DB
-                    initializeProfileLayout(profileWithReviews, profileWithReviews
-                            .getProfile().getTokenId());
+                    initializeProfileLayout(profileWithReviews, apiToken);
                 } else {
                     // fetch from API
                     fetchProfileFromApi(apiToken);
@@ -525,7 +523,10 @@ public class AccountFragment extends LifecycleFragment implements ReviewAdapter.
 
     private void saveProfileToDB(ProfileWithReviews profileWR) {
         profileDBRepository.insertProfile(profileWR.getProfile());
-        reviewDBRepository.insertReview(profileWR.getReviews());
+        List<ReviewModel> reviewModels = profileWR.getReviews();
+        if (reviewModels != null) {
+            reviewDBRepository.insertReview(profileWR.getReviews());
+        }
     }
 
     private void logoutFromDB() {

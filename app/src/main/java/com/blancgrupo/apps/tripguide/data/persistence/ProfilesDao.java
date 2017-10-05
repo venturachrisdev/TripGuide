@@ -1,6 +1,5 @@
 package com.blancgrupo.apps.tripguide.data.persistence;
 
-import android.arch.lifecycle.LiveData;
 import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Delete;
 import android.arch.persistence.room.Insert;
@@ -13,17 +12,19 @@ import com.blancgrupo.apps.tripguide.domain.model.ProfileWithReviews;
 
 import java.util.List;
 
+import io.reactivex.Single;
+
 /**
  * Created by venturachrisdev on 10/3/17.
  */
 
 @Dao
 public interface ProfilesDao {
-    @Query("SELECT * from profiles WHERE _id = :profileId")
-    LiveData<ProfileWithReviews> getProfile(String profileId);
+    @Query("SELECT * from profiles WHERE _id = :profileId LIMIT 1")
+    Single<ProfileWithReviews> getProfile(String profileId);
 
-    @Query("SELECT * from profiles WHERE tokenId = :apiToken")
-    LiveData<ProfileWithReviews> getProfileByToken(String apiToken);
+    @Query("SELECT * from profiles WHERE tokenId = :apiToken LIMIT 1")
+    Single<ProfileWithReviews> getProfileByToken(String apiToken);
 
     @Query("UPDATE profiles SET tokenId = NULL WHERE tokenId IS NOT NULL")
     int logoutProfile();

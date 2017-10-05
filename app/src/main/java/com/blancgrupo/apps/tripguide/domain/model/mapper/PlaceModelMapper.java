@@ -1,8 +1,11 @@
 package com.blancgrupo.apps.tripguide.domain.model.mapper;
 
+import com.blancgrupo.apps.tripguide.data.entity.api.Photo;
 import com.blancgrupo.apps.tripguide.data.entity.api.Place;
 import com.blancgrupo.apps.tripguide.data.entity.api.PlaceCover;
 import com.blancgrupo.apps.tripguide.data.entity.api.Review;
+import com.blancgrupo.apps.tripguide.data.entity.api.ReviewResponseWrapper;
+import com.blancgrupo.apps.tripguide.domain.model.PhotoModel;
 import com.blancgrupo.apps.tripguide.domain.model.PlaceModel;
 import com.blancgrupo.apps.tripguide.domain.model.PlaceWithReviews;
 import com.blancgrupo.apps.tripguide.domain.model.ReviewModel;
@@ -24,6 +27,7 @@ public class PlaceModelMapper {
         PlaceWithReviews entity = new PlaceWithReviews();
         entity.setPlace(transformPlace(place));
         entity.setReviews(transformAllReviews(place.getReviews()));
+        entity.setPhotos(transformPhotos(place.getPhotos(), place.getId()));
         return entity;
     }
 
@@ -67,6 +71,10 @@ public class PlaceModelMapper {
                 review.getPlace().get_id(),
                 review.getProfile().get_id()
         );
+        entity.setProfileName(review.getProfile().getName());
+        entity.setProfilePhotoUrl(review.getProfile().getPhotoUrl());
+        entity.setPlaceName(review.getPlace().getName());
+        entity.setPlaceCity(review.getPlace().getAddress());
         return entity;
     }
 
@@ -95,7 +103,6 @@ public class PlaceModelMapper {
                 place.getPhoto().getReference(),
                 place.getPhoto().getWidth()
         ));
-        // photos
         entity.setPhoneNumber(place.getPhoneNumber());
         return entity;
     }
@@ -114,15 +121,76 @@ public class PlaceModelMapper {
         entity.setCreatedAt(place.getCreatedAt());
         entity.setName(place.getName());
         entity.setRating(place.getRating());
-        entity.setWeekdays(place.getOpeningHours().getWeekdays().toString());
-        entity.setLat(place.getLocation().getLat());
-        entity.setLng(place.getLocation().getLng());
-        entity.setPhotoUrl(ApiUtils.getPlacePhotoUrlWithoutKey(
-                place.getPhoto().getReference(),
-                place.getPhoto().getWidth()
-        ));
-        // photos
-        entity.setPhoneNumber(place.getPhoneNumber());
+        if (place.getOpeningHours() != null) {
+            entity.setWeekdays(place.getOpeningHours().getWeekdays().toString());
+        }
+        if (place.getLocation() != null) {
+            entity.setLat(place.getLocation().getLat());
+            entity.setLng(place.getLocation().getLng());
+            if (place.getPhoto() != null) {
+                entity.setPhotoUrl(ApiUtils.getPlacePhotoUrlWithoutKey(
+                        place.getPhoto().getReference(),
+                        place.getPhoto().getWidth()
+                ));
+            }
+        }
+        return entity;
+    }
+
+
+    public static List<PhotoModel> transformPhotos(List<Photo> photos, String placeId) {
+        if (photos == null) {
+            return null;
+        }
+        List<PhotoModel> models = new ArrayList<>();
+        for (Photo photo : photos) {
+            models.add(transformPhoto(photo, placeId));
+        }
+        return models;
+    }
+
+    private static PhotoModel transformPhoto(Photo photo, String placeId) {
+        if (photo == null) {
+            return null;
+        }
+        PhotoModel model = new PhotoModel();
+        model.setPlaceId(placeId);
+        model.setReference(photo.getReference());
+        model.setWidth(photo.getWidth());
+        return model;
+    }
+
+    public static List<Photo> rollbackPhotos(List<PhotoModel> photos) {
+        if (photos == null) {
+            return null;
+        }
+        List<Photo> models = new ArrayList<>();
+        for (PhotoModel photo : photos) {
+            models.add(rollbackPhoto(photo));
+        }
+        return models;
+    }
+
+    private static Photo rollbackPhoto(PhotoModel photo) {
+        if (photo == null) {
+            return null;
+        }
+        return new Photo(photo.getReference(), photo.getWidth());
+    }
+
+    public static ReviewModel transformReview(ReviewResponseWrapper.ReviewResponse review) {
+        if (review == null) {
+            return null;
+        }
+        ReviewModel entity = new ReviewModel(
+                review.get_id(),
+                review.getRating(),
+                review.getMessage(),
+                review.getCreatedAt(),
+                null,
+                review.getPlace(),
+                review.getProfile()
+        );
         return entity;
     }
 }

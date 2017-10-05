@@ -14,6 +14,8 @@ public class PlaceWithReviews {
     private PlaceModel place;
     @Relation(parentColumn = "_id", entityColumn = "_id", entity = ReviewModel.class)
     private List<ReviewModel> reviews;
+    @Relation(parentColumn = "_id", entityColumn = "placeId", entity = PhotoModel.class)
+    private List<PhotoModel> photos;
 
     public PlaceWithReviews() {
     }
@@ -32,5 +34,13 @@ public class PlaceWithReviews {
 
     public void setReviews(List<ReviewModel> reviews) {
         this.reviews = reviews;
+    }
+
+    public List<PhotoModel> getPhotos() {
+        return photos;
+    }
+
+    public void setPhotos(List<PhotoModel> photos) {
+        this.photos = photos;
     }
 }

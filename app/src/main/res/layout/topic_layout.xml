@@ -56,23 +56,15 @@
 
         </RelativeLayout>
 
+                <com.cooltechworks.views.shimmer.ShimmerRecyclerView
+                    android:id="@+id/topic_rv"
+                    android:nestedScrollingEnabled="false"
+                    android:layout_width="match_parent"
+                    app:shimmer_demo_child_count="6"
+                    app:shimmer_demo_layout="@layout/shimmer_grid_place_item"
+                    app:shimmer_demo_layout_manager_type="grid"
+                    android:layout_height="wrap_content"/>
 
-
-        <HorizontalScrollView
-            android:scrollbars="none"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <com.cooltechworks.views.shimmer.ShimmerRecyclerView
-                android:id="@+id/topic_rv"
-                android:nestedScrollingEnabled="false"
-                android:layout_width="wrap_content"
-                app:shimmer_demo_child_count="6"
-                app:shimmer_demo_layout="@layout/shimmer_grid_place_item"
-                app:shimmer_demo_layout_manager_type="grid"
-                android:layout_height="wrap_content"/>
-
-        </HorizontalScrollView>
 
 
 </LinearLayout>

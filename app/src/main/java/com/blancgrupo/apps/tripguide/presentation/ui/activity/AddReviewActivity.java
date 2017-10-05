@@ -29,6 +29,10 @@ import com.blancgrupo.apps.tripguide.R;
 import com.blancgrupo.apps.tripguide.data.entity.api.Review;
 import com.blancgrupo.apps.tripguide.data.entity.api.ReviewResponseWrapper;
 import com.blancgrupo.apps.tripguide.data.entity.api.UploadPhotoWrapper;
+import com.blancgrupo.apps.tripguide.data.persistence.repository.PlaceDBRepository;
+import com.blancgrupo.apps.tripguide.data.persistence.repository.ReviewDBRepository;
+import com.blancgrupo.apps.tripguide.domain.model.ReviewModel;
+import com.blancgrupo.apps.tripguide.domain.model.mapper.PlaceModelMapper;
 import com.blancgrupo.apps.tripguide.domain.repository.ProfileRepository;
 import com.blancgrupo.apps.tripguide.presentation.di.component.DaggerActivityComponent;
 import com.blancgrupo.apps.tripguide.presentation.di.module.ActivityModule;
@@ -79,6 +83,11 @@ public class AddReviewActivity extends AppCompatActivity {
     SharedPreferences sharedPreferences;
     @Inject
     ProfileRepository profileRepository;
+
+    @Inject
+    ReviewDBRepository reviewDBRepository;
+    @Inject
+    PlaceDBRepository placeDBRepository;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -279,6 +288,9 @@ public class AddReviewActivity extends AppCompatActivity {
                     .subscribe(new Consumer<ReviewResponseWrapper>() {
                         @Override
                         public void accept(@io.reactivex.annotations.NonNull ReviewResponseWrapper reviewResponseWrapper) throws Exception {
+                            ReviewModel reviewModel = PlaceModelMapper.transformReview(reviewResponseWrapper.getReview());
+                            saveReviewToDB(reviewModel);
+                            updatePlace(placeId, true);
                             dialog.hide();
                             Toast.makeText(AddReviewActivity.this, R.string.thanks_for_your_review
                                     , Toast.LENGTH_SHORT).show();
@@ -297,9 +309,18 @@ public class AddReviewActivity extends AppCompatActivity {
         }
     }
 
+    void saveReviewToDB(ReviewModel review) {
+        reviewDBRepository.insertReview(review);
+    }
+
+    void updatePlace(String placeId, boolean isReviewed) {
+        placeDBRepository.setReviewed(placeId, isReviewed);
+    }
+
     @Override
     protected void onStop() {
         super.onStop();
+        reviewDBRepository.onStop();
         if (disposable != null && !disposable.isDisposed()) {
             disposable.dispose();
         }

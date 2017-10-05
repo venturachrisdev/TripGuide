@@ -1,6 +1,7 @@
 package com.blancgrupo.apps.tripguide.domain.model;
 
 import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.PrimaryKey;
 import android.support.annotation.NonNull;
 
@@ -20,8 +21,17 @@ public class ReviewModel {
     private String placeId;
     private String profileId;
 
+    private String profileName;
+    private String profilePhotoUrl;
+    private String placeName;
+    private String placeCity;
 
-    public ReviewModel(String _id, double rating, String message, String createdAt, String photo, String placeId, String profileId) {
+
+    public ReviewModel() {
+    }
+
+    @Ignore
+    public ReviewModel(@NonNull String _id, double rating, String message, String createdAt, String photo, String placeId, String profileId) {
         this._id = _id;
         this.rating = rating;
         this.message = message;
@@ -29,6 +39,38 @@ public class ReviewModel {
         this.photo = photo;
         this.placeId = placeId;
         this.profileId = profileId;
+    }
+
+    public String getProfilePhotoUrl() {
+        return profilePhotoUrl;
+    }
+
+    public void setProfilePhotoUrl(String profilePhotoUrl) {
+        this.profilePhotoUrl = profilePhotoUrl;
+    }
+
+    public String getProfileName() {
+        return profileName;
+    }
+
+    public void setProfileName(String profileName) {
+        this.profileName = profileName;
+    }
+
+    public String getPlaceName() {
+        return placeName;
+    }
+
+    public void setPlaceName(String placeName) {
+        this.placeName = placeName;
+    }
+
+    public String getPlaceCity() {
+        return placeCity;
+    }
+
+    public void setPlaceCity(String placeCity) {
+        this.placeCity = placeCity;
     }
 
     public String get_id() {

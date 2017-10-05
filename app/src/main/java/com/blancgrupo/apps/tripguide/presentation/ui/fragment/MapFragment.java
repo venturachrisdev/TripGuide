@@ -2,10 +2,8 @@ package com.blancgrupo.apps.tripguide.presentation.ui.fragment;
 
 
 import android.Manifest;
-import android.app.Activity;
 import android.arch.lifecycle.LifecycleFragment;
 import android.arch.lifecycle.ViewModelProviders;
-import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
@@ -20,7 +18,7 @@ import android.view.ViewGroup;
 import com.blancgrupo.apps.tripguide.MyApplication;
 import com.blancgrupo.apps.tripguide.R;
 import com.blancgrupo.apps.tripguide.data.entity.api.Location;
-import com.blancgrupo.apps.tripguide.data.entity.api.Place;
+import com.blancgrupo.apps.tripguide.domain.model.PlaceModel;
 import com.blancgrupo.apps.tripguide.presentation.di.component.DaggerActivityComponent;
 import com.blancgrupo.apps.tripguide.presentation.di.module.ActivityModule;
 import com.blancgrupo.apps.tripguide.presentation.ui.viewmodel.SearchVMFactory;
@@ -109,6 +107,11 @@ public class MapFragment extends LifecycleFragment implements OnMapReadyCallback
         map = googleMap;
         map.setIndoorEnabled(true);
         map.setTrafficEnabled(true);
+        map.setBuildingsEnabled(true);
+        map.getUiSettings().setCompassEnabled(true);
+        map.getUiSettings().setMapToolbarEnabled(true);
+        map.getUiSettings().setAllGesturesEnabled(true);
+        map.getUiSettings().setZoomControlsEnabled(true);
         if (ActivityCompat.checkSelfPermission(getActivity().getApplicationContext(),
                 Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
@@ -121,12 +124,10 @@ public class MapFragment extends LifecycleFragment implements OnMapReadyCallback
             map.setMyLocationEnabled(true);
             map.getUiSettings().setMyLocationButtonEnabled(true);
         }
-        map.getUiSettings().setAllGesturesEnabled(true);
-        map.getUiSettings().setZoomControlsEnabled(true);
 
         Bundle args = getArguments();
         if (args != null && args.containsKey(Constants.EXTRA_PLACE_FOR_MAP)) {
-            Place place = args.getParcelable(Constants.EXTRA_PLACE_FOR_MAP);
+            PlaceModel place = args.getParcelable(Constants.EXTRA_PLACE_FOR_MAP);
                 if (place != null) {
                     mapPlace(place);
                 }
@@ -146,14 +147,14 @@ public class MapFragment extends LifecycleFragment implements OnMapReadyCallback
         }
     }
 
-    private void mapPlace(@NonNull Place place) {
-        Location placeLocation = place.getLocation();
+    private void mapPlace(@NonNull PlaceModel place) {
+        Location placeLocation = new Location(place.getLat(), place.getLng());
         LatLng where = new LatLng(placeLocation.getLat(), placeLocation.getLng());
         map.addMarker(new MarkerOptions()
                 .position(where)
                 .title(place.getName())
                 .icon(ApiUtils.drawMarkerByType(getActivity().getApplicationContext(),
-                        place.getTypes().get(0))));
+                        place.getType())));
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(where, 17f));
     }
 

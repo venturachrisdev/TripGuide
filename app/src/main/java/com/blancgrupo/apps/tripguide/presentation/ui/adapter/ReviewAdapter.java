@@ -12,7 +12,6 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 
 import com.blancgrupo.apps.tripguide.R;
-import com.blancgrupo.apps.tripguide.data.entity.api.Review;
 import com.blancgrupo.apps.tripguide.domain.model.ReviewModel;
 import com.blancgrupo.apps.tripguide.utils.Constants;
 import com.bumptech.glide.Glide;
@@ -71,23 +70,17 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewView
         holder.setMessage(review.getMessage());
         holder.setRating(review.getRating());
         holder.setPhoto(review.getPhoto());
-//        switch (holder.getType()) {
-//            case REVIEW_PLACE_TYPE:
-//                if (review.getProfile() != null) {
-//                    if (review.getProfile() != null) {
-//                        ((ReviewPlaceViewHolder) holder).setName(review.getProfile().getName());
-//                        ((ReviewPlaceViewHolder) holder).setProfilePhoto(review.getProfile().getPhotoUrl());
-//                    }
-//                }
-//                break;
-//            case REVIEW_PROFILE_TYPE:
-//                if (review.getPlace() != null) {
-//                    ((ReviewProfileViewHolder) holder).setPlaceName(review.getPlace().getName());
-//                }
-//                ((ReviewProfileViewHolder) holder).setOnReviewPlaceClickListener(
-//                        profileListener, review.getPlace(), review);
-//                break;
-//        }
+        switch (holder.getType()) {
+            case REVIEW_PLACE_TYPE:
+                    ((ReviewPlaceViewHolder) holder).setName(review.getProfileName());
+                    ((ReviewPlaceViewHolder) holder).setProfilePhoto(review.getProfilePhotoUrl());
+                break;
+            case REVIEW_PROFILE_TYPE:
+                ((ReviewProfileViewHolder) holder).setPlaceName(review.getPlaceName());
+                ((ReviewProfileViewHolder) holder).setOnReviewPlaceClickListener(
+                        profileListener, review.getPlaceId(), review);
+                break;
+        }
     }
 
     @Override
@@ -122,17 +115,19 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewView
 
 
         public void setDate(String date) {
-            try {
-                DateFormat df1 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault());
-                Date result = df1.parse(date);
-                Calendar calendar = Calendar.getInstance();
-                calendar.setTime(result);
-                profileDate.setText(SimpleDateFormat.getDateTimeInstance(DateFormat.MEDIUM,
-                        DateFormat.SHORT)
-                        .format(calendar.getTime()));
-            } catch (ParseException e) {
-                e.printStackTrace();
-                profileDate.setText(date);
+            if (date != null) {
+                try {
+                    DateFormat df1 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault());
+                    Date result = df1.parse(date);
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.setTime(result);
+                    profileDate.setText(SimpleDateFormat.getDateTimeInstance(DateFormat.MEDIUM,
+                            DateFormat.SHORT)
+                            .format(calendar.getTime()));
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                    profileDate.setText(date);
+                }
             }
         }
 
@@ -211,12 +206,12 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewView
         }
 
         public void setOnReviewPlaceClickListener(final ReviewProfileListener listener,
-                                                  final Review.ReviewPlace reviewPlace,
-                                                  final Review review) {
+                                                  final String placeId,
+                                                  final ReviewModel review) {
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    listener.onReviewProfileClick(reviewPlace);
+                    listener.onReviewProfileClick(placeId);
                 }
             });
             optionsBtn.setOnClickListener(new View.OnClickListener() {
@@ -251,7 +246,7 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewView
     }
 
     public interface ReviewProfileListener {
-        void onReviewProfileClick(Review.ReviewPlace reviewPlace);
+        void onReviewProfileClick(String placeId);
     }
 
     public interface ReviewMenuListener {

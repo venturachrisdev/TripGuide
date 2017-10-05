@@ -7,6 +7,8 @@
     android:foreground="?attr/selectableItemBackground"
     app:cardCornerRadius="5dp"
     app:cardElevation="0dp"
+    android:layout_marginRight="20dp"
+    android:layout_marginEnd="20dp"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
@@ -19,7 +21,7 @@
         <com.elyeproj.loaderviewlibrary.LoaderImageView
             android:id="@+id/place_item_photo"
             android:layout_width="match_parent"
-            android:alpha="0.6"
+            android:alpha="0.8"
             android:layout_height="160dp" />
 
         <RelativeLayout

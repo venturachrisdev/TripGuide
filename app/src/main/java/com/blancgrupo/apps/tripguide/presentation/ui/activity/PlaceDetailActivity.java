@@ -41,12 +41,13 @@ import com.blancgrupo.apps.tripguide.data.entity.api.Photo;
 import com.blancgrupo.apps.tripguide.data.entity.api.Place;
 import com.blancgrupo.apps.tripguide.data.entity.api.PlaceDescription;
 import com.blancgrupo.apps.tripguide.data.entity.api.PlaceDescriptionWrapper;
-import com.blancgrupo.apps.tripguide.data.persistence.PlacesDatabase;
 import com.blancgrupo.apps.tripguide.data.persistence.repository.PlaceDBRepository;
 import com.blancgrupo.apps.tripguide.data.persistence.repository.ReviewDBRepository;
+import com.blancgrupo.apps.tripguide.domain.model.PhotoModel;
 import com.blancgrupo.apps.tripguide.domain.model.PlaceModel;
 import com.blancgrupo.apps.tripguide.domain.model.PlaceWithReviews;
 import com.blancgrupo.apps.tripguide.domain.model.ReviewModel;
+import com.blancgrupo.apps.tripguide.domain.model.mapper.PlaceModelMapper;
 import com.blancgrupo.apps.tripguide.domain.repository.PlaceRepository;
 import com.blancgrupo.apps.tripguide.presentation.di.component.DaggerActivityComponent;
 import com.blancgrupo.apps.tripguide.presentation.di.module.ActivityModule;
@@ -56,6 +57,7 @@ import com.blancgrupo.apps.tripguide.presentation.ui.custom.InfoView;
 import com.blancgrupo.apps.tripguide.presentation.ui.viewmodel.PlaceVMFactory;
 import com.blancgrupo.apps.tripguide.presentation.ui.viewmodel.PlaceViewModel;
 import com.blancgrupo.apps.tripguide.utils.ApiUtils;
+import com.blancgrupo.apps.tripguide.utils.ConnectivityUtils;
 import com.blancgrupo.apps.tripguide.utils.Constants;
 import com.blancgrupo.apps.tripguide.utils.LocationUtils;
 import com.blancgrupo.apps.tripguide.utils.TextStringUtils;
@@ -205,7 +207,11 @@ public class PlaceDetailActivity extends AppCompatActivity
 
         placeViewModel = ViewModelProviders.of(this, placeVMFactory)
                 .get(PlaceViewModel.class);
-        getPlaceFromDB(placeId);
+        if (ConnectivityUtils.isConnected(this)) {
+            fetchPlaceFromAPI(placeId);
+        } else {
+            getPlaceFromDB(placeId);
+        }
     }
 
     private void getPlaceFromDB(final String placeId) {
@@ -214,7 +220,14 @@ public class PlaceDetailActivity extends AppCompatActivity
             public void onChanged(@Nullable PlaceWithReviews placeWithReviews) {
                 if (placeWithReviews != null && placeWithReviews.getPlace() != null) {
                     // is in database
-                    bindPlace(placeWithReviews);
+                    if ((placeWithReviews.getPhotos() == null || placeWithReviews.getPhotos().size() == 0)
+                            && ConnectivityUtils.isConnected(PlaceDetailActivity.this)) {
+                        // Its in database but just the cover, and theres internet to fetch it from API
+                        fetchPlaceFromAPI(placeId);
+                    } else {
+                        // Details loaded before or theres no internet.
+                        bindPlace(placeWithReviews);
+                    }
                 } else {
                     // fetch from API
                     fetchPlaceFromAPI(placeId);
@@ -224,8 +237,11 @@ public class PlaceDetailActivity extends AppCompatActivity
     }
 
     private void savePlaceToDB(PlaceWithReviews placeWithReviews) {
-        placeDBRepository.insertPlace(placeWithReviews.getPlace());
-        reviewDBRepository.insertReview(placeWithReviews.getReviews());
+        placeDBRepository.insertPlace(placeWithReviews.getPlace(),
+                placeWithReviews.getPhotos());
+        List<ReviewModel> reviews = placeWithReviews.getReviews();
+        if (reviews != null)
+            reviewDBRepository.insertReview(placeWithReviews.getReviews());
     }
 
     private void updatePlaceToDB(PlaceModel place) {
@@ -388,7 +404,8 @@ public class PlaceDetailActivity extends AppCompatActivity
 
     void bindPlace(@NonNull final PlaceWithReviews placeWithReviews) {
         final PlaceModel place = placeWithReviews.getPlace();
-        List<ReviewModel> reviews = placeWithReviews.getReviews();
+        final List<ReviewModel> reviews = placeWithReviews.getReviews();
+        List<PhotoModel> photos = placeWithReviews.getPhotos();
         toolbarLayout.setTitle(place.getName());
         shareBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -531,33 +548,30 @@ public class PlaceDetailActivity extends AppCompatActivity
 //            }
 //        }
             String url = place.getPhotoUrl() + ((MyApplication) getApplication()).getApiKey();
-            final List<Photo> photos = new ArrayList<>();
-//            photos.add(photo);
             Glide.with(this)
                     .load(url)
                     .centerCrop()
                     .crossFade()
                     .into(headerImage);
 
-            headerImage.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Intent intent = new Intent(PlaceDetailActivity.this, DisplayImageActivity.class);
-                    intent.putParcelableArrayListExtra(Constants.EXTRA_IMAGE_URL,
-                            (ArrayList<? extends Parcelable>) photos);
-                    startActivity(intent);
+//            headerImage.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View view) {
+//                    Intent intent = new Intent(PlaceDetailActivity.this, DisplayImageActivity.class);
+//                    intent.putParcelableArrayListExtra(Constants.EXTRA_IMAGE_URL,
+//                            (ArrayList<? extends Parcelable>) myPhotos);
+//                    startActivity(intent);
 
-                }
-            });
-//        List<Photo> photos = place.getPhotos();
-//        if (photos != null && photos.size() > 0) {
-//            myPhotos = photos;
-//            photosLayout.setVisibility(View.VISIBLE);
-//            PhotoAdapter adapter = new PhotoAdapter(getApplication(), this, photos);
-//            photosRecyclerView.setHasFixedSize(true);
-//            photosRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
-//            photosRecyclerView.setAdapter(adapter);
-//        }
+//                }
+//            });
+        if (photos != null && photos.size() > 0) {
+            myPhotos = PlaceModelMapper.rollbackPhotos(photos);
+            photosLayout.setVisibility(View.VISIBLE);
+            PhotoAdapter adapter = new PhotoAdapter(getApplication(), this, myPhotos);
+            photosRecyclerView.setHasFixedSize(true);
+            photosRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+            photosRecyclerView.setAdapter(adapter);
+        }
         if (place.getWebsite() != null) {
             websiteLayout.setVisibility(View.VISIBLE);
             websiteLayout.setOnClickListener(new View.OnClickListener() {
@@ -628,25 +642,31 @@ public class PlaceDetailActivity extends AppCompatActivity
         // Reviews
         View emptyView1 = getLayoutInflater()
                 .inflate(R.layout.empty_reviews_layout, reviewsRecyclerView, false);
-        ReviewAdapter reviewAdapter = new ReviewAdapter(ReviewAdapter.REVIEW_PLACE_TYPE, null, null);
-        StatesRecyclerViewAdapter statesRecyclerViewAdapter1 = new StatesRecyclerViewAdapter(
+        final ReviewAdapter reviewAdapter = new ReviewAdapter(ReviewAdapter.REVIEW_PLACE_TYPE, null, null);
+        final StatesRecyclerViewAdapter statesRecyclerViewAdapter1 = new StatesRecyclerViewAdapter(
                 reviewAdapter, null, emptyView1, null);
         //reviewsRecyclerView.setHasFixedSize(true);
         reviewsRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         reviewsRecyclerView.setAdapter(statesRecyclerViewAdapter1);
-        if (reviews != null && reviews.size() > 0) {
-            reviewsCountText.setVisibility(View.VISIBLE);
-            reviewsCountText.setText(String.format(getString(R.string.reviews_count), reviews.size()));
-            reviewAdapter.updateData(reviews);
-            statesRecyclerViewAdapter1.setState(StatesRecyclerViewAdapter.STATE_NORMAL);
-        } else {
-            reviewsRecyclerView.hideShimmerAdapter();
-            statesRecyclerViewAdapter1.setState(StatesRecyclerViewAdapter.STATE_EMPTY);
-        }
+        reviewDBRepository.getReviewsByPlace(place.get_id())
+                .observe(this, new Observer<List<ReviewModel>>() {
+                    @Override
+                    public void onChanged(@Nullable List<ReviewModel> reviews) {
+                        if (reviews != null && reviews.size() > 0) {
+                            reviewsCountText.setVisibility(View.VISIBLE);
+                            reviewsCountText.setText(String.format(getString(R.string.reviews_count), reviews.size()));
+                            reviewAdapter.updateData(reviews);
+                            statesRecyclerViewAdapter1.setState(StatesRecyclerViewAdapter.STATE_NORMAL);
+                        } else {
+                            reviewsRecyclerView.hideShimmerAdapter();
+                            statesRecyclerViewAdapter1.setState(StatesRecyclerViewAdapter.STATE_EMPTY);
+                        }
+                    }
+                });
         updateMap(place);
     }
 
-    private void setPlaceAsFavorite(PlaceModel place) {
+    private void setPlaceAsFavorite(final PlaceModel place) {
         String tokenId = sharedPreferences.getString(Constants.USER_LOGGED_API_TOKEN_SP, null);
         if (tokenId != null) {
             final ProgressDialog dialog = new ProgressDialog(this);
@@ -672,6 +692,7 @@ public class PlaceDetailActivity extends AppCompatActivity
                                 favoriteBtn.setCompoundDrawablesWithIntrinsicBounds(null, ContextCompat.getDrawable(
                                         PlaceDetailActivity.this, R.drawable.ic_favorite_accent_24dp
                                 ), null, null);
+                                placeDBRepository.setFavorite(place.get_id(), true);
                             } else {
                                 Toast.makeText(PlaceDetailActivity.this, R.string.removed_from_favorites,
                                         Toast.LENGTH_LONG).show();
@@ -679,6 +700,7 @@ public class PlaceDetailActivity extends AppCompatActivity
                                 favoriteBtn.setCompoundDrawablesWithIntrinsicBounds(null, ContextCompat.getDrawable(
                                         PlaceDetailActivity.this, R.drawable.ic_favorite_border_black_24dp
                                 ), null, null);
+                                placeDBRepository.setFavorite(place.get_id(), false);
                             }
                             dialog.hide();
                         }
@@ -702,9 +724,7 @@ public class PlaceDetailActivity extends AppCompatActivity
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 999) {
             if (place != null) {
-                String apiToken = sharedPreferences
-                        .getString(Constants.USER_LOGGED_API_TOKEN_SP, null);
-                placeViewModel.loadSinglePlace(place.get_id(), apiToken);
+                fetchPlaceFromAPI(place.get_id());
             }
         }
     }

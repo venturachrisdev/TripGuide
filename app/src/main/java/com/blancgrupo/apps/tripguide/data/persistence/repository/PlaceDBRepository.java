@@ -2,12 +2,14 @@ package com.blancgrupo.apps.tripguide.data.persistence.repository;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
+import android.util.Log;
 
-import com.blancgrupo.apps.tripguide.data.persistence.PlacesDao;
 import com.blancgrupo.apps.tripguide.data.persistence.PlacesDatabase;
+import com.blancgrupo.apps.tripguide.domain.model.PhotoModel;
 import com.blancgrupo.apps.tripguide.domain.model.PlaceModel;
 import com.blancgrupo.apps.tripguide.domain.model.PlaceWithReviews;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
 
@@ -22,7 +24,7 @@ import io.reactivex.schedulers.Schedulers;
  * Created by venturachrisdev on 10/3/17.
  */
 
-public class PlaceDBRepository implements PlacesDao {
+public class PlaceDBRepository {
 
     PlacesDatabase database;
     CompositeDisposable disposable;
@@ -32,112 +34,123 @@ public class PlaceDBRepository implements PlacesDao {
         disposable = new CompositeDisposable();
     }
 
-    @Override
     public LiveData<List<PlaceWithReviews>> getPlaces() {
         final MutableLiveData<List<PlaceWithReviews>> livedata = new MutableLiveData<>();
         disposable.add(
-                Observable.fromCallable(new Callable<LiveData<List<PlaceWithReviews>>>() {
-                    @Override
-                    public LiveData<List<PlaceWithReviews>> call() throws Exception {
-                        return database.placesDao().getPlaces();
-                    }
-                }).subscribeOn(Schedulers.io())
+                database.placesDao().getPlaces()
+                        .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(new Consumer<LiveData<List<PlaceWithReviews>>>() {
+                        .subscribe(new Consumer<List<PlaceWithReviews>>() {
                             @Override
-                            public void accept(@NonNull LiveData<List<PlaceWithReviews>> profile) throws Exception {
-                                livedata.setValue(profile.getValue());
+                            public void accept(@NonNull List<PlaceWithReviews> places) throws Exception {
+                                Log.d("PlaceDatabase", "getPlaces returned");
+                                livedata.setValue(places);
+                            }
+                        }, new Consumer<Throwable>() {
+                            @Override
+                            public void accept(@NonNull Throwable throwable) throws Exception {
+                                Log.d("PlaceDatabase", "getPlaces returned null");
+                                livedata.setValue(null);
                             }
                         })
         );
         return livedata;
     }
 
-    @Override
     public LiveData<List<PlaceWithReviews>> getPlacesByType(final String placeType, final String cityId) {
         final MutableLiveData<List<PlaceWithReviews>> livedata = new MutableLiveData<>();
         disposable.add(
-                Observable.fromCallable(new Callable<LiveData<List<PlaceWithReviews>>>() {
-                    @Override
-                    public LiveData<List<PlaceWithReviews>> call() throws Exception {
-                        return database.placesDao().getPlacesByType(placeType, cityId);
-                    }
-                }).subscribeOn(Schedulers.io())
+                database.placesDao().getPlacesByType(placeType, cityId)
+                        .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(new Consumer<LiveData<List<PlaceWithReviews>>>() {
+                        .subscribe(new Consumer<List<PlaceWithReviews>>() {
                             @Override
-                            public void accept(@NonNull LiveData<List<PlaceWithReviews>> profile) throws Exception {
-                                livedata.setValue(profile.getValue());
+                            public void accept(@NonNull List<PlaceWithReviews> places) throws Exception {
+                                Log.d("PlaceDatabase", "getPlacesByType returned");
+                                livedata.setValue(places);
+                            }
+                        }, new Consumer<Throwable>() {
+                            @Override
+                            public void accept(@NonNull Throwable throwable) throws Exception {
+                                Log.d("PlaceDatabase", "getPlacesByType returned null");
+                                livedata.setValue(null);
                             }
                         })
         );
         return livedata;
     }
 
-    @Override
     public LiveData<PlaceWithReviews> getPlaceById(final String placeId) {
         final MutableLiveData<PlaceWithReviews> livedata = new MutableLiveData<>();
         disposable.add(
-                Observable.fromCallable(new Callable<LiveData<PlaceWithReviews>>() {
-                    @Override
-                    public LiveData<PlaceWithReviews> call() throws Exception {
-                        return database.placesDao().getPlaceById(placeId);
-                    }
-                }).subscribeOn(Schedulers.io())
+                database.placesDao().getPlaceById(placeId)
+                        .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(new Consumer<LiveData<PlaceWithReviews>>() {
+                        .subscribe(new Consumer<PlaceWithReviews>() {
                             @Override
-                            public void accept(@NonNull LiveData<PlaceWithReviews> profile) throws Exception {
-                                livedata.setValue(profile.getValue());
+                            public void accept(@NonNull PlaceWithReviews place) throws Exception {
+                                Log.d("PlaceDatabase", "getPlaceById returned");
+                                livedata.setValue(place);
+                            }
+                        }, new Consumer<Throwable>() {
+                            @Override
+                            public void accept(@NonNull Throwable throwable) throws Exception {
+                                Log.d("PlaceDatabase", "getPlaceById returned null");
+                                livedata.setValue(null);
                             }
                         })
         );
         return livedata;
     }
 
-    @Override
     public LiveData<List<PlaceModel>> getPlacesFavorite() {
         final MutableLiveData<List<PlaceModel>> livedata = new MutableLiveData<>();
-        disposable.add(
-                Observable.fromCallable(new Callable<LiveData<List<PlaceModel>>>() {
-                    @Override
-                    public LiveData<List<PlaceModel>> call() throws Exception {
-                        return database.placesDao().getPlacesFavorite();
-                    }
-                }).subscribeOn(Schedulers.io())
+        disposable.add(database.placesDao().getPlacesFavorite()
+                .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(new Consumer<LiveData<List<PlaceModel>>>() {
+                        .subscribe(new Consumer<List<PlaceModel>>() {
                             @Override
-                            public void accept(@NonNull LiveData<List<PlaceModel>> profile) throws Exception {
-                                livedata.setValue(profile.getValue());
+                            public void accept(@NonNull List<PlaceModel> places) throws Exception {
+                                Log.d("PlaceDatabase", "getPlacesFavorite returned");
+                                livedata.setValue(places);
+                            }
+                        }, new Consumer<Throwable>() {
+                            @Override
+                            public void accept(@NonNull Throwable throwable) throws Exception {
+                                throwable.printStackTrace();
+                                Log.d("PlaceDatabase", "getPlacesFavorite returned null");
+                                livedata.setValue(null);
                             }
                         })
         );
         return livedata;
     }
 
-    @Override
-    public Long insertPlace(final PlaceModel place) {
+    public void insertPlace(final PlaceModel place, final List<PhotoModel> photos) {
         disposable.add(
-                Observable.fromCallable(new Callable<Long>() {
+                Observable.fromCallable(new Callable<List<Long>>() {
                     @Override
-                    public Long call() throws Exception {
-                        return database.placesDao().insertPlace(place);
+                    public List<Long> call() throws Exception {
+                        database.placesDao().insertPlace(place);
+                        if (photos != null) {
+                            return database.photoDao().insertPhotos(photos);
+                        }
+                        return new ArrayList<>();
                     }
-                }).subscribeOn(Schedulers.io())
+                })
+                        .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(new Consumer<Long>() {
+                        .subscribe(new Consumer<List<Long>>() {
                             @Override
-                            public void accept(@NonNull Long aVoid) throws Exception {
+                            public void accept(@NonNull List<Long> aVoid) throws Exception {
 
                             }
                         })
         );
-        return null;
     }
 
-    @Override
-    public List<Long> insertPlace(final List<PlaceModel> places) {
+    public LiveData<List<Long>> insertPlace(final List<PlaceModel> places) {
+        final MutableLiveData<List<Long>> liveData = new MutableLiveData<>();
         disposable.add(
                 Observable.fromCallable(new Callable<List<Long>>() {
                     @Override
@@ -149,15 +162,76 @@ public class PlaceDBRepository implements PlacesDao {
                         .subscribe(new Consumer<List<Long>>() {
                             @Override
                             public void accept(@NonNull List<Long> aVoid) throws Exception {
-
+                                liveData.setValue(aVoid);
+                            }
+                        }, new Consumer<Throwable>() {
+                            @Override
+                            public void accept(@NonNull Throwable throwable) throws Exception {
+                                throwable.printStackTrace();
+                                liveData.setValue(null);
                             }
                         })
         );
-        return null;
+        return liveData;
     }
 
-    @Override
-    public int deletePlace(final PlaceModel place) {
+    public LiveData<List<Long>> insertPlaceFavorites(final List<PlaceModel> places) {
+        for (int i = 0; i < places.size() ; i++) {
+            places.get(i).setFavorite(true);
+        }
+        final MutableLiveData<List<Long>> liveData = new MutableLiveData<>();
+        disposable.add(
+                Observable.fromCallable(new Callable<List<Long>>() {
+                    @Override
+                    public List<Long> call() throws Exception {
+                        return database.placesDao().insertPlace(places);
+                    }
+                }).subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(new Consumer<List<Long>>() {
+                            @Override
+                            public void accept(@NonNull List<Long> aVoid) throws Exception {
+                                liveData.setValue(aVoid);
+                            }
+                        }, new Consumer<Throwable>() {
+                            @Override
+                            public void accept(@NonNull Throwable throwable) throws Exception {
+                                throwable.printStackTrace();
+                                liveData.setValue(null);
+                            }
+                        })
+        );
+        return liveData;
+    }
+
+    public LiveData<Integer> emptyFavorites() {
+        final MutableLiveData<Integer> liveData = new MutableLiveData<>();
+        disposable.add(
+                Observable.fromCallable(new Callable<Integer>() {
+                    @Override
+                    public Integer call() throws Exception {
+                        return database.placesDao().emptyFavorites();
+                    }
+                })
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(new Consumer<Integer>() {
+                            @Override
+                            public void accept(@NonNull Integer aVoid) throws Exception {
+                                liveData.setValue(aVoid);
+                            }
+                        }, new Consumer<Throwable>() {
+                            @Override
+                            public void accept(@NonNull Throwable throwable) throws Exception {
+                                throwable.printStackTrace();
+                                liveData.setValue(null);
+                            }
+                        })
+        );
+        return liveData;
+    }
+
+    public void deletePlace(final PlaceModel place) {
         disposable.add(
                 Observable.fromCallable(new Callable<Integer>() {
                     @Override
@@ -169,15 +243,13 @@ public class PlaceDBRepository implements PlacesDao {
                         .subscribe(new Consumer<Integer>() {
                             @Override
                             public void accept(@NonNull Integer aVoid) throws Exception {
-
+                                Log.d("PlaceDatabase", "deletePlace returned");
                             }
                         })
         );
-        return 0;
     }
 
-    @Override
-    public int deleteAllPlaces() {
+    public void deleteAllPlaces() {
         disposable.add(
                 Observable.fromCallable(new Callable<Integer>() {
                     @Override
@@ -189,15 +261,13 @@ public class PlaceDBRepository implements PlacesDao {
                         .subscribe(new Consumer<Integer>() {
                             @Override
                             public void accept(@NonNull Integer aVoid) throws Exception {
-
+                                Log.d("PlaceDatabase", "deleteAllPlaces returned");
                             }
                         })
         );
-        return 0;
     }
 
-    @Override
-    public int updatePlace(final PlaceModel place) {
+    public void updatePlace(final PlaceModel place) {
         disposable.add(
                 Observable.fromCallable(new Callable<Integer>() {
                     @Override
@@ -209,11 +279,47 @@ public class PlaceDBRepository implements PlacesDao {
                         .subscribe(new Consumer<Integer>() {
                             @Override
                             public void accept(@NonNull Integer aVoid) throws Exception {
-
+                                Log.d("PlaceDatabase", "updatePlace returned");
                             }
                         })
         );
-        return 0;
+    }
+
+    public void setFavorite(final String placeId, final boolean isFavorite) {
+        disposable.add(
+                Observable.fromCallable(new Callable<Integer>() {
+                    @Override
+                    public Integer call() throws Exception {
+                        return database.placesDao().setFavorite(placeId, isFavorite);
+                    }
+                }).subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(new Consumer<Integer>() {
+                            @Override
+                            public void accept(@NonNull Integer aVoid) throws Exception {
+                                Log.d("PlaceDatabase", "setFavorite returned");
+                            }
+                        })
+        );
+    }
+
+
+    public void setReviewed(final String placeId, final boolean isReviewed) {
+        disposable.add(
+                Observable.fromCallable(new Callable<Integer>() {
+                    @Override
+                    public Integer call() throws Exception {
+                        return database.placesDao().setFavorite(placeId, isReviewed);
+                    }
+                }).subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(new Consumer<Integer>() {
+                            @Override
+                            public void accept(@NonNull Integer aVoid) throws Exception {
+                                Log.d("PlaceDatabase", "setReviewed returned");
+                            }
+                        })
+        );
     }
 
     public void onStop() {

@@ -10,7 +10,7 @@ import java.util.List;
  */
 
 public class ProfileWithReviews {
-    @Embedded
+    @Embedded()
     private ProfileModel profile;
     @Relation(parentColumn = "_id", entityColumn = "profileId", entity = ReviewModel.class)
     private List<ReviewModel> reviews;
