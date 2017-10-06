@@ -64,13 +64,25 @@ public class PlaceViewModel extends ViewModel {
         return this.placeId != null;
     }
 
+    public boolean loadLoadedPlace(String apiToken) {
+        if (singlePlaceLiveData != null) {
+            singlePlaceLiveData.loadSinglePlace(
+                    placeRepository.getSinglePlace(placeId, apiToken)
+            );
+            return true;
+        }
+        return false;
+    }
 
-    public void loadSinglePlace(String placeId, String apiToken) {
+
+    public boolean loadSinglePlace(String placeId, String apiToken) {
         if (singlePlaceLiveData != null) {
                 singlePlaceLiveData.loadSinglePlace(
                         placeRepository.getSinglePlace(placeId, apiToken)
                 );
+            return true;
         }
+        return false;
     }
 
     public LiveData<PlacesWrapper> getPlaces() {
@@ -81,7 +93,7 @@ public class PlaceViewModel extends ViewModel {
         return placesLiveData;
     }
 
-    private void loadPlaces() {
+    public void loadPlaces() {
         if (placesLiveData != null) {
             placesLiveData.loadPlaces(placeRepository.getPlaces());
         }
@@ -99,11 +111,13 @@ public class PlaceViewModel extends ViewModel {
         return placeDescriptionLiveData;
     }
 
-    private void loadPlaceDescription(String placeId) {
+    public boolean loadPlaceDescription(String placeId) {
         if (placeDescriptionLiveData != null) {
             placeDescriptionLiveData.loadPlaceDescription(placeRepository.getPlaceDescription(
                     placeId, Locale.getDefault().getLanguage()
             ));
+            return true;
         }
+        return false;
     }
 }

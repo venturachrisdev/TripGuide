@@ -210,6 +210,7 @@ public class AccountFragment extends LifecycleFragment implements ReviewAdapter.
             bindProfile(profile);
 
             if (reviews !=  null && reviews.size() > 0) {
+                reviewAdapter.updateData(null);
                 reviewAdapter.updateData(reviews);
                 statesRecyclerViewAdapter.setState(StatesRecyclerViewAdapter.STATE_NORMAL);
             } else {
@@ -231,23 +232,25 @@ public class AccountFragment extends LifecycleFragment implements ReviewAdapter.
     }
 
     private void fetchProfileFromApi(final String apiToken) {
-        profileViewModel.getLoggedProfile(apiToken).observe(this, new Observer<ProfileWrapper>() {
-            @Override
-            public void onChanged(@Nullable ProfileWrapper profileWrapper) {
-                if (profileWrapper != null) {
-                    if (profileWrapper.getProfile() != null) {
-                        ProfileWithReviews profileWR = ProfileModelMapper
-                                .transform(profileWrapper.getProfile());
-                        initializeProfileLayout(profileWR,
-                                apiToken);
-                        saveProfileToDB(profileWR);
+        if (!profileViewModel.loadLoggedProfile(apiToken)) {
+            profileViewModel.getLoggedProfile(apiToken).observe(this, new Observer<ProfileWrapper>() {
+                @Override
+                public void onChanged(@Nullable ProfileWrapper profileWrapper) {
+                    if (profileWrapper != null) {
+                        if (profileWrapper.getProfile() != null) {
+                            ProfileWithReviews profileWR = ProfileModelMapper
+                                    .transform(profileWrapper.getProfile());
+                            initializeProfileLayout(profileWR,
+                                    apiToken);
+                            saveProfileToDB(profileWR);
+                        }
+                    } else {
+                        Toast.makeText(getContext(), R.string.network_error, Toast.LENGTH_LONG)
+                                .show();
                     }
-                } else {
-                    Toast.makeText(getContext(), R.string.network_error, Toast.LENGTH_LONG)
-                            .show();
                 }
-            }
-        });
+            });
+        }
     }
 
 

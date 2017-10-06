@@ -266,27 +266,31 @@ public class PlaceDetailActivity extends AppCompatActivity
             }
         };
 
-        if (placeViewModel.isPlaceLoaded()) {
+        if (placeViewModel.isPlaceLoaded() && !placeViewModel.loadLoadedPlace(apiToken)) {
             placeViewModel.getLoadedSinglePlace().observe(this, observer);
         } else {
-            placeViewModel.getSinglePlace(placeId, apiToken).observe(this, observer);
-            placeViewModel.getPlaceDescription(placeId).observe(this, new Observer<PlaceDescriptionWrapper>() {
-                @Override
-                public void onChanged(@Nullable PlaceDescriptionWrapper placeDescriptionWrapper) {
-                    if (placeDescriptionWrapper != null) {
-                        PlaceDescription description = placeDescriptionWrapper.getPlaceDescription();
-                        if (placeDescriptionWrapper.getStatus().equals("OK") && description != null
-                                && description.getText() != null) {
-                            infoView.setVisibility(View.VISIBLE);
-                            infoView.setContentText(description.getText());
+            if (!placeViewModel.loadSinglePlace(placeId, apiToken)) {
+                placeViewModel.getSinglePlace(placeId, apiToken).observe(this, observer);
+            }
+            if (!placeViewModel.loadPlaceDescription(placeId)) {
+                placeViewModel.getPlaceDescription(placeId).observe(this, new Observer<PlaceDescriptionWrapper>() {
+                    @Override
+                    public void onChanged(@Nullable PlaceDescriptionWrapper placeDescriptionWrapper) {
+                        if (placeDescriptionWrapper != null) {
+                            PlaceDescription description = placeDescriptionWrapper.getPlaceDescription();
+                            if (placeDescriptionWrapper.getStatus().equals("OK") && description != null
+                                    && description.getText() != null) {
+                                infoView.setVisibility(View.VISIBLE);
+                                infoView.setContentText(description.getText());
+                            } else {
+                                infoView.setVisibility(View.GONE);
+                            }
                         } else {
                             infoView.setVisibility(View.GONE);
                         }
-                    } else {
-                        infoView.setVisibility(View.GONE);
                     }
-                }
-            });
+                });
+            }
         }
     }
 
@@ -395,7 +399,7 @@ public class PlaceDetailActivity extends AppCompatActivity
         intent.putExtra(Intent.EXTRA_TEXT, String.format(
                 getString(R.string.share_text),
                 place.getName(),
-                place.getCity(),
+                place.getCity() != null ? place.getCity() : place.getAddress(),
                 getString(R.string.app_name),
                 "http://" + getString(R.string.app_name) + ".com/place/" + place.get_id())
         );
@@ -718,10 +722,9 @@ public class PlaceDetailActivity extends AppCompatActivity
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 999) {
-            if (place != null) {
-                fetchPlaceFromAPI(place.get_id());
-            } else {
-                Toast.makeText(this, "ID NULL", Toast.LENGTH_SHORT).show();
+            if (data != null && data.getExtras() != null && data.getExtras().containsKey(Constants.EXTRA_PLACE_ID)) {
+                String id = data.getStringExtra(Constants.EXTRA_PLACE_ID);
+                fetchPlaceFromAPI(id);
             }
         }
     }

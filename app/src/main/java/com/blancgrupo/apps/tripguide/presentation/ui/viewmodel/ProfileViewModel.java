@@ -36,15 +36,19 @@ public class ProfileViewModel extends ViewModel {
         return profileLiveData;
     }
 
-    public void loadProfileForAccess(Profile profile) {
+    public boolean loadProfileForAccess(Profile profile) {
         if (profileLiveData != null) {
             profileLiveData.loadProfile(profileRepository.loginOrRegisterProfile(profile));
+            return true;
         }
+        return false;
     }
 
-    public void loadLoggedProfile(String apiToken) {
+    public boolean loadLoggedProfile(String apiToken) {
         if (profileLiveData != null) {
             profileLiveData.loadProfile(profileRepository.getLoggedProfile(apiToken));
+            return true;
         }
+        return false;
     }
 }
