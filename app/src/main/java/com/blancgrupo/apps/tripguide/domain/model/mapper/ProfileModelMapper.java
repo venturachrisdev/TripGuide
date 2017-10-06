@@ -10,13 +10,14 @@ import com.blancgrupo.apps.tripguide.domain.model.ProfileWithReviews;
 
 public class ProfileModelMapper {
 
-    public static ProfileWithReviews transform(Profile profile) {
+    public static ProfileWithReviews transform(Profile profile, String token) {
         if (profile == null) {
             return null;
         }
         ProfileWithReviews entity = new ProfileWithReviews();
         entity.setProfile(transformProfile(profile));
         entity.setReviews(PlaceModelMapper.transformAllReviews(profile.getReviews()));
+        entity.setApiToken(token);
         return entity;
     }
 

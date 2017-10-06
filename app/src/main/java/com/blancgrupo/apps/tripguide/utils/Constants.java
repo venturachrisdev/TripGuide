@@ -41,12 +41,13 @@ public class Constants {
     public static final String USER_LOGGED_ID_SP = createSharedPreference("USER_LOGGED_ID");
     public static final String USER_LOGGED_TYPE_SP = createSharedPreference("USER_LOGGED_TYPE");
     public static final java.lang.String EXTRA_PLACE_NAME = createExtra("PLACE_NAME");
+    public static final String EXTRA_VIEW_PROFILE_ID = createExtra("VIEW_PROFILE_ID");
     public static String EXTRA_CURRENT_POSITION = createExtra("CURRENT_POSITION");
     public static String EXTRA_PROGRESS = createExtra("PROGRESS");
 
 
     public static final int XP_FIRST_LEVEL_TOP = 50;
-    public static final int XP_SECOND_LEVEL_TOP = 100;
+    public static final int XP_SECOND_LEVEL_TOP = 200;
     public static final int XP_THIRD_LEVEL_TOP = 500;
 
 

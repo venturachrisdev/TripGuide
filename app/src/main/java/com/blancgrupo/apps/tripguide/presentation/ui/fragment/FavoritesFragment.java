@@ -21,11 +21,8 @@ import android.view.ViewGroup;
 
 import com.blancgrupo.apps.tripguide.MyApplication;
 import com.blancgrupo.apps.tripguide.R;
-import com.blancgrupo.apps.tripguide.data.entity.api.Place;
-import com.blancgrupo.apps.tripguide.data.entity.api.PlacesWrapper;
 import com.blancgrupo.apps.tripguide.data.persistence.repository.PlaceDBRepository;
 import com.blancgrupo.apps.tripguide.domain.model.PlaceModel;
-import com.blancgrupo.apps.tripguide.domain.model.mapper.PlaceModelMapper;
 import com.blancgrupo.apps.tripguide.presentation.di.component.DaggerActivityComponent;
 import com.blancgrupo.apps.tripguide.presentation.di.module.ActivityModule;
 import com.blancgrupo.apps.tripguide.presentation.ui.activity.PlaceDetailActivity;
@@ -66,7 +63,7 @@ public class FavoritesFragment extends LifecycleFragment
     @Inject
     PlaceDBRepository placeDBRepository;
 
-    Observer<PlacesWrapper> observer;
+    Observer<List<PlaceModel>> observer;
 
     public FavoritesFragment() {
         // Required empty public constructor
@@ -103,8 +100,7 @@ public class FavoritesFragment extends LifecycleFragment
                 if (!ConnectivityUtils.isConnected(getContext())) {
                     swipeRefreshLayout.setRefreshing(false);
                 } else {
-                    String tokenId = sharedPreferences.getString(Constants.USER_LOGGED_API_TOKEN_SP, null);
-                    placeViewModel.getMyFavorites(tokenId).observe(FavoritesFragment.this, observer);
+                    fetchFromAPI();
                 }
             }
         });
@@ -115,32 +111,27 @@ public class FavoritesFragment extends LifecycleFragment
     @Override
     public void onStart() {
         super.onStart();
-        observer = new Observer<PlacesWrapper>() {
+        observer = new Observer<List<PlaceModel>>() {
             @Override
-            public void onChanged(@Nullable PlacesWrapper placesWrapper) {
+            public void onChanged(@Nullable final List<PlaceModel> places) {
                 recyclerView.hideShimmerAdapter();
                 swipeRefreshLayout.setRefreshing(false);
-                if (placesWrapper != null) {
-                    List<Place> places = placesWrapper.getPlaces();
-                    if (places != null && places.size() > 0) {
-                        final List<PlaceModel> placeModels = PlaceModelMapper.transformAll(places);
-                        placeDBRepository.emptyFavorites().observe(FavoritesFragment.this, new Observer<Integer>() {
-                            @Override
-                            public void onChanged(@Nullable Integer longs) {
-                                placeDBRepository.insertPlaceFavorites(placeModels).observe(FavoritesFragment.this, new Observer<List<Long>>() {
-                                    @Override
-                                    public void onChanged(@Nullable List<Long> longs) {
-                                    }
-                                });
-                                adapter.updateData(placeModels);
-                            }
+                if (places != null) {
+                    adapter.updateData(places);
+                    statesRecyclerViewAdapter.setState(StatesRecyclerViewAdapter.STATE_NORMAL);
+                    placeDBRepository.emptyFavorites().observe(FavoritesFragment.this, new Observer<Integer>() {
+                        @Override
+                        public void onChanged(@Nullable Integer longs) {
+                            placeDBRepository.insertPlaceFavorites(places).observe(FavoritesFragment.this, new Observer<List<Long>>() {
+                                @Override
+                                public void onChanged(@Nullable List<Long> longs) {
+                                }
+                            });
+                        }
 
-                        });
-                    } else {
-                        statesRecyclerViewAdapter.setState(StatesRecyclerViewAdapter.STATE_EMPTY);
-                    }
+                    });
                 } else {
-                    statesRecyclerViewAdapter.setState(StatesRecyclerViewAdapter.STATE_ERROR);
+                    statesRecyclerViewAdapter.setState(StatesRecyclerViewAdapter.STATE_EMPTY);
                 }
             }
         };
@@ -149,13 +140,10 @@ public class FavoritesFragment extends LifecycleFragment
     @Override
     public void onResume() {
         super.onResume();
-
         if (ConnectivityUtils.isConnected(getContext())) {
-            String tokenId = sharedPreferences.getString(Constants.USER_LOGGED_API_TOKEN_SP, null);
-            placeViewModel.getMyFavorites(tokenId).observe(FavoritesFragment.this, observer);
+            fetchFromAPI();
         } else {
             getFavoritesFromDatabase();
-            swipeRefreshLayout.setRefreshing(false);
         }
     }
 
@@ -195,8 +183,10 @@ public class FavoritesFragment extends LifecycleFragment
     }
 
     void fetchFromAPI() {
-        String userId = sharedPreferences.getString(Constants.USER_LOGGED_ID_SP, null);
-        placeViewModel.getMyFavorites(userId).observe(FavoritesFragment.this, observer);
+        String tokenId = sharedPreferences.getString(Constants.USER_LOGGED_API_TOKEN_SP, null);
+        if (!placeViewModel.loadMyFavorites(tokenId)) {
+            placeViewModel.getMyFavorites(tokenId).observe(this, observer);
+        }
     }
 
     @Override

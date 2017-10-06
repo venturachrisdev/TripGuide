@@ -6,11 +6,13 @@
     android:clickable="true"
     android:focusable="true"
     android:orientation="vertical"
+    android:animateLayoutChanges="true"
     android:layout_height="wrap_content">
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:padding="16dp"
+        android:animateLayoutChanges="true"
         android:layout_height="wrap_content">
 
         <de.hdodenhof.circleimageview.CircleImageView
@@ -26,7 +28,6 @@
             android:layout_marginLeft="14dp"
             android:layout_marginStart="14dp"
             android:textAppearance="@style/Base.TextAppearance.AppCompat.Body2"
-            android:layout_marginTop="4dp"
             android:layout_alignParentTop="true"
             android:layout_toRightOf="@+id/review_profile_photo"
             android:layout_toEndOf="@+id/review_profile_photo" />
@@ -54,6 +55,8 @@
         <TextView
             android:id="@+id/review_profile_message"
             android:layout_width="wrap_content"
+            android:clickable="true"
+            android:focusable="true"
             android:layout_height="wrap_content"
             android:textColor="@color/colorSecondaryText"
             android:textAppearance="@style/Base.TextAppearance.AppCompat.Body1"
@@ -63,6 +66,7 @@
 
         <ImageView
             android:id="@+id/photo"
+            android:visibility="gone"
             android:contentDescription="@string/app_name"
             android:layout_below="@id/review_profile_message"
             android:layout_width="match_parent"

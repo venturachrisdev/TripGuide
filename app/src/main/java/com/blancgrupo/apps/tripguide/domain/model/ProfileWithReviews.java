@@ -14,6 +14,7 @@ public class ProfileWithReviews {
     private ProfileModel profile;
     @Relation(parentColumn = "_id", entityColumn = "profileId", entity = ReviewModel.class)
     private List<ReviewModel> reviews;
+    private String apiToken;
 
     public ProfileWithReviews() {
     }
@@ -32,5 +33,13 @@ public class ProfileWithReviews {
 
     public void setReviews(List<ReviewModel> reviews) {
         this.reviews = reviews;
+    }
+
+    public String getApiToken() {
+        return apiToken;
+    }
+
+    public void setApiToken(String apiToken) {
+        this.apiToken = apiToken;
     }
 }

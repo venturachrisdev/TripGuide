@@ -91,7 +91,7 @@ import io.reactivex.schedulers.Schedulers;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 public class PlaceDetailActivity extends AppCompatActivity
-        implements LifecycleRegistryOwner, OnMapReadyCallback, PhotoAdapter.PhotoListener {
+        implements LifecycleRegistryOwner, OnMapReadyCallback, PhotoAdapter.PhotoListener, ReviewAdapter.ReviewProfileListener {
     private final LifecycleRegistry registry = new LifecycleRegistry(this);
 
     @BindView(R.id.toolbar)
@@ -647,7 +647,7 @@ public class PlaceDetailActivity extends AppCompatActivity
         // Reviews
         View emptyView1 = getLayoutInflater()
                 .inflate(R.layout.empty_reviews_layout, reviewsRecyclerView, false);
-        final ReviewAdapter reviewAdapter = new ReviewAdapter(ReviewAdapter.REVIEW_PLACE_TYPE, null, null);
+        final ReviewAdapter reviewAdapter = new ReviewAdapter(ReviewAdapter.REVIEW_PLACE_TYPE, this, null);
         final StatesRecyclerViewAdapter statesRecyclerViewAdapter1 = new StatesRecyclerViewAdapter(
                 reviewAdapter, null, emptyView1, null);
         //reviewsRecyclerView.setHasFixedSize(true);
@@ -729,6 +729,7 @@ public class PlaceDetailActivity extends AppCompatActivity
         }
     }
 
+
     void openMap(@NonNull PlaceModel place) {
         Intent intent = new Intent(PlaceDetailActivity.this, MapActivity.class);
         intent.putExtra(Constants.EXTRA_PLACE_FOR_MAP, place);
@@ -807,5 +808,18 @@ public class PlaceDetailActivity extends AppCompatActivity
         intent.putExtra(Constants.EXTRA_CURRENT_IMAGE_POSITION, position);
         intent.putParcelableArrayListExtra(Constants.EXTRA_IMAGE_URL, (ArrayList<? extends Parcelable>) myPhotos);
         startActivity(intent);
+    }
+
+    @Override
+    public void onReviewProfileClick(String placeId) {
+
+    }
+
+    @Override
+    public void onReviewUserClick(String userId) {
+        Intent i = new Intent(this, ViewProfileActivity.class);
+        i.setFlags( Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        i.putExtra(Constants.EXTRA_VIEW_PROFILE_ID, userId);
+        startActivity(i);
     }
 }

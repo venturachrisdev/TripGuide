@@ -4,14 +4,14 @@ import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.ViewModel;
 
 import com.blancgrupo.apps.tripguide.data.entity.api.PlaceDescriptionWrapper;
-import com.blancgrupo.apps.tripguide.data.entity.api.PlaceWrapper;
-import com.blancgrupo.apps.tripguide.data.entity.api.PlacesWrapper;
+import com.blancgrupo.apps.tripguide.domain.model.PlaceModel;
 import com.blancgrupo.apps.tripguide.domain.model.PlaceWithReviews;
 import com.blancgrupo.apps.tripguide.domain.repository.PlaceRepository;
 import com.blancgrupo.apps.tripguide.presentation.ui.viewmodel.livedata.PlaceDescriptionLiveData;
 import com.blancgrupo.apps.tripguide.presentation.ui.viewmodel.livedata.PlaceLiveData;
 import com.blancgrupo.apps.tripguide.presentation.ui.viewmodel.livedata.PlacesLiveData;
 
+import java.util.List;
 import java.util.Locale;
 
 /**
@@ -46,7 +46,7 @@ public class PlaceViewModel extends ViewModel {
         return singlePlaceLiveData;
     }
 
-    public LiveData<PlacesWrapper> getMyFavorites(String apiToken) {
+    public LiveData<List<PlaceModel>> getMyFavorites(String apiToken) {
         if (placesLiveData == null) {
             placesLiveData = new PlacesLiveData();
         }
@@ -54,10 +54,12 @@ public class PlaceViewModel extends ViewModel {
         return placesLiveData;
     }
 
-    private void loadMyFavorites(String apiToken) {
+    public boolean loadMyFavorites(String apiToken) {
         if (placesLiveData != null) {
             placesLiveData.loadPlaces(placeRepository.getMyFavorites(apiToken));
+            return true;
         }
+        return false;
     }
 
     public boolean isPlaceLoaded() {
@@ -85,7 +87,7 @@ public class PlaceViewModel extends ViewModel {
         return false;
     }
 
-    public LiveData<PlacesWrapper> getPlaces() {
+    public LiveData<List<PlaceModel>> getPlaces() {
         if (placesLiveData == null) {
             placesLiveData = new PlacesLiveData();
             loadPlaces();

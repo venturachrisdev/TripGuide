@@ -33,7 +33,6 @@ import android.widget.Toast;
 import com.blancgrupo.apps.tripguide.MyApplication;
 import com.blancgrupo.apps.tripguide.R;
 import com.blancgrupo.apps.tripguide.data.entity.api.Profile;
-import com.blancgrupo.apps.tripguide.data.entity.api.ProfileWrapper;
 import com.blancgrupo.apps.tripguide.data.entity.api.Review;
 import com.blancgrupo.apps.tripguide.data.entity.api.UploadPhotoWrapper;
 import com.blancgrupo.apps.tripguide.data.persistence.repository.ProfileDBRepository;
@@ -41,7 +40,6 @@ import com.blancgrupo.apps.tripguide.data.persistence.repository.ReviewDBReposit
 import com.blancgrupo.apps.tripguide.domain.model.ProfileModel;
 import com.blancgrupo.apps.tripguide.domain.model.ProfileWithReviews;
 import com.blancgrupo.apps.tripguide.domain.model.ReviewModel;
-import com.blancgrupo.apps.tripguide.domain.model.mapper.ProfileModelMapper;
 import com.blancgrupo.apps.tripguide.domain.repository.ProfileRepository;
 import com.blancgrupo.apps.tripguide.presentation.di.component.DaggerActivityComponent;
 import com.blancgrupo.apps.tripguide.presentation.di.module.ActivityModule;
@@ -199,6 +197,7 @@ public class AccountFragment extends LifecycleFragment implements ReviewAdapter.
     public void initializeProfileLayout(ProfileWithReviews profileWithReviews, String token) {
         ProfileModel profile = profileWithReviews.getProfile();
         List<ReviewModel> reviews = profileWithReviews.getReviews();
+        swipeRefreshLayout.setRefreshing(false);
         if (profile != null && token != null) {
             swipeRefreshLayout.setRefreshing(false);
             SharedPreferences.Editor editor = sharedPreferences.edit();
@@ -233,17 +232,13 @@ public class AccountFragment extends LifecycleFragment implements ReviewAdapter.
 
     private void fetchProfileFromApi(final String apiToken) {
         if (!profileViewModel.loadLoggedProfile(apiToken)) {
-            profileViewModel.getLoggedProfile(apiToken).observe(this, new Observer<ProfileWrapper>() {
+            profileViewModel.getLoggedProfile(apiToken).observe(this, new Observer<ProfileWithReviews>() {
                 @Override
-                public void onChanged(@Nullable ProfileWrapper profileWrapper) {
-                    if (profileWrapper != null) {
-                        if (profileWrapper.getProfile() != null) {
-                            ProfileWithReviews profileWR = ProfileModelMapper
-                                    .transform(profileWrapper.getProfile());
-                            initializeProfileLayout(profileWR,
+                public void onChanged(@Nullable ProfileWithReviews profile) {
+                    swipeRefreshLayout.setRefreshing(false);
+                    if (profile != null) {
+                            initializeProfileLayout(profile,
                                     apiToken);
-                            saveProfileToDB(profileWR);
-                        }
                     } else {
                         Toast.makeText(getContext(), R.string.network_error, Toast.LENGTH_LONG)
                                 .show();
@@ -377,6 +372,7 @@ public class AccountFragment extends LifecycleFragment implements ReviewAdapter.
                             dialog.cancel();
                             Glide.with(getContext())
                                     .load(Constants.API_UPLOAD_URL + uploadPhotoWrapper.getPhotoUrl())
+                                    .diskCacheStrategy(DiskCacheStrategy.ALL)
                                     .centerCrop()
                                     .crossFade()
                                     .into(profileImage);
@@ -488,19 +484,13 @@ public class AccountFragment extends LifecycleFragment implements ReviewAdapter.
                 profileViewModel = ViewModelProviders.of(this, profileVMFactory)
                         .get(ProfileViewModel.class);
             }
-            profileViewModel.signInOrRegister(profile).observe(this, new Observer<ProfileWrapper>() {
+            profileViewModel.signInOrRegister(profile).observe(this, new Observer<ProfileWithReviews>() {
                 @Override
-                public void onChanged(@Nullable ProfileWrapper profileWrapper) {
-                    if (profileWrapper != null) {
-                        if (profileWrapper.getProfile() != null && profileWrapper.getStatus().equals("OK")) {
-                            ProfileWithReviews profileWR = ProfileModelMapper.
-                                    transform(profileWrapper.getProfile());
-                            initializeProfileLayout(profileWR,
-                                    profileWrapper.getToken());
-                            saveProfileToDB(profileWR);
-                        } else {
-                            Toast.makeText(getContext(), profileWrapper.getStatus(), Toast.LENGTH_SHORT).show();
-                        }
+                public void onChanged(@Nullable ProfileWithReviews profile) {
+                    if (profile!= null) {
+                            initializeProfileLayout(profile,
+                                    profile.getApiToken());
+                            saveProfileToDB(profile);
                     } else {
                         Toast.makeText(getContext(), R.string.network_error, Toast.LENGTH_LONG)
                                 .show();
@@ -518,6 +508,7 @@ public class AccountFragment extends LifecycleFragment implements ReviewAdapter.
         profileDBRepository.getProfile(userId).observe(this, new Observer<ProfileWithReviews>() {
             @Override
             public void onChanged(@Nullable ProfileWithReviews profileWithReviews) {
+                swipeRefreshLayout.setRefreshing(false);
                 if (apiToken != null && profileWithReviews != null && profileWithReviews.getProfile() != null) {
                     // saved in DB
                     initializeProfileLayout(profileWithReviews, apiToken);
@@ -613,6 +604,8 @@ public class AccountFragment extends LifecycleFragment implements ReviewAdapter.
                             Intent chooser = Intent.createChooser(intent, getContext().getString(R.string.share_profile));
                             startActivity(chooser);
 
+                        } else {
+                            Toast.makeText(getContext(), R.string.network_error, Toast.LENGTH_SHORT).show();
                         }
                     }
                 });

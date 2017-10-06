@@ -4,7 +4,7 @@ import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.ViewModel;
 
 import com.blancgrupo.apps.tripguide.data.entity.api.Profile;
-import com.blancgrupo.apps.tripguide.data.entity.api.ProfileWrapper;
+import com.blancgrupo.apps.tripguide.domain.model.ProfileWithReviews;
 import com.blancgrupo.apps.tripguide.domain.repository.ProfileRepository;
 import com.blancgrupo.apps.tripguide.presentation.ui.viewmodel.livedata.ProfileLiveData;
 
@@ -20,7 +20,7 @@ public class ProfileViewModel extends ViewModel {
         this.profileRepository = profileRepository;
     }
 
-    public LiveData<ProfileWrapper> signInOrRegister(Profile profile) {
+    public LiveData<ProfileWithReviews> signInOrRegister(Profile profile) {
         if (profileLiveData == null) {
             profileLiveData = new ProfileLiveData();
         }
@@ -28,7 +28,7 @@ public class ProfileViewModel extends ViewModel {
         return profileLiveData;
     }
 
-    public LiveData<ProfileWrapper> getLoggedProfile(String apiToken) {
+    public LiveData<ProfileWithReviews> getLoggedProfile(String apiToken) {
         if (profileLiveData == null) {
             profileLiveData = new ProfileLiveData();
         }
@@ -47,6 +47,22 @@ public class ProfileViewModel extends ViewModel {
     public boolean loadLoggedProfile(String apiToken) {
         if (profileLiveData != null) {
             profileLiveData.loadProfile(profileRepository.getLoggedProfile(apiToken));
+            return true;
+        }
+        return false;
+    }
+
+    public LiveData<ProfileWithReviews> getSingleProfile(String profileId) {
+        if (profileLiveData == null) {
+            profileLiveData = new ProfileLiveData();
+        }
+        loadSingleProfile(profileId);
+        return profileLiveData;
+    }
+
+    public boolean loadSingleProfile(String profileId) {
+        if (profileLiveData != null) {
+            profileLiveData.loadProfile(profileRepository.getSingleProfile(profileId));
             return true;
         }
         return false;

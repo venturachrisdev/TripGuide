@@ -152,15 +152,22 @@ public class HomeActivity extends AppCompatActivity
         });
 
         Intent original = getIntent();
-        Intent intent = new Intent(this, PlaceDetailActivity.class);
+        Intent intent = null;
         if (original.getAction() != null && original.getAction().equals(Intent.ACTION_VIEW)) {
-            intent.setAction(original.getAction());
             Uri path = original.getData();
             if (path != null) {
                 List<String> params = path.getPathSegments();
                 if (params.get(0).equals("place")) {
+                    intent = new Intent(this, PlaceDetailActivity.class);
                     String placeId = params.get(1);
                     intent.putExtra(Constants.EXTRA_PLACE_ID, placeId);
+                } else if (params.get(0).equals("profile")) {
+                    String profileId = params.get(1);
+                    intent = new Intent(this, ViewProfileActivity.class);
+                    intent.putExtra(Constants.EXTRA_VIEW_PROFILE_ID, profileId);
+                }
+                if (intent != null) {
+                    intent.setAction(original.getAction());
                     startActivity(intent);
                     this.setIntent(new Intent(Intent.ACTION_DEFAULT));
                 }
@@ -217,6 +224,11 @@ public class HomeActivity extends AppCompatActivity
         Intent i = new Intent(this, PlaceDetailActivity.class);
         i.putExtra(Constants.EXTRA_PLACE_ID, placeId);
         startActivity(i);
+    }
+
+    @Override
+    public void onReviewUserClick(String userId) {
+
     }
 
     @Override

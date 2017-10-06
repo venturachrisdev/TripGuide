@@ -22,7 +22,7 @@
 
             <RelativeLayout
                 android:paddingTop="100dp"
-                android:paddingBottom="40dp"
+                android:paddingBottom="20dp"
                 android:paddingLeft="20dp"
                 android:paddingStart="20dp"
                 android:paddingEnd="20dp"
@@ -156,7 +156,8 @@
 
             <com.cooltechworks.views.shimmer.ShimmerRecyclerView
                 android:id="@+id/profile_rv"
-                android:padding="10dp"
+                android:padding="6dp"
+                app:shimmer_demo_child_count="1"
                 android:nestedScrollingEnabled="false"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"/>

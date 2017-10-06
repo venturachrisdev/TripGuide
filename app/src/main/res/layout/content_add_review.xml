@@ -97,7 +97,7 @@
                     android:minLines="5"
                     android:gravity="start"
                     android:inputType="textMultiLine|textLongMessage"
-                    android:layout_height="200dp" />
+                    android:layout_height="110dp" />
 
             </android.support.design.widget.TextInputLayout>
 

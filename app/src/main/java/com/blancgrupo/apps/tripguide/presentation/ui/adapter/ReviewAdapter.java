@@ -14,6 +14,7 @@ import android.widget.TextView;
 import com.blancgrupo.apps.tripguide.R;
 import com.blancgrupo.apps.tripguide.domain.model.ReviewModel;
 import com.blancgrupo.apps.tripguide.utils.Constants;
+import com.blancgrupo.apps.tripguide.utils.TextStringUtils;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
@@ -73,12 +74,12 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewView
         switch (holder.getType()) {
             case REVIEW_PLACE_TYPE:
                     ((ReviewPlaceViewHolder) holder).setName(review.getProfileName());
-                    ((ReviewPlaceViewHolder) holder).setProfilePhoto(review.getProfilePhotoUrl());
+                    ((ReviewPlaceViewHolder) holder).setProfilePhoto(review.getProfilePhotoUrl(), profileListener, review.getProfileId());
                 break;
             case REVIEW_PROFILE_TYPE:
                 ((ReviewProfileViewHolder) holder).setPlaceName(review.getPlaceName());
                 ((ReviewProfileViewHolder) holder).setOnReviewPlaceClickListener(
-                        profileListener, review.getPlaceId(), review);
+                        profileListener, review.getPlaceId());
                 break;
         }
     }
@@ -107,6 +108,8 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewView
         @BindView(R.id.photo)
         ImageView photo;
         int type;
+        boolean textExpanded;
+        boolean hasPhoto;
 
         public ReviewViewHolder(View itemView) {
             super(itemView);
@@ -131,9 +134,22 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewView
             }
         }
 
-        public void setMessage(String message) {
+        public void setMessage(final String message) {
             if (message != null && message.length() > 0) {
-                profileMessage.setText(message);
+                profileMessage.setText(TextStringUtils
+                        .shortText(message, 100));
+                profileMessage.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        if (textExpanded) {
+                            profileMessage.setText(TextStringUtils
+                                    .shortText(message, 100));
+                        } else {
+                            profileMessage.setText(message);
+                        }
+                        textExpanded = !textExpanded;
+                    }
+                });
             } else {
                 profileMessage.setVisibility(View.GONE);
             }
@@ -149,8 +165,10 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewView
 
         public void setPhoto(String photoUrl) {
             if (photoUrl != null && photoUrl.length() > 0) {
+                hasPhoto = true;
                 Glide.with(itemView.getContext())
                         .load(API_UPLOAD_URL + photoUrl)
+                        .diskCacheStrategy(DiskCacheStrategy.ALL)
                         .centerCrop()
                         .crossFade()
                         .into(photo);
@@ -166,25 +184,45 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewView
         CircleImageView profilePhoto;
         @BindView(R.id.review_profile_name)
         TextView profileName;
+        boolean photoExpanded;
 
         public ReviewPlaceViewHolder(View itemView) {
             super(itemView);
             this.type = REVIEW_PLACE_TYPE;
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (hasPhoto) {
+                        if (photoExpanded) {
+                            photo.setVisibility(View.GONE);
+                        } else {
+                            photo.setVisibility(View.VISIBLE);
+                        } photoExpanded = !photoExpanded;
+                    }
+                }
+            });
         }
 
         public void setName(String name) {
             profileName.setText(name);
         }
 
-        public void setProfilePhoto(String photoUrl) {
+        public void setProfilePhoto(String photoUrl, final ReviewProfileListener listener, final String userId) {
             if (photoUrl != null) {
                 Glide.with(itemView.getContext())
                         .load(Constants.API_UPLOAD_URL + photoUrl)
-                        .diskCacheStrategy(DiskCacheStrategy.RESULT)
+                        .diskCacheStrategy(DiskCacheStrategy.ALL)
                         .centerCrop()
                         .crossFade()
                         .placeholder(R.mipmap.profile)
                         .into(profilePhoto);
+
+                profilePhoto.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        listener.onReviewUserClick(userId);
+                    }
+                });
             }
         }
 
@@ -206,20 +244,23 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewView
         }
 
         public void setOnReviewPlaceClickListener(final ReviewProfileListener listener,
-                                                  final String placeId,
-                                                  final ReviewModel review) {
+                                                  final String placeId) {
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     listener.onReviewProfileClick(placeId);
                 }
             });
-            optionsBtn.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    popupMenu(view);
-                }
-            });
+            if (ReviewAdapter.this.reviewMenuListener != null) {
+                optionsBtn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        popupMenu(view);
+                    }
+                });
+            } else {
+                optionsBtn.setVisibility(View.GONE);
+            }
         }
 
         private void popupMenu(View view) {
@@ -238,7 +279,7 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewView
     }
 
     private void handleReviewItem(MenuItem item, int adapterPosition) {
-        if (reviews != null && adapterPosition < reviews.size()) {
+        if (reviews != null && adapterPosition < reviews.size() && reviewMenuListener != null) {
             ReviewModel review = reviews.get(adapterPosition);
             reviewMenuListener.onReviewMenuItemClick(item, review);
         }
@@ -247,6 +288,7 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewView
 
     public interface ReviewProfileListener {
         void onReviewProfileClick(String placeId);
+        void onReviewUserClick(String userId);
     }
 
     public interface ReviewMenuListener {
