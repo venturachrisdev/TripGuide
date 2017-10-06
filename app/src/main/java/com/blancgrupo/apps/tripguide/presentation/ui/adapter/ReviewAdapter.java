@@ -197,7 +197,9 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewView
                             photo.setVisibility(View.GONE);
                         } else {
                             photo.setVisibility(View.VISIBLE);
-                        } photoExpanded = !photoExpanded;
+                            photo.requestFocus();
+                        }
+                        photoExpanded = !photoExpanded;
                     }
                 }
             });

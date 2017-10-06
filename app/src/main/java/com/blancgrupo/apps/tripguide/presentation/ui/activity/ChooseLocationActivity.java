@@ -104,7 +104,7 @@ public class ChooseLocationActivity extends AppCompatActivity
                         public void run() {
                             onGpsEnabled();
                         }
-                    }, 1400);
+                    }, 1000);
                 }
             }
         }

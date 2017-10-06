@@ -29,7 +29,6 @@ import com.blancgrupo.apps.tripguide.R;
 import com.blancgrupo.apps.tripguide.data.entity.api.City;
 import com.blancgrupo.apps.tripguide.data.entity.api.CityWrapper;
 import com.blancgrupo.apps.tripguide.data.entity.api.Photo;
-import com.blancgrupo.apps.tripguide.data.entity.api.PlaceCover;
 import com.blancgrupo.apps.tripguide.data.entity.api.Topic;
 import com.blancgrupo.apps.tripguide.domain.model.PlaceModel;
 import com.blancgrupo.apps.tripguide.presentation.di.component.DaggerActivityComponent;
@@ -122,7 +121,6 @@ public class CityDetailFragment extends Fragment
         Bundle data = getArguments();
         if (data != null && data.containsKey(Constants.EXTRA_CITY_ID) && data.getString(Constants.EXTRA_CITY_ID) != null) {
             cityId = data.getString(Constants.EXTRA_CITY_ID);
-
         }
 
         return v;
@@ -186,7 +184,9 @@ public class CityDetailFragment extends Fragment
         if (cityViewModel.isSingleCityLoaded()) {
             cityViewModel.getLoadedSingleCity().observe(this, observer);
         } else {
-            cityViewModel.getSingleCity(cityId).observe(this, observer);
+            if (cityId != null) {
+                cityViewModel.getSingleCity(cityId).observe(this, observer);
+            }
         }
 
         if (errorView != null) {

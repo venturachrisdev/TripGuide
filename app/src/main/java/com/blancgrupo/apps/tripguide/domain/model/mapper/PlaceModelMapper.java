@@ -68,13 +68,19 @@ public class PlaceModelMapper {
                 review.getMessage(),
                 review.getCreatedAt(),
                 review.getPhoto(),
-                review.getPlace().get_id(),
-                review.getProfile().get_id()
+                null,
+                null
         );
-        entity.setProfileName(review.getProfile().getName());
-        entity.setProfilePhotoUrl(review.getProfile().getPhotoUrl());
-        entity.setPlaceName(review.getPlace().getName());
-        entity.setPlaceCity(review.getPlace().getAddress());
+        if (review.getPlace() != null) {
+            entity.setPlaceId(review.getPlace().get_id());
+            entity.setPlaceName(review.getPlace().getName());
+            entity.setPlaceCity(review.getPlace().getAddress());
+        }
+        if (review.getProfile() != null) {
+            entity.setProfileId(review.getProfile().get_id());
+            entity.setProfileName(review.getProfile().getName());
+            entity.setProfilePhotoUrl(review.getProfile().getPhotoUrl());
+        }
         return entity;
     }
 

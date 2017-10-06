@@ -586,28 +586,4 @@ public class AccountFragment extends LifecycleFragment implements ReviewAdapter.
                 });
     }
 
-    public void shareProfile() {
-        String id = sharedPreferences.getString(Constants.USER_LOGGED_ID_SP, null);
-        profileDBRepository.getProfile(id)
-                .observe(this, new Observer<ProfileWithReviews>() {
-                    @Override
-                    public void onChanged(@Nullable ProfileWithReviews profileWithReviews) {
-                        if (profileWithReviews != null && profileWithReviews.getProfile() != null) {
-                            ProfileModel profile = profileWithReviews.getProfile();
-                            Intent intent = new Intent(Intent.ACTION_SEND);
-                            intent.setType("text/plain");
-                            String title = String.format(getString(R.string.find_me_at_app), getString(R.string.app_name));
-                            String text = title + ": " + profile.getName()  + " -> "
-                                    + "http://" + getString(R.string.app_name) + ".com/profile/" + profile.get_id();
-                            intent.putExtra(Intent.EXTRA_SUBJECT, title);
-                            intent.putExtra(Intent.EXTRA_TEXT, text);
-                            Intent chooser = Intent.createChooser(intent, getContext().getString(R.string.share_profile));
-                            startActivity(chooser);
-
-                        } else {
-                            Toast.makeText(getContext(), R.string.network_error, Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });
-    }
 }
