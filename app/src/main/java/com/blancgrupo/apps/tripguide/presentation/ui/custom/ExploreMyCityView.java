@@ -17,6 +17,12 @@ import com.blancgrupo.apps.tripguide.R;
 public class ExploreMyCityView extends FrameLayout {
     Button btn;
 
+    public ExploreMyCityView(@NonNull Context context) {
+        super(context);
+        LayoutInflater.from(context).inflate(R.layout.explore_nearby_layout, this);
+        btn = findViewById(R.id.btn);
+    }
+
     public ExploreMyCityView(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         LayoutInflater.from(context).inflate(R.layout.explore_nearby_layout, this);

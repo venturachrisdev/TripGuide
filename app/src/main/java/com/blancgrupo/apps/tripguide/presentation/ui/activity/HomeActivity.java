@@ -105,6 +105,7 @@ public class HomeActivity extends AppCompatActivity
         viewPager.setAdapter(pagerAdapter);
         viewPager.setOffscreenPageLimit(3);
         viewPager.setPagingEnabled(false);
+
         bottomNavigationViewEx.setupWithViewPager(viewPager);
         bottomNavigationViewEx.enableAnimation(true);
         bottomNavigationViewEx.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -186,39 +187,6 @@ public class HomeActivity extends AppCompatActivity
         startActivityForResult(signInIntent, RC_SIGN_IN);
     }
 
-//    @Override
-//    public void loadAccount() {
-////        final ProgressDialog dialog = new ProgressDialog(this);
-////        dialog.setMessage("Signing in...");
-//        Toast.makeText(this, "Loading Account!!!!", Toast.LENGTH_SHORT).show();
-//        if (!mGoogleApiClient.isConnected() && !mGoogleApiClient.isConnecting()) {
-//            Toast.makeText(this, "Not logged", Toast.LENGTH_SHORT).show();
-//            if (authFragment.isUserSaved()) {
-//                OptionalPendingResult<GoogleSignInResult> pendingResult =
-//                        Auth.GoogleSignInApi.silentSignIn(mGoogleApiClient);
-//                if (pendingResult.isDone()) {
-//                    // There's immediate result available.
-//                    //authFragment.initializeProfileLayout(pendingResult.get().getSignInAccount());
-//                } else {
-//                    // There's no immediate result ready, displays some progress indicator and waits for the
-//                    // async callback.
-////                    dialog.show();
-////                    pendingResult.setResultCallback(new ResultCallback<GoogleSignInResult>() {
-////                        @Override
-////                        public void onResult(@NonNull GoogleSignInResult result) {
-////                            //authFragment.initializeProfileLayout(result.getSignInAccount());
-////                            dialog.hide();
-////                        }
-////                    });
-//                }
-//            } else {
-//                Toast.makeText(this, "User not saved", Toast.LENGTH_SHORT).show();
-//            }
-//        } else {
-//            Toast.makeText(this, "Theres a session.", Toast.LENGTH_SHORT).show();
-//        }
-//    }
-
     @Override
     public void onReviewProfileClick(String placeId) {
         Intent i = new Intent(this, PlaceDetailActivity.class);
@@ -235,11 +203,11 @@ public class HomeActivity extends AppCompatActivity
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
         if (v.getId() == R.id.options_btn) {
-            MenuItem remove =  menu.add(0, v.getId(), 0, "Remove");
+            MenuItem remove =  menu.add(0, v.getId(), 0, getString(R.string.remove));
             remove.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
                 @Override
                 public boolean onMenuItemClick(MenuItem menuItem) {
-                    Toast.makeText(HomeActivity.this, "Removing ", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(HomeActivity.this, R.string.removing, Toast.LENGTH_SHORT).show();
                     return false;
                 }
             });
@@ -248,8 +216,8 @@ public class HomeActivity extends AppCompatActivity
 
     @Override
     public boolean onContextItemSelected(MenuItem item) {
-        if (item.getTitle().equals("Remove")) {
-            Toast.makeText(this, "Removed!!", Toast.LENGTH_SHORT).show();
+        if (item.getTitle().equals(getString(R.string.remove))) {
+            Toast.makeText(this, R.string.removed, Toast.LENGTH_SHORT).show();
         }
         return super.onContextItemSelected(item);
     }
@@ -396,7 +364,7 @@ public class HomeActivity extends AppCompatActivity
             handleSignInResult(result);
         }
         if (requestCode == Constants.CHOOSE_LOCATION_RC) {
-            if (data != null) {
+            if (data != null && resultCode == RESULT_OK) {
                 String newCityId = data.getStringExtra(Constants.EXTRA_CITY_ID);
                 pagerAdapter.setCityId(newCityId);
             }

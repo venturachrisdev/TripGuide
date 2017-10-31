@@ -7,15 +7,14 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
+import android.widget.Toast;
 
 import com.blancgrupo.apps.tripguide.MyApplication;
 import com.blancgrupo.apps.tripguide.R;
 import com.blancgrupo.apps.tripguide.presentation.di.component.DaggerActivityComponent;
 import com.blancgrupo.apps.tripguide.presentation.di.module.ActivityModule;
 import com.blancgrupo.apps.tripguide.presentation.ui.adapter.ReviewAdapter;
-import com.blancgrupo.apps.tripguide.utils.ApiUtils;
-import com.blancgrupo.apps.tripguide.utils.Constants;
+import com.blancgrupo.apps.tripguide.utils.ConnectivityUtils;
 import com.google.android.gms.common.SignInButton;
 
 import butterknife.BindView;
@@ -62,7 +61,11 @@ public class SignInFragment extends Fragment {
 
             @Override
             public void onClick(View view) {
-                authListener.signInWithGoogle();
+                if (ConnectivityUtils.isConnected(getContext())) {
+                    authListener.signInWithGoogle();
+                } else {
+                    Toast.makeText(getContext(), R.string.network_error, Toast.LENGTH_SHORT).show();
+                }
             }
         });
         return v;

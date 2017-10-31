@@ -1,7 +1,6 @@
 package com.blancgrupo.apps.tripguide.presentation.ui.fragment;
 
 
-import android.arch.lifecycle.LifecycleFragment;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
@@ -41,12 +40,11 @@ import butterknife.ButterKnife;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class CitiesFragment extends LifecycleFragment implements CityAdapter.CityAdapterListener {
+public class CitiesFragment extends Fragment implements CityAdapter.CityAdapterListener {
     @BindView(R.id.cities_rv)
     ShimmerRecyclerView recyclerView;
     @BindView(R.id.swipeRefreshLayout)
     SwipeRefreshLayout swipeRefreshLayout;
-    @BindView(R.id.explore_my_cityview)
     ExploreMyCityView exploreMyCityView;
     CityViewModel cityViewModel;
     CitiesFragmentListener listener;
@@ -73,7 +71,6 @@ public class CitiesFragment extends LifecycleFragment implements CityAdapter.Cit
                         .getNetComponent())
                 .build()
                 .inject(this);
-
         adapter = new CityAdapter((MyApplication) getActivity().getApplication(), this);
         LinearLayoutManager manager = new LinearLayoutManager(getContext());
         manager.setOrientation(LinearLayoutManager.VERTICAL);
@@ -87,6 +84,8 @@ public class CitiesFragment extends LifecycleFragment implements CityAdapter.Cit
         recyclerView.setAdapter(statesRecyclerViewAdapter);
         cityViewModel = ViewModelProviders.of(getActivity(), cityVMFactory)
                 .get(CityViewModel.class);
+
+        exploreMyCityView = v.findViewById(R.id.explore_my_cityview);
 
         Observer<CitiesWrapper> observer = new Observer<CitiesWrapper>() {
             @Override
@@ -128,7 +127,6 @@ public class CitiesFragment extends LifecycleFragment implements CityAdapter.Cit
                 }
             }
         });
-
         exploreMyCityView.findViewById(R.id.btn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

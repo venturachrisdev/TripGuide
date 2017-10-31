@@ -152,6 +152,11 @@ public class ChooseLocationActivity extends AppCompatActivity
     }
 
     @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+    }
+
+    @Override
     public void onLocationChanged(Location location) {
         fragment.fetchCurrentCity(new ApiUtils.ActionCallback() {
 

@@ -1,7 +1,6 @@
 package com.blancgrupo.apps.tripguide.presentation.ui.fragment;
 
 
-import android.arch.lifecycle.LifecycleFragment;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
@@ -18,6 +17,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.blancgrupo.apps.tripguide.MyApplication;
 import com.blancgrupo.apps.tripguide.R;
@@ -44,7 +44,7 @@ import butterknife.ButterKnife;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class FavoritesFragment extends LifecycleFragment
+public class FavoritesFragment extends Fragment
         implements PlaceAdapter.PlaceAdapterListener {
     @BindView(R.id.favorites_rv)
     ShimmerRecyclerView recyclerView;
@@ -97,8 +97,9 @@ public class FavoritesFragment extends LifecycleFragment
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                if (!ConnectivityUtils.isConnected(getContext())) {
+                if (!ConnectivityUtils.isConnected(getContext()) || !sharedPreferences.contains(Constants.USER_LOGGED_API_TOKEN_SP)) {
                     swipeRefreshLayout.setRefreshing(false);
+                    Toast.makeText(getContext(), R.string.network_error, Toast.LENGTH_SHORT).show();
                 } else {
                     fetchFromAPI();
                 }

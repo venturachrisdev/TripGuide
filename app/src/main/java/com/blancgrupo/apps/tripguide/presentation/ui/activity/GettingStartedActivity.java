@@ -20,6 +20,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.blancgrupo.apps.tripguide.MyApplication;
@@ -127,9 +129,28 @@ public class GettingStartedActivity extends AppCompatActivity
                     ((GettingStartedActivity) getActivity()).onSkipFragment();
                 }
             });
+            TextView title = root.findViewById(R.id.textView1);
+            TextView message = root.findViewById(R.id.textView2);
+            ImageView image = root.findViewById(R.id.imageView5);
             Bundle args = getArguments();
-            if (args.getInt("type", 0) == 3) {
-                skipBtn.setText(R.string.finish);
+            int step = args.getInt("type", 1);
+            switch (step) {
+                case 1:
+                    title.setText(R.string.explore_your_city);
+                    message.setText(R.string.explore_your_city_content);
+                    image.setImageResource(R.mipmap.city);
+                    break;
+                case 2:
+                    title.setText(R.string.rate_visited_places);
+                    message.setText(R.string.rated_visited_places_content);
+                    image.setImageResource(R.mipmap.place);
+                    break;
+                case 3:
+                    title.setText(R.string.make_a_tour);
+                    message.setText(R.string.make_a_tour_content);
+                    skipBtn.setText(R.string.finish);
+                    image.setImageResource(R.mipmap.tours);
+                    break;
             }
             return root;
         }
@@ -222,21 +243,6 @@ public class GettingStartedActivity extends AppCompatActivity
     }
 
 
-//    void goForLocation() {
-//        Location location = LocationUtils.getCurrentLocation(this);
-//        if (location == null) {
-//            LocationUtils.requestLocationUpdates(this, this);
-//            new Handler().postDelayed(new Runnable() {
-//                @Override
-//                public void run() {
-//                    goForIt(LocationUtils.getCurrentLocation(GettingStartedActivity.this));
-//                }
-//            }, 1000);
-//        } else {
-//            goForIt(location);
-//        }
-//    }
-//
     void startCityActivityAndFinish() {
         Intent intent = new Intent(this, HomeActivity.class);
         Intent original = getIntent();
@@ -247,47 +253,7 @@ public class GettingStartedActivity extends AppCompatActivity
         startActivity(intent);
         finish();
     }
-//
-//    void showGpsStepLayout() {
-//        View activeGps = getLayoutInflater()
-//                .inflate(R.layout.first_gps_on_layout,
-//                        (ViewGroup) findViewById(R.id.content));
-//        activeGps.findViewById(R.id.location_btn).setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                if (!LocationUtils.isGpsEnabled(GettingStartedActivity.this)) {
-//                    LocationUtils.showDialogEnableGps(GettingStartedActivity.this);
-//                } else {
-//                    showLoadingCityLayout();
-//                    goForLocation();
-//                }
-//            }
-//        });
-//        activeGps.findViewById(R.id.no_thanks_btn).setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                startCityActivityAndFinish();
-//            }
-//        });
-//    }
-//
-//    private void showLoadingCityLayout() {
-//        getLayoutInflater().inflate(R.layout.first_loading_city_layout,
-//                (ViewGroup) findViewById(R.id.content));
-//    }
-//
-//    void showNoConnectionLayout() {
-//        noConnection = getLayoutInflater().inflate(R.layout.first_no_internet_layout,
-//                (ViewGroup) findViewById(R.id.content));
-//        noConnection.findViewById(R.id.location_btn).setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                showLoadingCityLayout();
-//                goForLocation();
-//            }
-//        });
-//    }
-//
+
 
     public void afterPermission() {
         if (LocationUtils.isGpsEnabled(this)) {
@@ -326,42 +292,7 @@ public class GettingStartedActivity extends AppCompatActivity
     public LifecycleRegistry getLifecycle() {
         return this.registry;
     }
-//
-//    void goForIt(Location location) {
-//        if (location != null) {
-//            showLoadingCityLayout();
-//            if (ConnectivityUtils.isConnected(this)) {
-//                cityViewModel.getCurrentCityId(String.valueOf(location.getLatitude()),
-//                        String.valueOf(location.getLongitude()))
-//                        .observe(this, new Observer<String>() {
-//                            @Override
-//                            public void onChanged(@Nullable String s) {
-//                                if (s != null) {
-//                                    // Google IDS have 27 chars
-//                                    if (s.length() == 27) {
-//                                        SharedPreferences.Editor editor = sharedPreferences.edit();
-//                                        editor.putString(Constants.CURRENT_LOCATION_SP, s);
-//                                        editor.apply();
-//                                        startActivity(new Intent(GettingStartedActivity.this,
-//                                                HomeActivity.class));
-//                                        finish();
-//                                    } else {
-//                                        showNoConnectionLayout();
-//                                    }
-//                                } else {
-//                                    showNoConnectionLayout();
-//                                }
-//                            }
-//                        });
-//            } else {
-//                showNoConnectionLayout();
-//            }
-//        } else {
-//            Toast.makeText(this, "Location is null", Toast.LENGTH_LONG).show();
-//            startCityActivityAndFinish();
-//        }
-//    }
-//
+
     @Override
     public void onLocationChanged(Location location) {
 //        goForIt(location);

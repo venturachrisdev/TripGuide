@@ -168,5 +168,19 @@
     <string name="download">Download</string>
     <string name="share_profile">Share profile</string>
     <string name="find_me_at_app">Find me at %s</string>
+    <string name="remove">Remove</string>
+    <string name="removing">Removing...</string>
+    <string name="removed">Removed</string>
+
+    /* Onboarding */
+    <string name="explore_your_city">Explore your city</string>
+    <string name="explore_your_city_content">information, photos and rating about your favorite places</string>
+    <string name="rate_visited_places">Rate your visited places</string>
+    <string name="rated_visited_places_content">Visit a place, rate it and comment what you think about it.</string>
+    <string name="make_a_tour">Make a tour!</string>
+    <string name="make_a_tour_content">Check for tours when you visit a new city and save time while traveling.</string>
+    <string name="congrats">Congrats!</string>
+    <string name="you_completed_tour">You have completed tour: %s</string>
+    <string name="from">from</string>
 
 </resources>

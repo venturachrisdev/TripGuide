@@ -8,11 +8,12 @@
     android:fitsSystemWindows="true"
     android:layout_height="match_parent">
 
-    <FrameLayout
-        android:layout_gravity="bottom"
+    <ImageView
+        app:srcCompat="@drawable/ic_place_white_24dp"
         android:layout_width="match_parent"
         android:layout_weight="1"
-        android:layout_height="0dp"/>
+        android:layout_margin="20dp"
+        android:layout_height="0dp" />
 
     <RelativeLayout
         android:layout_gravity="bottom"

@@ -3,9 +3,11 @@ package com.blancgrupo.apps.tripguide.presentation.ui.fragment;
 
 import android.content.Context;
 import android.content.Intent;
+import android.location.LocationListener;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -18,7 +20,9 @@ import android.widget.Toast;
 
 import com.blancgrupo.apps.tripguide.MyApplication;
 import com.blancgrupo.apps.tripguide.R;
+import com.blancgrupo.apps.tripguide.data.entity.api.Location;
 import com.blancgrupo.apps.tripguide.data.entity.api.PlaceTypesCover;
+import com.blancgrupo.apps.tripguide.presentation.ui.activity.RunningTourActivity;
 import com.blancgrupo.apps.tripguide.utils.ApiUtils;
 import com.blancgrupo.apps.tripguide.utils.Constants;
 import com.blancgrupo.apps.tripguide.utils.LocationUtils;
@@ -36,7 +40,7 @@ import static android.app.Activity.RESULT_OK;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class RunningPlaceFragment extends Fragment {
+public class RunningPlaceFragment extends Fragment implements LocationListener {
     @BindView(R.id.progressbar)
     ProgressBar progressBar;
     @BindView(R.id.place_item_title)
@@ -86,9 +90,15 @@ public class RunningPlaceFragment extends Fragment {
         Bundle args = getArguments();
         PlaceTypesCover place = args.getParcelable(Constants.EXTRA_PLACE_ID);
         position = args.getInt(Constants.EXTRA_CURRENT_POSITION);
-        realDistance = args.getDouble(Constants.EXTRA_CURRENT_DISTANCE);
-        progress = args.getInt(Constants.EXTRA_PROGRESS);
-        startDistance = args.getDouble(Constants.EXTRA_START_POSITION);
+        if (realDistance == 0) {
+            realDistance = args.getDouble(Constants.EXTRA_CURRENT_DISTANCE);
+        }
+        if (progress == 0) {
+            progress = args.getInt(Constants.EXTRA_PROGRESS);
+        }
+        if (startDistance == 0) {
+            startDistance = args.getDouble(Constants.EXTRA_START_POSITION);
+        }
         bindProgress(realDistance, progress);
         if (place != null) {
             cover = place;
@@ -132,6 +142,37 @@ public class RunningPlaceFragment extends Fragment {
                 .centerCrop()
                 .crossFade()
                 .into(placePhoto);
+
+        startLocationService(place.getLocation());
+    }
+
+    private void startLocationService(Location location) {
+        android.location.Location whereIam = LocationUtils.getCurrentLocation(getContext());
+        if (startDistance <= 0) {
+            startDistance = LocationUtils.measureDoubleDistance(getContext(), whereIam, cover.getLocation().getLat(), cover.getLocation().getLng());
+        }
+        LocationUtils.requestLocationUpdates(getContext(), this);
+        if (whereIam != null) {
+            showDistance(whereIam, location);
+        }
+    }
+
+    private void showDistance(android.location.Location whereIam, Location location) {
+        double distance = LocationUtils.measureDoubleDistance(getContext(), whereIam, location.getLat(), location.getLng());
+        realDistance = distance;
+        int percent = (int) (100 / (startDistance / realDistance));
+        progress = 100 - percent;
+        Log.d("TRIPGUIDE_TOUR", "startDistance: " + startDistance);
+        Log.d("TRIPGUIDE_TOUR", "realDistance: " + realDistance);
+        Log.d("TRIPGUIDE_TOUR", "Progress: " + progress);
+        if (progress >= 0) {
+            bindProgress(distance, progress);
+            if (progress > 96 || distance < 100) {
+                ((RunningTourActivity) getActivity()).startPlaceDetail();
+            }
+        } else {
+            bindProgress(distance, 0);
+        }
     }
 
     @Override
@@ -167,4 +208,25 @@ public class RunningPlaceFragment extends Fragment {
         progressBar.setProgress(progress);
     }
 
+    @Override
+    public void onLocationChanged(android.location.Location location) {
+        if (isAdded()) {
+            showDistance(location, cover.getLocation());
+        }
+    }
+
+    @Override
+    public void onStatusChanged(String s, int i, Bundle bundle) {
+
+    }
+
+    @Override
+    public void onProviderEnabled(String s) {
+
+    }
+
+    @Override
+    public void onProviderDisabled(String s) {
+
+    }
 }

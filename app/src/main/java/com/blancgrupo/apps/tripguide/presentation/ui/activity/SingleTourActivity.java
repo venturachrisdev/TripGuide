@@ -59,7 +59,7 @@ import butterknife.ButterKnife;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 public class SingleTourActivity extends AppCompatActivity
-    implements LifecycleRegistryOwner, TimelinePlaceAdapter.PlaceTimeLineListener, OnMapReadyCallback, RoutingListener {
+    implements TimelinePlaceAdapter.PlaceTimeLineListener, OnMapReadyCallback, RoutingListener {
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
@@ -81,7 +81,6 @@ public class SingleTourActivity extends AppCompatActivity
     @Inject
     TourVMFactory tourVMFactory;
     TourViewModel tourViewModel;
-    private LifecycleRegistry registry = new LifecycleRegistry(this);
     private String imageUrl;
     GoogleMap googleMap;
 
@@ -267,11 +266,6 @@ public class SingleTourActivity extends AppCompatActivity
         googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
                 new LatLng(centerLat, centerLng), 15f));
 
-    }
-
-    @Override
-    public LifecycleRegistry getLifecycle() {
-        return this.registry;
     }
 
     @Override

@@ -95,13 +95,18 @@ public class ProfileFragment extends Fragment implements  ApiUtils.AuthFragment 
 
     @Override
     public void handleSignInResult(final GoogleSignInResult result) {
-        showAccountFragment();
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                accountFragment.handleSignInResult(result);
-            }
-        }, 600);
+        if (!result.getStatus().isSuccess() || result.getSignInAccount() == null) {
+            Toast.makeText(getContext(), result.getStatus().getStatusMessage(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), R.string.sign_in_aborted, Toast.LENGTH_SHORT).show();
+        } else {
+            showAccountFragment();
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    accountFragment.handleSignInResult(result);
+                }
+            }, 600);
+        }
     }
 
     @Override

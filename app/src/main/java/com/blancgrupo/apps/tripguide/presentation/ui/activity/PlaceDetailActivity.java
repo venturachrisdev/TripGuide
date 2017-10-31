@@ -22,11 +22,13 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.AppCompatImageButton;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -35,6 +37,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.blancgrupo.apps.tripguide.MyApplication;
 import com.blancgrupo.apps.tripguide.R;
 import com.blancgrupo.apps.tripguide.data.entity.api.Photo;
@@ -77,6 +80,7 @@ import com.rockerhieu.rvadapter.states.StatesRecyclerViewAdapter;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.concurrent.Callable;
 
@@ -101,7 +105,7 @@ public class PlaceDetailActivity extends AppCompatActivity
     @BindView(R.id.header_image)
     ImageView headerImage;
     @BindView(R.id.share_btn)
-    Button shareBtn;
+    AppCompatImageButton shareBtn;
     @BindView(R.id.address_text)
     LoaderTextView addressText;
     @BindView(R.id.distance_text)
@@ -145,7 +149,7 @@ public class PlaceDetailActivity extends AppCompatActivity
     @BindView(R.id.info_layout)
     InfoView infoView;
     @BindView(R.id.favorite_btn)
-    Button favoriteBtn;
+    AppCompatImageButton favoriteBtn;
 
     List<Photo> myPhotos;
 
@@ -430,15 +434,11 @@ public class PlaceDetailActivity extends AppCompatActivity
         this.place = place;
 
         if (place.isFavorite()) {
-            favoriteBtn.setText(R.string.remove_from_favorites);
-            favoriteBtn.setCompoundDrawablesWithIntrinsicBounds(null, ContextCompat.getDrawable(
-                    this, R.drawable.ic_favorite_accent_24dp
-            ), null, null);
+//            favoriteBtn.setText(R.string.remove_from_favorites);
+            favoriteBtn.setImageResource(R.drawable.ic_favorite_accent_24dp);
         } else {
-            favoriteBtn.setText(R.string.add_to_favorite);
-            favoriteBtn.setCompoundDrawablesWithIntrinsicBounds(null, ContextCompat.getDrawable(
-                    this, R.drawable.ic_favorite_border_black_24dp
-            ), null, null);
+//            favoriteBtn.setText(R.string.add_to_favorite);
+            favoriteBtn.setImageResource(R.drawable.ic_favorite_border_black_24dp);
         }
         favoriteBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -503,55 +503,71 @@ public class PlaceDetailActivity extends AppCompatActivity
             @Override
             public void onRatingChanged(SimpleRatingBar simpleRatingBar, float rating, boolean fromUser) {
                 if (fromUser) {
-                    Intent intent = new Intent(PlaceDetailActivity.this, AddReviewActivity.class);
-                    intent.putExtra(Constants.EXTRA_PLACE_ID, place.get_id());
-                    intent.putExtra(Constants.EXTRA_PROGRESS, simpleRatingBar.getRating());
-                    intent.putExtra(Constants.EXTRA_PLACE_NAME, place.getName());
-                    startActivityForResult(intent, 999);
+                    if (ConnectivityUtils.isConnected(PlaceDetailActivity.this)) {
+                        if (sharedPreferences.contains(Constants.USER_LOGGED_API_TOKEN_SP)) {
+                            Intent intent = new Intent(PlaceDetailActivity.this, AddReviewActivity.class);
+                            intent.putExtra(Constants.EXTRA_PLACE_ID, place.get_id());
+                            intent.putExtra(Constants.EXTRA_PROGRESS, simpleRatingBar.getRating());
+                            intent.putExtra(Constants.EXTRA_PLACE_NAME, place.getName());
+                            startActivityForResult(intent, 999);
+                        } else {
+                            Toast.makeText(PlaceDetailActivity.this, R.string.you_are_not_logged_in, Toast.LENGTH_SHORT).show();
+                            ratingBar.setRating(0);
+                        }
+
+                    } else {
+                        Toast.makeText(PlaceDetailActivity.this, R.string.no_connection, Toast.LENGTH_SHORT).show();
+                        ratingBar.setRating(0);
+                    }
                 }
             }
         });
         ratingToolbar.setEnabled(false);
+        ratingToolbar.setClickable(false);
+        ratingToolbar.setFocusable(false);
         ratingToolbar.setActivated(false);
         ratingToolbar.setRating((float) place.getRating());
 
         categoryText.setText(TextStringUtils.formatTitle(place.getType()));
-//            if (weekend != null && weekend.size() > 0) {
-//                calendarLayout.setVisibility(View.VISIBLE);
-//                calendarLayout.setOnClickListener(new View.OnClickListener() {
-//                    @Override
-//                    public void onClick(View view) {
-//                        new MaterialDialog.Builder(PlaceDetailActivity.this)
-//                                .content(TextStringUtils.arrayToString(weekend))
-//                                .show();
-//                    }
-//                });
-//                switch (day) {
-//                    case Calendar.MONDAY:
-//                        calendarText.setText(weekend.get(0));
-//                        break;
-//                    case Calendar.TUESDAY:
-//                        calendarText.setText(weekend.get(1));
-//                        break;
-//                    case Calendar.WEDNESDAY:
-//                        calendarText.setText(weekend.get(2));
-//                        break;
-//                    case Calendar.THURSDAY:
-//                        calendarText.setText(weekend.get(3));
-//                        break;
-//                    case Calendar.FRIDAY:
-//                        calendarText.setText(weekend.get(4));
-//                        break;
-//                    case Calendar.SATURDAY:
-//                        calendarText.setText(weekend.get(5));
-//                        break;
-//                    case Calendar.SUNDAY:
-//                        calendarText.setText(weekend.get(6));
-//                        break;
-//
-//                }
-//            }
-//        }
+        final List<String> weekdays = new ArrayList<>();
+        for (String day : place.getWeekdays().split(",")) {
+            weekdays.add(day.replace("[", "").replace("]", ""));
+        }
+        if (weekdays.size() > 6) {
+            calendarLayout.setVisibility(View.VISIBLE);
+            calendarLayout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    new MaterialDialog.Builder(PlaceDetailActivity.this)
+                            .content(TextStringUtils.arrayToString(weekdays))
+                            .show();
+                }
+            });
+            int day = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
+            switch (day) {
+                case Calendar.MONDAY:
+                    calendarText.setText(weekdays.get(0));
+                    break;
+                case Calendar.TUESDAY:
+                    calendarText.setText(weekdays.get(1));
+                    break;
+                case Calendar.WEDNESDAY:
+                    calendarText.setText(weekdays.get(2));
+                    break;
+                case Calendar.THURSDAY:
+                    calendarText.setText(weekdays.get(3));
+                    break;
+                case Calendar.FRIDAY:
+                    calendarText.setText(weekdays.get(4));
+                    break;
+                case Calendar.SATURDAY:
+                    calendarText.setText(weekdays.get(5));
+                    break;
+                case Calendar.SUNDAY:
+                    calendarText.setText(weekdays.get(6));
+                    break;
+            }
+        }
             String url = place.getPhotoUrl() + ((MyApplication) getApplication()).getApiKey();
             Glide.with(this)
                     .load(url)
@@ -687,18 +703,14 @@ public class PlaceDetailActivity extends AppCompatActivity
                             if (s.equals("added")) {
                                 Toast.makeText(PlaceDetailActivity.this, R.string.added_to_favorites,
                                         Toast.LENGTH_LONG).show();
-                                favoriteBtn.setText(R.string.remove_from_favorites);
-                                favoriteBtn.setCompoundDrawablesWithIntrinsicBounds(null, ContextCompat.getDrawable(
-                                        PlaceDetailActivity.this, R.drawable.ic_favorite_accent_24dp
-                                ), null, null);
+//                                favoriteBtn.setText(R.string.remove_from_favorites);
+                                favoriteBtn.setImageResource(R.drawable.ic_favorite_accent_24dp);
                                 placeDBRepository.setFavorite(place.get_id(), true);
                             } else {
                                 Toast.makeText(PlaceDetailActivity.this, R.string.removed_from_favorites,
                                         Toast.LENGTH_LONG).show();
-                                favoriteBtn.setText(R.string.add_to_favorite);
-                                favoriteBtn.setCompoundDrawablesWithIntrinsicBounds(null, ContextCompat.getDrawable(
-                                        PlaceDetailActivity.this, R.drawable.ic_favorite_border_black_24dp
-                                ), null, null);
+//                                favoriteBtn.setText(R.string.add_to_favorite);
+                                favoriteBtn.setImageResource(R.drawable.ic_favorite_border_black_24dp);
                                 placeDBRepository.setFavorite(place.get_id(), false);
                             }
                             dialog.hide();

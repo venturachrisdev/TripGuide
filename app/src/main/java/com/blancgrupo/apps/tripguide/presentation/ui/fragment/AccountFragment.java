@@ -3,7 +3,6 @@ package com.blancgrupo.apps.tripguide.presentation.ui.fragment;
 
 import android.Manifest;
 import android.app.ProgressDialog;
-import android.arch.lifecycle.LifecycleFragment;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
@@ -79,7 +78,7 @@ import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class AccountFragment extends LifecycleFragment implements ReviewAdapter.ReviewMenuListener {
+public class AccountFragment extends Fragment implements ReviewAdapter.ReviewMenuListener {
     @BindView(R.id.profile_rv)
     ShimmerRecyclerView recyclerView;
     @BindView(R.id.user_profile_name)
@@ -470,36 +469,32 @@ public class AccountFragment extends LifecycleFragment implements ReviewAdapter.
     }
 
     public void handleSignInResult(GoogleSignInResult result) {
-        if (result.isSuccess() && result.getSignInAccount() != null) {
-            GoogleSignInAccount account = result.getSignInAccount();
-            Profile profile = new Profile();
-            profile.setTokenId(account.getId());
-            profile.setName(account.getDisplayName());
-            profile.setEmail(account.getEmail());
-            if (account.getPhotoUrl() != null) {
-                profile.setPhotoUrl(account.getPhotoUrl().toString());
-            }
-            profile.setType("google");
-            if (profileViewModel == null) {
-                profileViewModel = ViewModelProviders.of(this, profileVMFactory)
-                        .get(ProfileViewModel.class);
-            }
-            profileViewModel.signInOrRegister(profile).observe(this, new Observer<ProfileWithReviews>() {
-                @Override
-                public void onChanged(@Nullable ProfileWithReviews profile) {
-                    if (profile!= null) {
-                            initializeProfileLayout(profile,
-                                    profile.getApiToken());
-                            saveProfileToDB(profile);
-                    } else {
-                        Toast.makeText(getContext(), R.string.network_error, Toast.LENGTH_LONG)
-                                .show();
-                    }
-                }
-            });
-        } else {
-            Toast.makeText(getContext(), R.string.sign_in_aborted, Toast.LENGTH_SHORT).show();
+        GoogleSignInAccount account = result.getSignInAccount();
+        Profile profile = new Profile();
+        profile.setTokenId(account.getId());
+        profile.setName(account.getDisplayName());
+        profile.setEmail(account.getEmail());
+        if (account.getPhotoUrl() != null) {
+            profile.setPhotoUrl(account.getPhotoUrl().toString());
         }
+        profile.setType("google");
+        if (profileViewModel == null) {
+            profileViewModel = ViewModelProviders.of(this, profileVMFactory)
+                    .get(ProfileViewModel.class);
+        }
+        profileViewModel.signInOrRegister(profile).observe(this, new Observer<ProfileWithReviews>() {
+            @Override
+            public void onChanged(@Nullable ProfileWithReviews profile) {
+                if (profile!= null) {
+                        initializeProfileLayout(profile,
+                                profile.getApiToken());
+                        saveProfileToDB(profile);
+                } else {
+                    Toast.makeText(getContext(), R.string.network_error, Toast.LENGTH_LONG)
+                            .show();
+                }
+            }
+        });
     }
 
     private void getProfileFromDB() {

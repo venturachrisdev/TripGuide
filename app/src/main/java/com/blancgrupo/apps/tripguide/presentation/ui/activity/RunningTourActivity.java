@@ -69,13 +69,15 @@ public class RunningTourActivity extends AppCompatActivity
             finish();
         }
         tour = data.getParcelable(Constants.EXTRA_SINGLE_TOUR_PLACES);
-        currentPosition = data.getInt(Constants.EXTRA_CURRENT_IMAGE_POSITION, 1);
+        if (currentPosition == 0) {
+            currentPosition = data.getInt(Constants.EXTRA_CURRENT_IMAGE_POSITION, 1);
+        }
         currentDistance = data.getDouble(Constants.EXTRA_CURRENT_DISTANCE);
         tourId = data.getString(Constants.EXTRA_SINGLE_TOUR_ID);
         currentProgress = data.getInt(Constants.EXTRA_PROGRESS);
         startDistance = data.getDouble(Constants.EXTRA_START_POSITION);
         if (tour != null) {
-            if (currentPosition < tour.getPlaces().size() - 1) {
+            if (currentPosition <= tour.getPlaces().size()) {
                 setContentFragment(tour, currentPosition, currentDistance, currentProgress, startDistance);
             } else {
                 Toast.makeText(this, "Position: " + currentPosition, Toast.LENGTH_SHORT).show();
@@ -88,7 +90,6 @@ public class RunningTourActivity extends AppCompatActivity
     }
 
     void setContentFragment(Tour tour, int position, double  currentDistance, int currentProgress, double startDistance) {
-        PlaceTypesCover cover = tour.getPlaces().get(position);
 //        Intent backgroundIntent = new Intent(getApplicationContext(), LocationService.class);
 //        backgroundIntent.setAction("android.intent.action.RUN");
 //        backgroundIntent.putExtra(Constants.EXTRA_PLACE_ID, cover);
@@ -105,7 +106,7 @@ public class RunningTourActivity extends AppCompatActivity
 //        backgroundIntent.putExtra(Constants.EXTRA_PROGRESS, currentProgress);
 //        Toast.makeText(this, "Started service", Toast.LENGTH_SHORT).show();
 //        startService(backgroundIntent);
-        PlaceTypesCover place = tour.getPlaces().get(position);
+        PlaceTypesCover place = tour.getPlaces().get(position - 1);
         fragment = new RunningPlaceFragment();
         Bundle args = new Bundle();
         args.putParcelable(Constants.EXTRA_PLACE_ID, place);
@@ -128,15 +129,24 @@ public class RunningTourActivity extends AppCompatActivity
 //        stopService(new Intent(this, LocationService.class));
     }
 
+    void goNextPlace(int jump) {
+        if (currentPosition < tour.getPlaces().size()) {
+            currentPosition += jump;
+            setContentFragment(tour, currentPosition, currentDistance, 0, startDistance);
+        } else {
+            Intent i = new Intent(this, CongratsActivity.class);
+            i.putExtra(Constants.EXTRA_SINGLE_TOUR_ID, tour.getName());
+            startActivity(i);
+            finish();
+        }
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
             onBackPressed();
         } else if (item.getItemId() == R.id.action_next) {
-            if (currentPosition < tour.getPlaces().size() - 1) {
-                currentPosition += 1;
-                setContentFragment(tour, currentPosition, currentDistance, 0, startDistance);
-            }
+            goNextPlace(1);
         }
         return super.onOptionsItemSelected(item);
     }
@@ -148,4 +158,22 @@ public class RunningTourActivity extends AppCompatActivity
         startActivity(intent);
     }
 
+    public void startPlaceDetail() {
+        getSupportFragmentManager()
+                .beginTransaction()
+                .remove(fragment)
+                .commit();
+        Intent intent = new Intent(this, PlaceDetailActivity.class);
+        currentPosition += 1;
+        intent.putExtra(Constants.EXTRA_PLACE_ID, tour.getPlaces().get(currentPosition - 1).getId());
+        startActivityForResult(intent, 888);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 888) {
+            goNextPlace(1);
+        }
+    }
 }

@@ -1,5 +1,7 @@
 package com.blancgrupo.apps.tripguide.domain.model.mapper;
 
+import android.text.TextUtils;
+
 import com.blancgrupo.apps.tripguide.data.entity.api.Photo;
 import com.blancgrupo.apps.tripguide.data.entity.api.Place;
 import com.blancgrupo.apps.tripguide.data.entity.api.PlaceCover;
@@ -115,7 +117,7 @@ public class PlaceModelMapper {
         }
         entity.setPhotoUrl(ApiUtils.getPlacePhotoUrlWithoutKey(
                 place.getPhoto().getReference(),
-                place.getPhoto().getWidth()
+                place.getPhoto().getWidth() / 2
         ));
         entity.setPhoneNumber(place.getPhoneNumber());
         return entity;
@@ -136,7 +138,7 @@ public class PlaceModelMapper {
         entity.setName(place.getName());
         entity.setRating(place.getRating());
         if (place.getOpeningHours() != null) {
-            entity.setWeekdays(place.getOpeningHours().getWeekdays().toString());
+            entity.setWeekdays(TextUtils.join(",", place.getOpeningHours().getWeekdays()));
         }
         if (place.getLocation() != null) {
             entity.setLat(place.getLocation().getLat());
@@ -144,7 +146,7 @@ public class PlaceModelMapper {
             if (place.getPhoto() != null) {
                 entity.setPhotoUrl(ApiUtils.getPlacePhotoUrlWithoutKey(
                         place.getPhoto().getReference(),
-                        place.getPhoto().getWidth()
+                        place.getPhoto().getWidth() / 4
                 ));
             }
         }

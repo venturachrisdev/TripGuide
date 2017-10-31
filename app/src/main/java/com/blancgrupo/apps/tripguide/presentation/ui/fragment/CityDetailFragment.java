@@ -41,7 +41,6 @@ import com.blancgrupo.apps.tripguide.presentation.ui.activity.SearchActivity;
 import com.blancgrupo.apps.tripguide.presentation.ui.activity.TourActivity;
 import com.blancgrupo.apps.tripguide.presentation.ui.adapter.PlaceAdapter;
 import com.blancgrupo.apps.tripguide.presentation.ui.adapter.TopicAdapter;
-import com.blancgrupo.apps.tripguide.presentation.ui.custom.FeatureCardView;
 import com.blancgrupo.apps.tripguide.presentation.ui.viewmodel.CityVMFactory;
 import com.blancgrupo.apps.tripguide.presentation.ui.viewmodel.CityViewModel;
 import com.blancgrupo.apps.tripguide.utils.ApiUtils;
@@ -80,8 +79,6 @@ public class CityDetailFragment extends Fragment
     ImageView headerImage;
     @BindView(R.id.city_name)
     TextView cityNameText;
-    @BindView(R.id.featurecardview)
-    FeatureCardView featureCardView;
     @BindView(R.id.all_topics_rv)
     ShimmerRecyclerView recyclerView;
     @BindView(R.id.swipeRefreshLayout)
@@ -163,7 +160,7 @@ public class CityDetailFragment extends Fragment
                         if (!ConnectivityUtils.isConnected(getActivity().getApplicationContext())) {
                             statesRecyclerViewAdapter.setState(StatesRecyclerViewAdapter.STATE_ERROR);
                         } else {
-                            Toast.makeText(getContext(), cityWrapper.getStatus(), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getContext(), R.string.network_error, Toast.LENGTH_SHORT).show();
                             statesRecyclerViewAdapter.setState(StatesRecyclerViewAdapter.STATE_EMPTY);
                         }
                     }
@@ -208,7 +205,6 @@ public class CityDetailFragment extends Fragment
     void bindCity(City city) {
         cityNameText.setText(city.getName());
         recyclerView.hideShimmerAdapter();
-//        featureCardView.show();
         Photo header = city.getPhoto();
 
         if (header != null && header.getReference() != null) {
@@ -235,11 +231,6 @@ public class CityDetailFragment extends Fragment
         // BIND TOPICS
         List<Topic> topics = city.getTopics();
         if (topics.size() > 0) {
-//            if (topics.get(0).get_id().equals("tour")) {
-//                featureCardView.hide();
-//            } else {
-//                featureCardView.show();
-//            }
             adapter.updateData(topics);
         } else {
             Intent intent = new Intent(getActivity(), PlaceDetailActivity.class);
@@ -282,7 +273,6 @@ public class CityDetailFragment extends Fragment
 
     @Override
     public void onTourPresence() {
-//        featureCardView.hide();
     }
 
     @Override

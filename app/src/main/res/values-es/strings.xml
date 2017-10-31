@@ -155,5 +155,16 @@
     <string name="download_app" formatted="false">Descarga %s desde Play store y comparte tus historias y fotos de viajes: %s</string>
     <string name="share_profile">Compartir perfil</string>
     <string name="find_me_at_app">Encuentrame en %s</string>
+    <string name="remove">Borrar</string>
+    <string name="removed">Borrado</string>
+    <string name="removing">Borrando</string>
+
+    <string name="explore_your_city">Explora tu ciudad</string>
+    <string name="explore_your_city_content">Explora tus lugares favoritos, mientras ves sus fotos, y opiniones de otros usuarios</string>
+    <string name="rate_visited_places">Califica los lugares que hayas visitado</string>
+    <string name="rated_visited_places_content">Puedes dar tu opinion acerca de tu estadia en un lugar así como calificarlo con estrellas.</string>
+    <string name="make_a_tour">Planea tus tours</string>
+    <string name="make_a_tour_content">Tenemos tours en distintas ciudades para que sepas que lugares visitar y así planificar tu tiempo.</string>
+
 
 </resources>
