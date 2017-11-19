@@ -36,6 +36,12 @@ public class City implements Parcelable {
     @SerializedName("location")
     @Expose
     private Location location;
+    @SerializedName("category")
+    @Expose
+    String category;
+    @SerializedName("region")
+    @Expose
+    Region region;
     @SerializedName("topics")
     @Expose
     private List<Topic> topics;
@@ -78,6 +84,22 @@ public class City implements Parcelable {
             return new City[size];
         }
     };
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
+    public Region getRegion() {
+        return region;
+    }
+
+    public void setRegion(Region region) {
+        this.region = region;
+    }
 
     public String getId() {
         return id;
