@@ -12,7 +12,7 @@ import java.util.List;
  * Created by root on 8/18/17.
  */
 
-public class City implements Parcelable {
+public class CityCover implements Parcelable {
     @SerializedName("_id")
     @Expose
     private String id;
@@ -41,17 +41,13 @@ public class City implements Parcelable {
     String category;
     @SerializedName("region")
     @Expose
-    RegionCover region;
-    @SerializedName("topics")
-    @Expose
-    private List<Topic> topics;
+    String region;
 
-
-    public City(String id) {
+    public CityCover(String id) {
         this.id = id;
     }
 
-    public City(String id, String googleId, String name, Integer v, String createdAt, Photo photo, Location location, List<Topic> topics, String parent) {
+    public CityCover(String id, String googleId, String name, Integer v, String createdAt, Photo photo, Location location, String parent) {
         this.id = id;
         this.googleId = googleId;
         this.name = name;
@@ -59,11 +55,10 @@ public class City implements Parcelable {
         this.createdAt = createdAt;
         this.photo = photo;
         this.location = location;
-        this.topics = topics;
         this.parent = parent;
     }
 
-    protected City(Parcel in) {
+    protected CityCover(Parcel in) {
         id = in.readString();
         googleId = in.readString();
         name = in.readString();
@@ -93,11 +88,11 @@ public class City implements Parcelable {
         this.category = category;
     }
 
-    public RegionCover getRegion() {
+    public String getRegion() {
         return region;
     }
 
-    public void setRegion(RegionCover region) {
+    public void setRegion(String region) {
         this.region = region;
     }
 
@@ -165,13 +160,6 @@ public class City implements Parcelable {
         this.parent = parent;
     }
 
-    public List<Topic> getTopics() {
-        return topics;
-    }
-
-    public void setTopics(List<Topic> topics) {
-        this.topics = topics;
-    }
 
     @Override
     public int describeContents() {

@@ -182,5 +182,7 @@
     <string name="congrats">Congrats!</string>
     <string name="you_completed_tour">You have completed tour: %s</string>
     <string name="from">from</string>
+    <string name="choose_region">Choose Region</string>
+    <string name="choose_country">Choose Country</string>
 
 </resources>

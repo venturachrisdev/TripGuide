@@ -6,6 +6,14 @@
             android:id="@+id/nav_location"
             android:icon="@drawable/ic_public_black_24dp"
             android:title="@string/change_location" />
+        <item
+            android:id="@+id/nav_location2"
+            android:icon="@drawable/ic_public_black_24dp"
+            android:title="Region" />
+        <item
+            android:id="@+id/nav_location3"
+            android:icon="@drawable/ic_public_black_24dp"
+            android:title="Country" />
     </group>
 
     <item android:title="@string/communicate">
