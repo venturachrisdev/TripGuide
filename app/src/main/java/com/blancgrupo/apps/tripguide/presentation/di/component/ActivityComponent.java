@@ -5,9 +5,11 @@ import com.blancgrupo.apps.tripguide.presentation.di.module.ActivityModule;
 import com.blancgrupo.apps.tripguide.presentation.ui.activity.AddReviewActivity;
 import com.blancgrupo.apps.tripguide.presentation.ui.activity.ChooseLocationActivity;
 import com.blancgrupo.apps.tripguide.presentation.ui.activity.CityToursActivity;
+import com.blancgrupo.apps.tripguide.presentation.ui.activity.CountryActivity;
 import com.blancgrupo.apps.tripguide.presentation.ui.activity.GettingStartedActivity;
 import com.blancgrupo.apps.tripguide.presentation.ui.activity.HomeActivity;
 import com.blancgrupo.apps.tripguide.presentation.ui.activity.PlaceDetailActivity;
+import com.blancgrupo.apps.tripguide.presentation.ui.activity.RegionsActivity;
 import com.blancgrupo.apps.tripguide.presentation.ui.activity.SearchActivity;
 import com.blancgrupo.apps.tripguide.presentation.ui.activity.SingleTourActivity;
 import com.blancgrupo.apps.tripguide.presentation.ui.activity.TourActivity;
@@ -50,5 +52,7 @@ public interface ActivityComponent {
     void inject(SignInFragment signInFragment);
     void inject(FavoritesFragment favoritesFragment);
     void inject(ViewProfileActivity viewProfileActivity);
+    void inject(RegionsActivity regionsActivity);
+    void inject(CountryActivity countryActivity);
 }
 

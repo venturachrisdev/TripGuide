@@ -2,6 +2,8 @@ package com.blancgrupo.apps.tripguide.data.service;
 
 import com.blancgrupo.apps.tripguide.data.entity.api.CitiesWrapper;
 import com.blancgrupo.apps.tripguide.data.entity.api.CityWrapper;
+import com.blancgrupo.apps.tripguide.data.entity.api.CountriesWrapper;
+import com.blancgrupo.apps.tripguide.data.entity.api.CountryWrapper;
 import com.blancgrupo.apps.tripguide.data.entity.api.ParentTourWrapper;
 import com.blancgrupo.apps.tripguide.data.entity.api.Place;
 import com.blancgrupo.apps.tripguide.data.entity.api.PlaceDescriptionWrapper;
@@ -9,10 +11,14 @@ import com.blancgrupo.apps.tripguide.data.entity.api.PlaceWrapper;
 import com.blancgrupo.apps.tripguide.data.entity.api.PlacesWrapper;
 import com.blancgrupo.apps.tripguide.data.entity.api.Profile;
 import com.blancgrupo.apps.tripguide.data.entity.api.ProfileWrapper;
+import com.blancgrupo.apps.tripguide.data.entity.api.RegionWrapper;
+import com.blancgrupo.apps.tripguide.data.entity.api.RegionsWrapper;
 import com.blancgrupo.apps.tripguide.data.entity.api.Review;
 import com.blancgrupo.apps.tripguide.data.entity.api.ReviewResponseWrapper;
 import com.blancgrupo.apps.tripguide.data.entity.api.TourWrapper;
 import com.blancgrupo.apps.tripguide.data.entity.api.UploadPhotoWrapper;
+
+import org.androidannotations.annotations.rest.Get;
 
 import io.reactivex.Observable;
 import okhttp3.MultipartBody;
@@ -88,5 +94,15 @@ public interface ApiPlaceService {
     @POST("reviews/remove?json")
     Observable<String> removeReview(@Body Review review, @Header("x-access-token") String apiToken);
 
-    
+    @GET("regions/{region_id}?json")
+    Observable<RegionWrapper> getRegion(@Header("x-access-token") String apiToken, @Path("region_id0") String regionId);
+
+    @GET("regions?json")
+    Observable<RegionsWrapper> getRegions(@Header("x-access-token") String apiToken);
+
+    @GET("countries/{country_id}?json")
+    Observable<CountryWrapper> getCountry(@Header("x-access-token") String apiToken, @Path("country_id") String countryId);
+
+    @GET("countries?json")
+    Observable<CountriesWrapper> getCountries(@Header("x-access-token") String apiToken);
 }

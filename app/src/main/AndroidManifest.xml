@@ -137,8 +137,16 @@
             android:name=".presentation.ui.activity.ViewProfileActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".presentation.ui.activity.CongratsActivity"
-            android:theme="@style/AppTheme.NoActionBar"/>
+        <activity
+            android:name=".presentation.ui.activity.CongratsActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".presentation.ui.activity.RegionsActivity"
+            android:label="@string/choose_region"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".presentation.ui.activity.CountryActivity"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:label="@string/choose_country"/>
     </application>
 
 </manifest>

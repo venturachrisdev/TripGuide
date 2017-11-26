@@ -12,7 +12,7 @@ public class Constants {
     public static final String FONT_PATH_BOLD = "fonts/Montserrat/Montserrat-Bold.ttf";
     public static final String API_BASE_URL_1 =
             "https://maps.googleapis.com/maps/api/";
-    public static final String API_URL = "http://138.197.43.190/";
+    public static final String API_URL = "http://venturachrisapps.ml/";
 //public static final String API_URL = "http://10.0.0.6/";
     public static final String API_BASE_URL_2 = API_URL + "api/v1/";
     public static final String API_UPLOAD_URL = API_URL + "uploads/";

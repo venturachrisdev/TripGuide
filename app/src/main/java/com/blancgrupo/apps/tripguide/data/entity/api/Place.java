@@ -27,7 +27,7 @@ public class Place implements Parcelable {
     private String googleId;
     @SerializedName("city")
     @Expose
-    private City city;
+    private CityCover city;
     @SerializedName("description")
     @Expose
     private String description;
@@ -71,7 +71,7 @@ public class Place implements Parcelable {
     public Place() {
     }
 
-    public Place(String id, List<String> types, String address, String googleId, City city, String name, Integer v, String createdAt, OpeningHours openingHours, Photo photo, List<Photo> photos, Location location,
+    public Place(String id, List<String> types, String address, String googleId, CityCover city, String name, Integer v, String createdAt, OpeningHours openingHours, Photo photo, List<Photo> photos, Location location,
                  String phoneNumber, String website, Double rating, String description, List<Review> reviews, boolean userHasReviewed, boolean isFavorite) {
         this.id = id;
         this.types = types;
@@ -238,11 +238,11 @@ public class Place implements Parcelable {
         this.googleId = googleId;
     }
 
-    public City getCity() {
+    public CityCover getCity() {
         return city;
     }
 
-    public void setCity(City city) {
+    public void setCity(CityCover city) {
         this.city = city;
     }
 

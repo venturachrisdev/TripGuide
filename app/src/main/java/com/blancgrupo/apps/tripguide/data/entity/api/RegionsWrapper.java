@@ -6,29 +6,29 @@ import com.google.gson.annotations.SerializedName;
 import java.util.List;
 
 /**
- * Created by root on 8/18/17.
+ * Created by venturachrisdev on 11/25/17.
  */
 
-public class CitiesWrapper {
-    @SerializedName("countries")
+public class RegionsWrapper {
+    @SerializedName("regions")
     @Expose
-    List<City> cities;
+    List<Region> regions;
 
     @SerializedName("status")
     @Expose
     String status;
 
-    public CitiesWrapper(List<City> cities, String status) {
-        this.cities = cities;
+    public RegionsWrapper(List<Region> regions, String status) {
+        this.regions = regions;
         this.status = status;
     }
 
-    public List<City> getCities() {
-        return cities;
+    public List<Region> getRegions() {
+        return regions;
     }
 
-    public void setCities(List<City> cities) {
-        this.cities = cities;
+    public void setRegions(List<Region> regions) {
+        this.regions = regions;
     }
 
     public String getStatus() {

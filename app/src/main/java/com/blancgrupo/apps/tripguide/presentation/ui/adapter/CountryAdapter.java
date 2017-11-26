@@ -5,15 +5,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.blancgrupo.apps.tripguide.MyApplication;
 import com.blancgrupo.apps.tripguide.R;
-import com.blancgrupo.apps.tripguide.data.entity.api.City;
+import com.blancgrupo.apps.tripguide.data.entity.api.Country;
 import com.blancgrupo.apps.tripguide.utils.ApiUtils;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.elyeproj.loaderviewlibrary.LoaderImageView;
 import com.elyeproj.loaderviewlibrary.LoaderTextView;
 
 import java.util.List;
@@ -22,55 +20,55 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 /**
- * Created by root on 8/18/17.
+ * Created by venturachrisdev on 11/25/17.
  */
 
-public class CityAdapter extends RecyclerView.Adapter<CityAdapter.CityViewHolder> {
-    private List<City> cities;
+public class CountryAdapter extends RecyclerView.Adapter<CountryAdapter.CountryViewHolder> {
+    List<Country> countries;
     private MyApplication application;
-    CityAdapterListener listener;
+    CountryAdapterListener listener;
 
-    public interface CityAdapterListener {
-        void onCityItemClick(City city);
+    public interface CountryAdapterListener {
+        void onCountryItemClick(Country country);
     }
 
-    public CityAdapter(MyApplication application, CityAdapterListener listener) {
+    public CountryAdapter(MyApplication application, CountryAdapterListener listener) {
         this.application = application;
         this.listener = listener;
     }
 
-    public CityViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    @Override
+    public CountryViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.city_list_item, parent, false);
-        return new CityViewHolder(v);
+        return new CountryViewHolder(v);
     }
 
     @Override
-    public void onBindViewHolder(CityViewHolder holder, int position) {
-        City city = cities.get(position);
-        holder.setName(city.getName());
-        holder.setPhoto(application, city.getPhoto().getReference(),
-                1000);
-        if (city.getRegion() != null) {
-            holder.setParent(city.getRegion().getName());
-            holder.setOnClickListener(listener, city);
-        }
+    public void onBindViewHolder(CountryViewHolder holder, int position) {
+        Country country = countries.get(position);
+        holder.setName(country.getName());
+        holder.setParent(country.getContinent());
+        holder.setOnClickListener(listener, country);
+        holder.setPhoto(application, country.getPhoto().getReference(),
+                country.getPhoto().getWidth());
     }
 
-    public void updateData(List<City> newCities) {
-        this.cities = newCities;
+    public void updateData(List<Country> newCountries) {
+        this.countries = newCountries;
         notifyDataSetChanged();
     }
 
     @Override
     public int getItemCount() {
-        if (cities != null) {
-            return cities.size();
+        if (countries != null) {
+            return countries.size();
         }
         return 0;
     }
 
-    class CityViewHolder extends RecyclerView.ViewHolder {
+
+    public static class CountryViewHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.city_name)
         LoaderTextView cityName;
         @BindView(R.id.city_image)
@@ -78,7 +76,7 @@ public class CityAdapter extends RecyclerView.Adapter<CityAdapter.CityViewHolder
         @BindView(R.id.city_parent)
         LoaderTextView cityParent;
 
-        public CityViewHolder(View itemView) {
+        public CountryViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
         }
@@ -101,11 +99,11 @@ public class CityAdapter extends RecyclerView.Adapter<CityAdapter.CityViewHolder
             cityParent.setText(parent);
         }
 
-        public void setOnClickListener(final CityAdapterListener listener, final City city) {
+        public void setOnClickListener(final CountryAdapterListener listener, final Country country) {
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    listener.onCityItemClick(city);
+                    listener.onCountryItemClick(country);
                 }
             });
         }

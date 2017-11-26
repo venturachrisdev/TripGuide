@@ -1,8 +1,10 @@
 package com.blancgrupo.apps.tripguide.presentation.di.module;
 
 import com.blancgrupo.apps.tripguide.data.ApiCityRepository;
+import com.blancgrupo.apps.tripguide.data.ApiCountryRepository;
 import com.blancgrupo.apps.tripguide.data.ApiPlaceRepository;
 import com.blancgrupo.apps.tripguide.data.ApiProfileRepository;
+import com.blancgrupo.apps.tripguide.data.ApiRegionRepository;
 import com.blancgrupo.apps.tripguide.data.ApiTourRepository;
 import com.blancgrupo.apps.tripguide.data.GooglePlaceRepository;
 import com.blancgrupo.apps.tripguide.data.persistence.PlacesDatabase;
@@ -12,13 +14,17 @@ import com.blancgrupo.apps.tripguide.data.persistence.repository.ReviewDBReposit
 import com.blancgrupo.apps.tripguide.data.service.ApiPlaceService;
 import com.blancgrupo.apps.tripguide.data.service.GooglePlaceService;
 import com.blancgrupo.apps.tripguide.domain.repository.CityRepository;
+import com.blancgrupo.apps.tripguide.domain.repository.CountryRepository;
 import com.blancgrupo.apps.tripguide.domain.repository.PlaceRepository;
 import com.blancgrupo.apps.tripguide.domain.repository.ProfileRepository;
+import com.blancgrupo.apps.tripguide.domain.repository.RegionRepository;
 import com.blancgrupo.apps.tripguide.domain.repository.TourRepository;
 import com.blancgrupo.apps.tripguide.presentation.di.ActivityScope;
 import com.blancgrupo.apps.tripguide.presentation.ui.viewmodel.CityVMFactory;
+import com.blancgrupo.apps.tripguide.presentation.ui.viewmodel.CountryVMFactory;
 import com.blancgrupo.apps.tripguide.presentation.ui.viewmodel.PlaceVMFactory;
 import com.blancgrupo.apps.tripguide.presentation.ui.viewmodel.ProfileVMFactory;
+import com.blancgrupo.apps.tripguide.presentation.ui.viewmodel.RegionVMFactory;
 import com.blancgrupo.apps.tripguide.presentation.ui.viewmodel.SearchVMFactory;
 import com.blancgrupo.apps.tripguide.presentation.ui.viewmodel.TourVMFactory;
 
@@ -72,6 +78,30 @@ public class ActivityModule {
 
     @Provides
     @ActivityScope
+    RegionRepository providesRegionRepository(ApiPlaceService apiPlaceService) {
+        return new ApiRegionRepository(apiPlaceService);
+    }
+
+    @Provides
+    @ActivityScope
+    CountryRepository providesCountryRepository(ApiPlaceService apiPlaceService) {
+        return new ApiCountryRepository(apiPlaceService);
+    }
+
+    @Provides
+    @ActivityScope
+    CountryVMFactory providesCountryVMFactory(CountryRepository countryRepository) {
+        return new CountryVMFactory(countryRepository);
+    }
+
+    @Provides
+    @ActivityScope
+    RegionVMFactory providesRegionVMFactory(RegionRepository regionRepository) {
+        return new RegionVMFactory(regionRepository);
+    }
+
+    @Provides
+    @ActivityScope
     ProfileVMFactory providesProfileFactory(ProfileRepository profileRepository) {
         return new ProfileVMFactory(profileRepository);
     }
@@ -81,7 +111,6 @@ public class ActivityModule {
     CityVMFactory providesCityFactory(CityRepository cityRepository) {
         return new CityVMFactory(cityRepository);
     }
-
 
     @Provides
     @ActivityScope

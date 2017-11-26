@@ -293,6 +293,14 @@ public class HomeActivity extends AppCompatActivity
                 Intent intent = new Intent(this, ChooseLocationActivity.class);
                 startActivityForResult(intent, Constants.CHOOSE_LOCATION_RC);
                 break;
+            case R.id.nav_location2:
+                Intent intent2 = new Intent(this, RegionsActivity.class);
+                startActivity(intent2);
+                break;
+            case R.id.nav_location3:
+                Intent intent3 = new Intent(this, CountryActivity.class);
+                startActivity(intent3);
+                break;
             case R.id.nav_share:
                 shareAppLink();
                 break;

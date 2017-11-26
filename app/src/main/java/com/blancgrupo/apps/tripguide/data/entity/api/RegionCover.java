@@ -3,13 +3,11 @@ package com.blancgrupo.apps.tripguide.data.entity.api;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-import java.util.List;
-
 /**
- * Created by venturachrisdev on 11/9/17.
+ * Created by venturachrisdev on 11/24/17.
  */
 
-public class Region {
+public class RegionCover {
     @SerializedName("_id")
     @Expose
     String _id;
@@ -18,7 +16,7 @@ public class Region {
     String name;
     @SerializedName("country")
     @Expose
-    Country country;
+    String country;
     @SerializedName("location")
     @Expose
     Location location;
@@ -28,10 +26,6 @@ public class Region {
     @SerializedName("createdAt")
     @Expose
     String createdAt;
-    @SerializedName("countries")
-    List<City> cities;
-
-    public Region() {}
 
     public String get_id() {
         return _id;
@@ -49,11 +43,11 @@ public class Region {
         this.name = name;
     }
 
-    public Country getCountry() {
+    public String getCountry() {
         return country;
     }
 
-    public void setCountry(Country country) {
+    public void setCountry(String country) {
         this.country = country;
     }
 
@@ -79,13 +73,5 @@ public class Region {
 
     public void setCreatedAt(String createdAt) {
         this.createdAt = createdAt;
-    }
-
-    public List<City> getCities() {
-        return cities;
-    }
-
-    public void setCities(List<City> cities) {
-        this.cities = cities;
     }
 }
